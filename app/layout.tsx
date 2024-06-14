@@ -5,6 +5,8 @@ import { Inter as FontSans } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ModeToggle } from '@/components/ui/mode-toggle'
 import { cn } from '@/lib/utils'
+
+import Footer from './footer'
 import './globals.css'
 
 const fontSans = FontSans({
@@ -40,6 +42,7 @@ export default function RootLayout({
             <ModeToggle />
           </div>
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
