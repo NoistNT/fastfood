@@ -49,7 +49,8 @@ const burgers = [
   {
     id: 1,
     name: 'Cheeseburger',
-    description: 'A delicious cheeseburger.',
+    description:
+      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis dolor molestias, sunt eaque nemo!. Lorem, ipsum dolor sit amet consectetur adipisicing elit.',
     price: 4.99,
     ingredientIds: [1, 2, 3],
     isVegetarian: false,
@@ -62,7 +63,8 @@ const burgers = [
   {
     id: 2,
     name: 'Veggieburger',
-    description: 'A delicious veggieburger.',
+    description:
+      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis dolor molestias, sunt eaque nemo!. Lorem, ipsum dolor sit amet consectetur adipisicing elit.',
     price: 4.99,
     ingredientIds: [2, 3],
     isVegetarian: false,
@@ -75,7 +77,8 @@ const burgers = [
   {
     id: 3,
     name: 'Vegan burger',
-    description: 'A delicious vegan burger.',
+    description:
+      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis dolor molestias, sunt eaque nemo!. Lorem, ipsum dolor sit amet consectetur adipisicing elit.',
     price: 4.99,
     ingredientIds: [3],
     isVegetarian: false,
@@ -88,7 +91,8 @@ const burgers = [
   {
     id: 4,
     name: 'Hamburger',
-    description: 'A delicious hamburger.',
+    description:
+      'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis dolor molestias, sunt eaque nemo!. Lorem, ipsum dolor sit amet consectetur adipisicing elit.',
     price: 4.99,
     ingredientIds: [1, 2, 3, 4, 5],
     isVegetarian: false,
