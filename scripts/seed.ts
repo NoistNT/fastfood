@@ -104,37 +104,71 @@ const burgers = [
   }
 ]
 
-// const orders = [
-//   {
-//     id: 1,
-//     burgerId: 1,
-//     quantity: 1
-//   },
-//   {
-//     id: 2,
-//     burgerId: 1,
-//     quantity: 2
-//   },
-//   {
-//     id: 3,
-//     burgerId: 1,
-//     quantity: 3
-//   }
-// ]
+const orderItems = [
+  {
+    id: 1,
+    orderId: 1,
+    burgerId: 1,
+    quantity: 1
+  },
+  {
+    id: 2,
+    orderId: 1,
+    burgerId: 2,
+    quantity: 2
+  },
+  {
+    id: 3,
+    orderId: 1,
+    burgerId: 3,
+    quantity: 1
+  },
+  {
+    id: 4,
+    orderId: 2,
+    burgerId: 4,
+    quantity: 2
+  },
+  {
+    id: 5,
+    orderId: 2,
+    burgerId: 1,
+    quantity: 1
+  }
+]
+
+const createdAt = new Date() as unknown as string
+
+const orders = [
+  {
+    id: 1,
+    totalAmount: 37.99,
+    orderItemIds: [1, 2, 3],
+    createdAt
+  },
+  {
+    id: 2,
+    totalAmount: 9.99,
+    orderItemIds: [1, 2, 3],
+    createdAt
+  }
+]
 
 async function main() {
   try {
     console.log('Clearing the database...')
     await Promise.all([
       db.delete(schema.ingredients),
-      db.delete(schema.burgers)
-      // db.delete(schema.order)
+      db.delete(schema.burgers),
+      db.delete(schema.orders),
+      db.delete(schema.orderItem)
     ])
 
     console.log('Seeding the database...')
     await db.insert(schema.burgers).values(burgers)
     await db.insert(schema.ingredients).values(ingredients)
-    // await db.insert(schema.order).values(orders)
+    await db.insert(schema.orders).values(orders)
+    await db.insert(schema.orderItem).values(orderItems)
     console.log('Database seeded!')
   } catch (error) {
     throw new Error('Failed to seed database')
