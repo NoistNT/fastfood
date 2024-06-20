@@ -1,11 +1,8 @@
 import Card from '@/components/burger/card'
-import { findAllBurgers, findAllIngredients } from '@/db/queries'
+import { burgerApi } from '@/db/queries'
 
 export default async function Home() {
-  const [burgers, ingredients] = await Promise.all([
-    findAllBurgers(),
-    findAllIngredients()
-  ])
+  const burgers = await burgerApi.findAll()
 
   return (
     <main className="flex min-h-screen">
