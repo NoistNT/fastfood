@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm'
 import {
   boolean,
   doublePrecision,
@@ -20,6 +21,11 @@ export const burgers = pgTable('burgers', {
   isAvailable: boolean('is_available').notNull().default(true)
 })
 
+export const burgerRelations = relations(burgers, ({ many }) => ({
+  orders: many(orders),
+  orderItems: many(orderItem)
+}))
+
 export const ingredients = pgTable('ingredients', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
@@ -31,15 +37,16 @@ export const ingredients = pgTable('ingredients', {
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  burgerId: integer('burger_id').notNull(),
-  quantity: integer('quantity').notNull(),
   totalAmount: doublePrecision('total_amount').notNull(),
-  isDelivered: boolean('is_delivered').notNull().default(false),
-  isPaid: boolean('is_paid').notNull().default(false),
+  orderItemIds: integer('order_item_ids').notNull().array(),
   createdAt: text('created_at').notNull()
 })
 
-export const orderItems = pgTable('order_items', {
+export const ordersRelations = relations(orders, ({ many }) => ({
+  orderItems: many(orderItem)
+}))
+
+export const orderItem = pgTable('order_item', {
   id: serial('id').primaryKey(),
   orderId: integer('order_id')
     .notNull()
@@ -49,3 +56,14 @@ export const orderItems = pgTable('order_items', {
     .references(() => burgers.id, { onDelete: 'cascade' }),
   quantity: integer('quantity').notNull()
 })
+
+export const orderItemsRelations = relations(orderItem, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItem.orderId],
+    references: [orders.id]
+  }),
+  burger: one(burgers, {
+    fields: [orderItem.burgerId],
+    references: [burgers.id]
+  })
+}))
