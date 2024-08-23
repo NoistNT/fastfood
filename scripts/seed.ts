@@ -53,7 +53,7 @@ const burgers = [
       'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Officiis dolor molestias, sunt eaque nemo!. Lorem, ipsum dolor sit amet consectetur adipisicing elit.',
     price: 4.99,
     ingredientIds: [1, 2, 3],
-    isVegetarian: false,
+    isVegetarian: true,
     isVeg: false,
     imgSrc:
       'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
