@@ -19,6 +19,8 @@ export const burgerApi = {
       ingredientsData
     ])
 
+    if (!burger) return null
+
     return { ...burger, ingredients }
   }
 }
@@ -29,9 +31,13 @@ export const ingredientApi = {
   },
 
   findOne: async (id: number) => {
-    return await db.query.ingredients.findFirst({
+    const ingredientData = await db.query.ingredients.findFirst({
       where: eq(ingredients.id, id)
     })
+
+    if (!ingredientData) return null
+
+    return ingredientData
   }
 }
 
