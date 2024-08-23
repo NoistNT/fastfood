@@ -1,5 +1,5 @@
-import Card from '@/components/burger/card'
 import { burgerApi } from '@/db/queries'
+import Card from '@/modules/products/components/card'
 
 export default async function Home() {
   const burgers = await burgerApi.findAll()

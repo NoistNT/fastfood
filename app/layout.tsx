@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 
 import { Inter as FontSans } from 'next/font/google'
 
-import { ThemeProvider } from '@/components/theme-provider'
-import { ModeToggle } from '@/components/ui/mode-toggle'
 import { cn } from '@/lib/utils'
+import { ThemeProvider } from '@/modules/core/theme-provider'
+import { ModeToggle } from '@/modules/core/ui/mode-toggle'
 
 import Footer from './footer'
 import './globals.css'

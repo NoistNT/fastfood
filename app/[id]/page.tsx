@@ -1,7 +1,11 @@
-import DetailCard from '@/components/burger/detail-card'
 import { burgerApi } from '@/db/queries'
+import DetailCard from '@/modules/products/components/detail-card'
 
-export default async function Page({ params }: { params: { id: number } }) {
+interface Props {
+  params: { id: number }
+}
+
+export default async function Page({ params }: Props) {
   const { id } = params
 
   const burger = await burgerApi.findOne(id)
