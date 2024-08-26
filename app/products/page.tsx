@@ -5,8 +5,8 @@ export default async function Home() {
   const burgers = await burgerApi.findAll()
 
   return (
-    <main className="flex min-h-screen">
-      <ul className="container grid max-w-6xl gap-4 md:grid-cols-2">
+    <main className="flex">
+      <ul className="container grid gap-4 xl:grid-cols-2 xl:gap-8">
         {burgers.map(
           ({
             id,
