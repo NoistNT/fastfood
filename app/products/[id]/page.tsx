@@ -29,7 +29,7 @@ export default async function Page({ params }: Props) {
       id={id}
       imgAlt={imgAlt}
       imgSrc={imgSrc}
-      ingredients={ingredients.map((ingredient) => ingredient.name)}
+      ingredients={ingredients.map(({ name }) => name)}
       isVegan={isVegan}
       isVegetarian={isVegetarian}
       name={name}
