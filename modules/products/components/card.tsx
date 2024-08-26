@@ -1,56 +1,47 @@
 import type { Burger } from '@/modules/products/types'
 
 import Image from 'next/image'
+import Link from 'next/link'
+
+import { Button } from '@/modules/core/ui/button'
 
 export default function Card({
+  id,
   name,
   description,
   imgAlt,
   imgSrc,
-  isVegetarian,
-  isVegan,
   price
 }: Burger) {
   return (
-    <article className="h-full max-w-md rounded-xl border-2 border-neutral-400 dark:border-neutral-700 dark:bg-black">
+    <article className="flex h-full flex-col rounded-xl bg-white p-3 shadow-md dark:bg-black sm:h-40 sm:min-w-[480px] sm:flex-row">
       <Image
         alt={imgAlt}
-        className="rounded-t-xl"
-        height={480}
+        className="w-full rounded-xl object-cover sm:aspect-square sm:w-40"
+        height={130}
         src={imgSrc}
-        width={480}
+        width={130}
       />
-      <div className="h-1 w-full bg-neutral-400 dark:bg-neutral-600" />
-      <div className="mx-4 mt-4">
-        <div className="mb-4 flex items-center justify-between px-2">
+      <div className="mt-3 flex flex-col justify-between p-2 sm:pb-0 sm:pl-4">
+        <div className="flex justify-between">
           <h2 className="text-2xl font-bold">{name}</h2>
-          <p className="text-xl font-semibold text-neutral-600 dark:text-neutral-300">
-            ${price}
-          </p>
+          <p className="text-2xl font-extrabold">${price}</p>
         </div>
-        <div className="mb-4 h-0.5 w-full bg-neutral-400 dark:bg-neutral-700" />
-        <p className="mb-5 min-h-16 px-4 text-neutral-500/85 dark:text-neutral-400/85">
+        <p className="mt-3 max-h-20 max-w-sm truncate p-1 text-sm text-muted-foreground sm:mt-0">
           {description}
         </p>
-        <div className="mb-2 h-0.5 w-full bg-neutral-400 dark:bg-neutral-700" />
-        <ul className="mx-auto my-3 flex items-center justify-around text-center text-muted-foreground">
-          <p className="text-center font-semibold">
-            Vegetarian:
-            {isVegetarian ? (
-              <span className="text-green-600"> Yes</span>
-            ) : (
-              <span className="text-red-400"> No</span>
-            )}
-          </p>
-          <p className="text-center font-semibold">
-            Vegan:
-            {isVegan ? (
-              <span className="text-green-600"> Yes</span>
-            ) : (
-              <span className="text-red-400"> No</span>
-            )}
-          </p>
-        </ul>
+        <div className="mt-4 flex w-full justify-center gap-4 sm:mt-0 sm:justify-end sm:gap-2">
+          <Link className="w-full sm:w-32" href={`/products/${id}`}>
+            <Button className="w-full sm:w-32" type="button" variant="outline">
+              Más info
+            </Button>
+          </Link>
+          <Link className="w-full sm:w-32" href="/cart">
+            <Button className="w-full sm:w-32" type="button" variant="default">
+              Añadir
+            </Button>
+          </Link>
+        </div>
       </div>
     </article>
   )
