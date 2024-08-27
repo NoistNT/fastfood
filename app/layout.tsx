@@ -39,7 +39,7 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
         >
-          <div className="fixed right-4 top-3">
+          <div className="fixed right-4 top-3.5">
             <ModeToggle />
           </div>
           <Header />
