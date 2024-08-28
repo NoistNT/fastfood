@@ -4,9 +4,7 @@ import type { Burger } from '@/modules/products/types'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
 
-import { fixedPrice } from '@/lib/utils'
 import { Button } from '@/modules/core/ui/button'
 import { useOrderStore } from '@/store/use-order'
 
@@ -18,22 +16,8 @@ export default function Card({
   imgSrc,
   price
 }: Burger) {
-  const { addToOrder, incrementQuantity, decrementQuantity } = useOrderStore()
-  const [quantity, setQuantity] = useState(1)
-  const subtotal = fixedPrice(price * quantity)
-  const order = { id, name, price, quantity, subtotal }
-
-  const handleIncrement = () => {
-    setQuantity(quantity + 1)
-    incrementQuantity(id)
-  }
-
-  const handleDecrement = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1)
-      decrementQuantity(id)
-    }
-  }
+  const { addItem } = useOrderStore()
+  const product = { id, name, price, quantity: 1, subtotal: price }
 
   return (
     <article className="flex h-full flex-col rounded-xl bg-white p-3 shadow-md dark:bg-black sm:h-40 sm:min-w-[480px] sm:flex-row">
@@ -59,31 +43,10 @@ export default function Card({
             </Button>
           </Link>
           <Button
-            type="button"
-            variant="outline"
-            onClick={() => handleDecrement()}
-          >
-            -
-          </Button>
-          <input
-            disabled
-            className="w-10 rounded-md border border-neutral-200 text-center text-sm font-semibold text-black"
-            type="text"
-            value={quantity}
-            onChange={(event) => setQuantity(Number(event.target.value))}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => handleIncrement()}
-          >
-            +
-          </Button>
-          <Button
             className="w-full sm:w-32"
             type="button"
             variant="default"
-            onClick={() => addToOrder(order)}
+            onClick={() => addItem(product)}
           >
             Añadir al pedido
           </Button>
