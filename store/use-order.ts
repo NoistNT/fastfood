@@ -5,12 +5,11 @@ interface Item {
   name: string
   price: number
   quantity: number
-  subtotal: number
 }
 
 interface OrderStore {
   order: Item[]
-  addToOrder: (item: Item) => void
+  addItem: (item: Item) => void
   incrementQuantity: (id: number) => void
   decrementQuantity: (id: number) => void
   removeItem: (id: number) => void
@@ -19,31 +18,37 @@ interface OrderStore {
 
 export const useOrderStore = create<OrderStore>((set) => ({
   order: [],
-  addToOrder: (item) => set((state) => ({ order: [...state.order, item] })),
+  addItem: (item) =>
+    set((state) => {
+      const existingItemIndex = state.order.findIndex(
+        (orderItem) => orderItem.id === item.id
+      )
+
+      if (existingItemIndex > -1) {
+        const updatedOrder = [...state.order]
+
+        updatedOrder[existingItemIndex].quantity += item.quantity
+
+        return { order: updatedOrder }
+      }
+
+      return { order: [...state.order, item] }
+    }),
   incrementQuantity: (id) =>
     set((state) => {
-      const itemIndex = state.order.findIndex((item) => item.id === id)
-
-      if (itemIndex === -1) return state
-
-      const updatedOrder = [...state.order]
-
-      updatedOrder[itemIndex].quantity++
+      const updatedOrder = state.order.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+      )
 
       return { order: updatedOrder }
     }),
   decrementQuantity: (id) =>
     set((state) => {
-      const itemIndex = state.order.findIndex((item) => item.id === id)
-
-      if (itemIndex === -1) return state
-
-      const updatedOrder = [...state.order]
-      const currentQuantity = updatedOrder[itemIndex].quantity
-
-      if (currentQuantity > 0) {
-        updatedOrder[itemIndex].quantity--
-      }
+      const updatedOrder = state.order.map((item) =>
+        item.id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      )
 
       return { order: updatedOrder }
     }),
