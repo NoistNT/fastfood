@@ -13,7 +13,7 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "next": "^14.2.6",
+    "next": "^14.2.7",
     "react": "^18",
     "react-dom": "^18"
   },
@@ -49,5 +49,5 @@
     "typescript": "^5.5.4",
     "zustand": "^4.5.5"
   },
-  "packageManager": "pnpm@9.8.0+sha256.56a9e76b51796ca7f73b85e44cf83712862091f4d498c0ce4d5b7ecdc6ba18f7"
+  "packageManager": "pnpm@9.9.0+sha256.56a9e76b51796ca7f73b85e44cf83712862091f4d498c0ce4d5b7ecdc6ba18f7"
 }
