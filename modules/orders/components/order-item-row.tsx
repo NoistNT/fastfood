@@ -30,12 +30,16 @@ export function OrderItemRow({
   }
 
   return (
-    <TableRow key={id} className="hover:bg-neutral-100">
+    <TableRow
+      key={id}
+      className="hover:bg-neutral-100 dark:hover:bg-neutral-800"
+    >
       <TableCell className="font-medium">{name}</TableCell>
       <TableCell>${fixedPrice(price)}</TableCell>
       <TableCell>
         <Button
           aria-label="Decrease quantity"
+          className="size-8 p-0 dark:hover:border-neutral-700"
           type="button"
           variant="outline"
           onClick={handleDecrement}
@@ -44,12 +48,13 @@ export function OrderItemRow({
         </Button>
         <input
           disabled
-          className="w-10 rounded-md border border-neutral-200 text-center text-sm font-semibold text-black"
+          className="mx-1.5 h-7 w-8 rounded-md border border-neutral-200 text-center text-sm font-semibold text-black dark:border-neutral-700 dark:text-white"
           type="text"
           value={quantity}
         />
         <Button
           aria-label="Increase quantity"
+          className="size-8 p-0 dark:hover:border-neutral-700"
           type="button"
           variant="outline"
           onClick={() => incrementQuantity(id)}
@@ -61,6 +66,7 @@ export function OrderItemRow({
       <TableCell>
         <Button
           aria-label="Remove item"
+          className="size-8 p-0 hover:bg-red-500"
           type="button"
           variant="outline"
           onClick={() => removeItem(id)}

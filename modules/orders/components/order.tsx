@@ -59,11 +59,17 @@ export default function Order() {
         removeItem={removeItem}
         total={total}
       />
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2 py-1.5">
         <Link href="/products">
-          <Button variant="outline">Seguir agregando</Button>
+          <Button
+            className="border border-neutral-300 hover:border-neutral-400 dark:h-10 dark:border-neutral-700 dark:hover:border-neutral-600"
+            type="button"
+            variant="secondary"
+          >
+            Seguir agregando
+          </Button>
         </Link>
-        <Button variant="default" onClick={submitOrder}>
+        <Button type="button" variant="default" onClick={submitOrder}>
           Confirmar pedido
         </Button>
       </div>
