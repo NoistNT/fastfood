@@ -1,3 +1,5 @@
+import { TrashIcon } from '@radix-ui/react-icons'
+
 import { fixedPrice } from '@/lib/utils'
 import { Button } from '@/modules/core/ui/button'
 import { TableCell, TableRow } from '@/modules/core/ui/table'
@@ -9,6 +11,7 @@ interface OrderItemRowProps {
   quantity: number
   incrementQuantity: (id: number) => void
   decrementQuantity: (id: number) => void
+  removeItem: (id: number) => void
 }
 
 export function OrderItemRow({
@@ -17,7 +20,8 @@ export function OrderItemRow({
   price,
   quantity,
   incrementQuantity,
-  decrementQuantity
+  decrementQuantity,
+  removeItem
 }: OrderItemRowProps) {
   const handleDecrement = () => {
     if (quantity > 1) {
@@ -54,6 +58,16 @@ export function OrderItemRow({
         </Button>
       </TableCell>
       <TableCell>${fixedPrice(price * quantity)}</TableCell>
+      <TableCell>
+        <Button
+          aria-label="Remove item"
+          type="button"
+          variant="outline"
+          onClick={() => removeItem(id)}
+        >
+          <TrashIcon />
+        </Button>
+      </TableCell>
     </TableRow>
   )
 }

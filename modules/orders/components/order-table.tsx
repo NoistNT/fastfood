@@ -19,6 +19,7 @@ interface OrderTableProps {
   }[]
   incrementQuantity: (id: number) => void
   decrementQuantity: (id: number) => void
+  removeItem: (id: number) => void
   total: number
 }
 
@@ -26,6 +27,7 @@ export default function OrderTable({
   items,
   incrementQuantity,
   decrementQuantity,
+  removeItem,
   total
 }: OrderTableProps) {
   return (
@@ -36,6 +38,7 @@ export default function OrderTable({
           <TableHead>Precio</TableHead>
           <TableHead>Cantidad</TableHead>
           <TableHead>Subtotal</TableHead>
+          <TableHead className="w-0">Quitar</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -48,13 +51,14 @@ export default function OrderTable({
             name={name}
             price={price}
             quantity={quantity}
+            removeItem={removeItem}
           />
         ))}
       </TableBody>
       <TableFooter>
         <TableRow className="bg-neutral-100 font-semibold hover:bg-neutral-200">
           <TableCell colSpan={3}>Total</TableCell>
-          <TableCell>${fixedPrice(total)}</TableCell>
+          <TableCell colSpan={4}>${fixedPrice(total)}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

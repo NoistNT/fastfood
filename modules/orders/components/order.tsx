@@ -4,13 +4,15 @@ import type { Order } from '@/modules/orders/types'
 
 import Link from 'next/link'
 import { useMemo } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/modules/core/ui/button'
 import OrderTable from '@/modules/orders/components/order-table'
 import { useOrderItemStore } from '@/store/use-order-item'
 
 export default function Order() {
-  const { item, incrementQuantity, decrementQuantity } = useOrderItemStore()
+  const { item, incrementQuantity, decrementQuantity, removeItem } =
+    useOrderItemStore()
 
   const total = useMemo(
     () => item.reduce((acc, { price, quantity }) => acc + price * quantity, 0),
@@ -32,6 +34,20 @@ export default function Order() {
     }
 
     console.log(order)
+    toast.success('Order placed!')
+  }
+
+  if (item.length === 0) {
+    return (
+      <div className="mx-auto flex max-w-5xl flex-col gap-y-10 py-60">
+        <p className="text-center text-secondary-foreground">
+          No hay productos en el pedido
+        </p>
+        <Link className="mx-auto" href="/products">
+          <Button variant="default">Añadir productos</Button>
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -40,6 +56,7 @@ export default function Order() {
         decrementQuantity={decrementQuantity}
         incrementQuantity={incrementQuantity}
         items={item}
+        removeItem={removeItem}
         total={total}
       />
       <div className="flex justify-end gap-2">
