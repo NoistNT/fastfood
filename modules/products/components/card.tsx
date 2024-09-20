@@ -1,9 +1,11 @@
 'use client'
 
+import type { Item } from '@/modules/orders/types'
 import type { Burger } from '@/modules/products/types'
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 import { Button } from '@/modules/core/ui/button'
 import { useOrderItemStore } from '@/store/use-order-item'
@@ -18,6 +20,11 @@ export default function Card({
 }: Burger) {
   const { addItem } = useOrderItemStore()
   const item = { id, name, price, quantity: 1, subtotal: price }
+
+  const handleAddItem = (item: Item) => {
+    addItem(item)
+    toast.success('Item added to cart')
+  }
 
   return (
     <article className="flex h-full flex-col rounded-xl bg-white p-3 shadow-md dark:bg-black sm:h-40 sm:min-w-[480px] sm:flex-row">
@@ -46,7 +53,7 @@ export default function Card({
             className="w-full sm:w-32"
             type="button"
             variant="default"
-            onClick={() => addItem(item)}
+            onClick={() => handleAddItem(item)}
           >
             Añadir al pedido
           </Button>

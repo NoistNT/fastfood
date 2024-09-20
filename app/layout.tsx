@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Inter as FontSans } from 'next/font/google'
+import { Toaster } from 'sonner'
 
 import { cn } from '@/lib/utils'
 import Footer from '@/modules/core/footer'
@@ -39,6 +40,7 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
         >
+          <Toaster />
           <div className="fixed right-4 top-3.5">
             <ModeToggle />
           </div>
