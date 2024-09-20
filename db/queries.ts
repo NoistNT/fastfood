@@ -1,27 +1,53 @@
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/drizzle'
-import { burgers, ingredients, orderItem, orders } from '@/db/schema'
+import {
+  ingredients,
+  orderItem,
+  orders,
+  products,
+  type ProductWithIngredients
+} from '@/db/schema'
 
-export const burgerApi = {
+export const productsApi = {
   findAll: async () => {
-    return await db.query.burgers.findMany()
+    return await db.query.products.findMany()
   },
 
-  findOne: async (id: number) => {
-    const ingredientsData = await db.query.ingredients.findMany()
-    const burgerData = await db.query.burgers.findFirst({
-      where: eq(burgers.id, id)
+  findOne: async (id: number): Promise<ProductWithIngredients | null> => {
+    const productWithIngredients = await db.query.products.findFirst({
+      where: eq(products.id, id),
+      columns: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        imgSrc: true,
+        imgAlt: true,
+        isVegetarian: true,
+        isVegan: true,
+        isAvailable: true
+      },
+      with: {
+        ingredients: {
+          columns: {},
+          with: {
+            ingredient: {
+              columns: { name: true }
+            }
+          }
+        }
+      }
     })
 
-    const [burger, ingredients] = await Promise.all([
-      burgerData,
-      ingredientsData
-    ])
+    if (!productWithIngredients) return null
 
-    if (!burger) return null
+    const { ingredients, ...product } = productWithIngredients
 
-    return { ...burger, ingredients }
+    return {
+      ...product,
+      ingredients: ingredients.map(({ ingredient }) => ingredient?.name ?? '')
+    }
   }
 }
 
@@ -59,14 +85,14 @@ export const ordersApi = {
 export const orderItemsApi = {
   findAll: async () => {
     return await db.query.orderItem.findMany({
-      with: { burger: true }
+      with: { product: true }
     })
   },
 
   findOne: async (id: number) => {
     return await db.query.orderItem.findFirst({
       where: eq(orderItem.id, id),
-      with: { burger: true }
+      with: { product: true }
     })
   }
 }
