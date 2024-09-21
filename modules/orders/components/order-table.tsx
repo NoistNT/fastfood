@@ -1,3 +1,5 @@
+import type { Item } from '@/modules/orders/types'
+
 import { fixedPrice } from '@/lib/utils'
 import {
   Table,
@@ -11,12 +13,7 @@ import {
 import { OrderItemRow } from '@/modules/orders/components/order-item-row'
 
 interface OrderTableProps {
-  items: {
-    id: number
-    name: string
-    price: number
-    quantity: number
-  }[]
+  items: Item[]
   incrementQuantity: (id: number) => void
   decrementQuantity: (id: number) => void
   removeItem: (id: number) => void
@@ -46,11 +43,8 @@ export default function OrderTable({
           <OrderItemRow
             key={id}
             decrementQuantity={decrementQuantity}
-            id={id}
             incrementQuantity={incrementQuantity}
-            name={name}
-            price={price}
-            quantity={quantity}
+            item={{ id, name, price, quantity }}
             removeItem={removeItem}
           />
         ))}
