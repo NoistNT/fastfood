@@ -1,4 +1,4 @@
-import { relations, type InferSelectModel } from 'drizzle-orm'
+import { relations } from 'drizzle-orm'
 import {
   boolean,
   doublePrecision,
@@ -8,10 +8,6 @@ import {
   text,
   timestamp
 } from 'drizzle-orm/pg-core'
-
-export type Product = InferSelectModel<typeof products>
-
-export type ProductWithIngredients = Product & { ingredients: string[] }
 
 export const productIngredients = pgTable('product_ingredients', {
   productId: integer('product_id')
@@ -65,7 +61,7 @@ export const ingredients = pgTable('ingredients', {
 
 export const orders = pgTable('orders', {
   id: serial('id').primaryKey(),
-  totalAmount: doublePrecision('total_amount').notNull(),
+  total: doublePrecision('total').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow()
 })
 
