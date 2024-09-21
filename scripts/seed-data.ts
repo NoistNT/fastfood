@@ -153,15 +153,15 @@ export const productIngredientsSeed = [
 
 export const ordersSeed = [
   {
-    totalAmount: 12.99,
+    total: 12.99,
     createdAt: new Date()
   },
   {
-    totalAmount: 9.99,
+    total: 9.99,
     createdAt: new Date()
   },
   {
-    totalAmount: 8.99,
+    total: 8.99,
     createdAt: new Date()
   }
 ]
