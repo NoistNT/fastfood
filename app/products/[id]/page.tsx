@@ -1,4 +1,4 @@
-import { burgerApi } from '@/db/queries'
+import { findOne } from '@/modules/products/actions/actions'
 import DetailCard from '@/modules/products/components/detail-card'
 
 interface Props {
@@ -8,9 +8,9 @@ interface Props {
 export default async function Page({ params }: Props) {
   const { id } = params
 
-  const burger = await burgerApi.findOne(id)
+  const product = await findOne(id)
 
-  if (!burger) return null
+  if (!product) return null
 
   const {
     name,
@@ -21,15 +21,16 @@ export default async function Page({ params }: Props) {
     isVegan,
     isVegetarian,
     price
-  } = burger
+  } = product
 
   return (
     <DetailCard
+      isAvailable
       description={description}
       id={id}
       imgAlt={imgAlt}
       imgSrc={imgSrc}
-      ingredients={ingredients.map(({ name }) => name)}
+      ingredients={ingredients}
       isVegan={isVegan}
       isVegetarian={isVegetarian}
       name={name}
