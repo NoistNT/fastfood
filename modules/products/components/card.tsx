@@ -10,15 +10,13 @@ import { toast } from 'sonner'
 import { Button } from '@/modules/core/ui/button'
 import { useOrderItemStore } from '@/store/use-order-item'
 
+interface Props {
+  product: ProductGeneralView
+}
+
 export default function Card({
-  id,
-  name,
-  description,
-  imgAlt,
-  imgSrc,
-  price,
-  isAvailable
-}: ProductGeneralView) {
+  product: { id, imgAlt, imgSrc, name, description, price, isAvailable }
+}: Props) {
   const { addItem } = useOrderItemStore()
   const item = { id, name, price, quantity: 1, subtotal: price }
 

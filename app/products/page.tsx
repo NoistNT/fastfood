@@ -7,18 +7,9 @@ export default async function Home() {
   return (
     <main className="flex">
       <ul className="container grid gap-4 xl:grid-cols-2 xl:gap-8">
-        {products.map(({ id, description, imgAlt, imgSrc, name, price }) => (
-          <li key={id} className="mx-auto">
-            <Card
-              key={id}
-              isAvailable
-              description={description}
-              id={id}
-              imgAlt={imgAlt}
-              imgSrc={imgSrc}
-              name={name}
-              price={price}
-            />
+        {products.map((product) => (
+          <li key={product.id} className="mx-auto">
+            <Card key={product.id} product={product} />
           </li>
         ))}
       </ul>

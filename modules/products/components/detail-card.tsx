@@ -1,19 +1,25 @@
-import type { Burger } from '@/modules/products/types'
+import type { ProductWithIngredients } from '@/modules/products/types'
 
 import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 
+interface Props {
+  product: ProductWithIngredients
+}
+
 export default function DetailCard({
-  name,
-  description,
-  ingredients,
-  imgSrc,
-  imgAlt,
-  isVegetarian,
-  isVegan,
-  price
-}: Burger) {
+  product: {
+    name,
+    description,
+    imgAlt,
+    imgSrc,
+    price,
+    ingredients,
+    isVegan,
+    isVegetarian
+  }
+}: Props) {
   return (
     <section className="max-w-lg rounded-3xl border-2 border-neutral-200 dark:border-neutral-700">
       <Image
