@@ -1,55 +1,7 @@
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/drizzle'
-import {
-  ingredients,
-  orderItem,
-  orders,
-  products,
-  type ProductWithIngredients
-} from '@/db/schema'
-
-export const productsApi = {
-  findAll: async () => {
-    return await db.query.products.findMany()
-  },
-
-  findOne: async (id: number): Promise<ProductWithIngredients | null> => {
-    const productWithIngredients = await db.query.products.findFirst({
-      where: eq(products.id, id),
-      columns: {
-        id: true,
-        name: true,
-        description: true,
-        price: true,
-        imgSrc: true,
-        imgAlt: true,
-        isVegetarian: true,
-        isVegan: true,
-        isAvailable: true
-      },
-      with: {
-        ingredients: {
-          columns: {},
-          with: {
-            ingredient: {
-              columns: { name: true }
-            }
-          }
-        }
-      }
-    })
-
-    if (!productWithIngredients) return null
-
-    const { ingredients, ...product } = productWithIngredients
-
-    return {
-      ...product,
-      ingredients: ingredients.map(({ ingredient }) => ingredient?.name ?? '')
-    }
-  }
-}
+import { ingredients, orderItem } from '@/db/schema'
 
 export const ingredientApi = {
   findAll: async () => {
@@ -64,21 +16,6 @@ export const ingredientApi = {
     if (!ingredientData) return null
 
     return ingredientData
-  }
-}
-
-export const ordersApi = {
-  findAll: async () => {
-    return await db.query.orders.findMany({
-      with: { orderItems: true }
-    })
-  },
-
-  findOne: async (id: number) => {
-    return await db.query.orders.findFirst({
-      where: eq(orders.id, id),
-      with: { orderItems: true }
-    })
   }
 }
 
