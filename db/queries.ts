@@ -26,7 +26,7 @@ export const orderItemsApi = {
     })
   },
 
-  findOne: async (id: number) => {
+  findOne: async (id: string) => {
     return await db.query.orderItem.findFirst({
       where: eq(orderItem.id, id),
       with: { product: true }
