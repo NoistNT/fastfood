@@ -6,8 +6,12 @@ import {
   pgTable,
   serial,
   text,
-  timestamp
+  timestamp,
+  uuid,
+  varchar
 } from 'drizzle-orm/pg-core'
+
+import { ORDER_STATUS } from '@/modules/orders/types'
 
 export const productIngredients = pgTable('product_ingredients', {
   productId: integer('product_id')
@@ -60,8 +64,9 @@ export const ingredients = pgTable('ingredients', {
 })
 
 export const orders = pgTable('orders', {
-  id: serial('id').primaryKey(),
+  id: uuid('id').primaryKey().defaultRandom(),
   total: doublePrecision('total').notNull(),
+  status: varchar('status').notNull().default(ORDER_STATUS.PENDING),
   createdAt: timestamp('created_at').notNull().defaultNow()
 })
 
@@ -70,8 +75,8 @@ export const ordersRelations = relations(orders, ({ many }) => ({
 }))
 
 export const orderItem = pgTable('order_item', {
-  id: serial('id').primaryKey(),
-  orderId: integer('order_id')
+  id: uuid('id').primaryKey().defaultRandom(),
+  orderId: uuid('order_id')
     .notNull()
     .references(() => orders.id, { onDelete: 'cascade' }),
   productId: integer('product_id')
