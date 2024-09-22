@@ -31,7 +31,6 @@ export const findOne = async (
     where: eq(products.id, id),
     with: {
       ingredients: {
-        columns: {},
         with: { ingredient: { columns: { name: true } } }
       }
     }
