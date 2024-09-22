@@ -39,12 +39,12 @@ export default function OrderTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map(({ id, name, price, quantity }) => (
+        {items.map((item) => (
           <OrderItemRow
-            key={id}
+            key={item.id}
             decrementQuantity={decrementQuantity}
             incrementQuantity={incrementQuantity}
-            item={{ id, name, price, quantity }}
+            item={item}
             removeItem={removeItem}
           />
         ))}
