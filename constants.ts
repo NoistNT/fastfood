@@ -1,17 +1,16 @@
-import { config } from 'dotenv'
+import 'dotenv/config'
 
-config({ path: '.env.local' })
-
-const envVariables = ['BASE_URL, DB_URL']
-
-const customError = (envVariable: string) => {
-  throw new Error(`Environment variable ${envVariable} is not defined`)
+const missingEnvError = (key: string) => {
+  throw new Error(`Missing environment variable: ${key}`)
 }
 
-for (const envVariable of envVariables) {
-  if (!process.env[envVariable]) {
-    customError(envVariable)
-  }
-}
+const requiredEnvVars = ['DB_URL', 'NEXT_PUBLIC_BASE_URL']
 
-export const { BASE_URL, DB_URL } = process.env as Record<string, string>
+requiredEnvVars.forEach((key) => {
+  if (!process.env[key]) missingEnvError(key)
+})
+
+export const { DB_URL, NEXT_PUBLIC_BASE_URL: BASE_URL } = process.env as Record<
+  string,
+  string
+>
