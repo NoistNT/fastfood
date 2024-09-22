@@ -2,7 +2,7 @@ import { config } from 'dotenv'
 
 config({ path: '.env.local' })
 
-const envVariables = ['DB_URL']
+const envVariables = ['BASE_URL, DB_URL']
 
 const customError = (envVariable: string) => {
   throw new Error(`Environment variable ${envVariable} is not defined`)
@@ -14,4 +14,4 @@ for (const envVariable of envVariables) {
   }
 }
 
-export const { DB_URL } = process.env as Record<string, string>
+export const { BASE_URL, DB_URL } = process.env as Record<string, string>
