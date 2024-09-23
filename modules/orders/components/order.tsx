@@ -1,43 +1,52 @@
 'use client'
 
-import type { Order } from '@/modules/orders/types'
+import type { NewOrder } from '@/modules/orders/types'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useTransition } from 'react'
 import { toast } from 'sonner'
 
+import { fixedPrice } from '@/lib/utils'
 import { Button } from '@/modules/core/ui/button'
-import OrderTable from '@/modules/orders/components/order-table'
-import { useOrderItemStore } from '@/store/use-order-item'
+import { create } from '@/modules/orders/actions/actions'
+import { OrderTable } from '@/modules/orders/components/order-table'
+import { SubmitOrder } from '@/modules/orders/components/submit-order'
+import { useOrderStore } from '@/store/use-order'
 
 export default function Order() {
-  const { item, incrementQuantity, decrementQuantity, removeItem } =
-    useOrderItemStore()
+  const {
+    items: items,
+    incrementQuantity,
+    decrementQuantity,
+    removeItem,
+    clearOrder
+  } = useOrderStore()
 
   const total = useMemo(
-    () => item.reduce((acc, { price, quantity }) => acc + price * quantity, 0),
-    [item]
+    () => items.reduce((acc, { price, quantity }) => acc + price * quantity, 0),
+    [items]
   )
 
-  const submitOrder = () => {
-    const order: Order = {
-      id: 1,
-      createdAt: new Date(),
-      items: item.map(({ id, name, price, quantity }) => ({
-        id,
-        name,
-        price,
-        quantity
-      })),
-      total,
-      status: 'PENDING'
-    }
+  const [isPending, startTransition] = useTransition()
 
-    console.log(order)
-    toast.success('Order placed!')
+  const handleSubmit = async () => {
+    startTransition(async () => {
+      const order: NewOrder = {
+        items: items.map(({ id, quantity }) => ({ id, quantity })),
+        total: fixedPrice(total)
+      }
+
+      try {
+        await create(order)
+        clearOrder()
+        toast.success('El pedido ha sido registrado')
+      } catch (error) {
+        toast.error('No se pudo registrar el pedido. Intente nuevamente')
+      }
+    })
   }
 
-  if (item.length === 0) {
+  if (!items.length) {
     return (
       <div className="mx-auto flex max-w-5xl flex-col gap-y-10 py-60">
         <p className="text-center text-secondary-foreground">
@@ -55,24 +64,11 @@ export default function Order() {
       <OrderTable
         decrementQuantity={decrementQuantity}
         incrementQuantity={incrementQuantity}
-        items={item}
+        items={items}
         removeItem={removeItem}
         total={total}
       />
-      <div className="flex items-center justify-end gap-2 py-1.5">
-        <Link href="/products">
-          <Button
-            className="border border-neutral-300 hover:border-neutral-400 dark:h-10 dark:border-neutral-700 dark:hover:border-neutral-600"
-            type="button"
-            variant="secondary"
-          >
-            Seguir agregando
-          </Button>
-        </Link>
-        <Button type="button" variant="default" onClick={submitOrder}>
-          Confirmar pedido
-        </Button>
-      </div>
+      <SubmitOrder handleSubmit={handleSubmit} isPending={isPending} />
     </div>
   )
 }
