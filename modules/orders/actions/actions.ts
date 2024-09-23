@@ -23,6 +23,37 @@ export const create = async (newOrder: NewOrder) => {
   )
 }
 
+export const findAll = async () => {
+  const res = await db.query.orders.findMany({
+    with: {
+      orderItems: {
+        columns: { quantity: true },
+        with: { product: { columns: { name: true, price: true } } }
+      }
+    }
+  })
+
+  const orders = res.map(({ id, status, total, createdAt, orderItems }) => {
+    if (!isValidStatus(status)) {
+      throw new Error('Invalid status')
+    }
+
+    return {
+      id,
+      total,
+      status,
+      createdAt,
+      items: orderItems.map(({ product: { name, price }, quantity }) => ({
+        name,
+        quantity,
+        subtotal: quantity * price
+      }))
+    }
+  })
+
+  return orders
+}
+
 const statusTransitions: Record<OrderStatus, OrderStatus[]> = {
   [ORDER_STATUS.PENDING]: [ORDER_STATUS.PROCESSING],
   [ORDER_STATUS.PROCESSING]: [ORDER_STATUS.SHIPPED],
@@ -34,8 +65,8 @@ const canTransition = (currentStatus: OrderStatus, newStatus: OrderStatus) => {
   return statusTransitions[currentStatus].includes(newStatus)
 }
 
-const isValidStatus = (status: OrderStatus): status is OrderStatus => {
-  return Object.values(ORDER_STATUS).includes(status)
+const isValidStatus = (status: string): status is OrderStatus => {
+  return Object.values(ORDER_STATUS).includes(status as OrderStatus)
 }
 
 export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
