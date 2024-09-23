@@ -20,7 +20,7 @@ interface OrderTableProps {
   total: number
 }
 
-export default function OrderTable({
+export function OrderTable({
   items,
   incrementQuantity,
   decrementQuantity,
