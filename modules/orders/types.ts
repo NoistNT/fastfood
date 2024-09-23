@@ -20,3 +20,24 @@ export interface NewOrder {
   items: NewOrderItem[]
   total: number
 }
+
+export interface Order {
+  id: string
+  total: number
+  status: string
+  createdAt: Date
+}
+
+export interface OrderItem {
+  name: string
+  quantity: number
+  subtotal: number
+}
+
+export interface OrderWithItems {
+  id: string
+  total: number
+  status: OrderStatus
+  createdAt: Date
+  items: OrderItem[]
+}
