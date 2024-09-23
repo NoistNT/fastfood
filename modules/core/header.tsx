@@ -8,9 +8,14 @@ export default function Header() {
       <Link href="/">
         <h1 className="text-2xl font-bold hover:text-neutral-300">Fastfood</h1>
       </Link>
-      <Link className="mr-[4.5rem] sm:mr-20" href="/order">
-        <Button variant="secondary">Ver pedido</Button>
-      </Link>
+      <nav className="flex items-center gap-x-2">
+        <Link href="/dashboard">
+          <Button variant="secondary">Dashboard</Button>
+        </Link>
+        <Link className="mr-[4.5rem] sm:mr-20" href="/order">
+          <Button variant="secondary">Ver pedido</Button>
+        </Link>
+      </nav>
     </header>
   )
 }
