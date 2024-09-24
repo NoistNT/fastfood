@@ -23,7 +23,7 @@ export default function Page() {
 
   const handleSubmit = async () => {
     startTransition(async () => {
-      await submitOrder(items, total, clearOrder)
+      await submitOrder({ items, total }, clearOrder)
     })
   }
 
