@@ -2,9 +2,9 @@ import type { Item } from '@/modules/orders/types'
 
 import { TrashIcon } from '@radix-ui/react-icons'
 
-import { fixedPrice } from '@/lib/utils'
 import { Button } from '@/modules/core/ui/button'
 import { TableCell, TableRow } from '@/modules/core/ui/table'
+import { fixedPrice } from '@/modules/orders/utils'
 
 interface OrderItemRowProps {
   key: number

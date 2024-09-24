@@ -1,6 +1,5 @@
 import type { Item } from '@/modules/orders/types'
 
-import { fixedPrice } from '@/lib/utils'
 import {
   Table,
   TableBody,
@@ -11,6 +10,7 @@ import {
   TableRow
 } from '@/modules/core/ui/table'
 import { OrderItemRow } from '@/modules/orders/components/order-item-row'
+import { fixedPrice } from '@/modules/orders/utils'
 
 interface OrderTableProps {
   items: Item[]
