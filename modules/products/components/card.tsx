@@ -1,14 +1,10 @@
 'use client'
 
-import type { Item } from '@/modules/orders/types'
 import type { ProductGeneralView } from '@/modules/products/types'
 
 import Image from 'next/image'
-import Link from 'next/link'
-import { toast } from 'sonner'
 
-import { Button } from '@/modules/core/ui/button'
-import { useOrderItemStore } from '@/store/use-order-item'
+import { CardFooter } from '@/modules/products/components/card-footer'
 
 interface Props {
   product: ProductGeneralView
@@ -17,16 +13,6 @@ interface Props {
 export default function Card({
   product: { id, imgAlt, imgSrc, name, description, price, isAvailable }
 }: Props) {
-  const { addItem } = useOrderItemStore()
-  const item = { id, name, price, quantity: 1, subtotal: price }
-
-  const handleAddItem = (item: Item) => {
-    if (!isAvailable) return
-
-    addItem(item)
-    toast.success(`${name} añadido al pedido`)
-  }
-
   return (
     <article className="flex h-full w-96 flex-col rounded-xl bg-white p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-black dark:shadow-neutral-900 sm:h-40 sm:w-full sm:max-w-xl sm:flex-row">
       <Image
@@ -44,29 +30,12 @@ export default function Card({
         <p className="mt-3 max-h-20 max-w-sm truncate p-1 text-sm text-muted-foreground sm:mt-0 sm:min-w-96">
           {description}
         </p>
-        <div className="mt-4 flex w-full justify-center gap-4 sm:mt-0 sm:justify-end sm:gap-2">
-          <Link className="w-full sm:w-32" href={`/products/${id}`}>
-            <Button
-              className="w-full transition-colors dark:hover:border-neutral-700 sm:w-32"
-              type="button"
-              variant="outline"
-            >
-              Más info
-            </Button>
-          </Link>
-          <Button
-            className={
-              isAvailable
-                ? 'w-full transition-colors dark:bg-neutral-50 sm:w-32'
-                : 'w-full cursor-not-allowed bg-rose-100 font-semibold text-red-500 hover:bg-rose-100 hover:text-red-500 dark:border-neutral-700 dark:bg-rose-900 dark:text-red-200 dark:hover:bg-rose-900 sm:w-32'
-            }
-            type="button"
-            variant={isAvailable ? 'default' : 'outline'}
-            onClick={() => handleAddItem(item)}
-          >
-            {isAvailable ? 'Añadir al pedido' : 'Sin Stock'}
-          </Button>
-        </div>
+        <CardFooter
+          id={id}
+          isAvailable={isAvailable}
+          name={name}
+          price={price}
+        />
       </div>
     </article>
   )
