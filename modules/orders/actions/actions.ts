@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/drizzle'
 import { orderItem, orders } from '@/db/schema'
-import { ORDER_STATUS } from '@/modules/orders/types'
+import { canTransition, isValidStatus } from '@/modules/orders/utils'
 
 export const create = async (newOrder: NewOrder) => {
   const orderId = await db
@@ -54,21 +54,6 @@ export const findAll = async () => {
   return orders
 }
 
-const statusTransitions: Record<OrderStatus, OrderStatus[]> = {
-  [ORDER_STATUS.PENDING]: [ORDER_STATUS.PROCESSING],
-  [ORDER_STATUS.PROCESSING]: [ORDER_STATUS.SHIPPED],
-  [ORDER_STATUS.SHIPPED]: [ORDER_STATUS.DELIVERED],
-  [ORDER_STATUS.DELIVERED]: []
-}
-
-const canTransition = (currentStatus: OrderStatus, newStatus: OrderStatus) => {
-  return statusTransitions[currentStatus].includes(newStatus)
-}
-
-const isValidStatus = (status: string): status is OrderStatus => {
-  return Object.values(ORDER_STATUS).includes(status as OrderStatus)
-}
-
 export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
   if (!isValidStatus(newStatus)) throw new Error('Invalid status')
 
@@ -78,13 +63,12 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
 
   if (!order) throw new Error('Order not found')
 
-  if (!canTransition(order.status as OrderStatus, newStatus))
+  if (!canTransition(order.status as OrderStatus, newStatus)) {
     throw new Error('Invalid transition')
+  }
 
-  const result = await db
+  return await db
     .update(orders)
     .set({ status: newStatus })
     .where(eq(orders.id, orderId))
-
-  return result
 }
