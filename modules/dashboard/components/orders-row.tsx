@@ -4,11 +4,14 @@ import { TableCell, TableRow } from '@/modules/core/ui/table'
 import { ExpandableCell } from '@/modules/dashboard/components/expandable-cell'
 
 interface OrderItemRowProps {
-  order: OrderWithItems
+  orderWithItems: OrderWithItems
 }
 
 export function OrdersRow({
-  order: { id, total, status, createdAt, items }
+  orderWithItems: {
+    order: { id, status, total, createdAt },
+    items
+  }
 }: OrderItemRowProps) {
   return (
     <TableRow className="hover:bg-neutral-100 dark:hover:bg-neutral-800">
