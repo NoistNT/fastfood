@@ -1,5 +1,3 @@
-import type { OrderWithItems } from '@/modules/orders/types'
-
 import {
   Table,
   TableBody,
@@ -11,7 +9,7 @@ import { OrdersRow } from '@/modules/dashboard/components/orders-row'
 import { findAll } from '@/modules/orders/actions/actions'
 
 export default async function Page() {
-  const orders: OrderWithItems[] = await findAll()
+  const ordersWithItems = await findAll()
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -26,8 +24,11 @@ export default async function Page() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {orders.map((order) => (
-            <OrdersRow key={Number(order.id)} order={order} />
+          {ordersWithItems.map((orderWithItems) => (
+            <OrdersRow
+              key={Number(orderWithItems.order.id)}
+              orderWithItems={orderWithItems}
+            />
           ))}
         </TableBody>
       </Table>
