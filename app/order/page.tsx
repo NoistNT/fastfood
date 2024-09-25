@@ -2,6 +2,8 @@
 
 import { useMemo, useTransition } from 'react'
 
+import { toast } from '@/modules/core/hooks/use-toast'
+import { ToastAction } from '@/modules/core/ui/toast'
 import { EmptyOrder } from '@/modules/orders/components/empty-order'
 import { OrderTable } from '@/modules/orders/components/order-table'
 import { SubmitOrder } from '@/modules/orders/components/submit-order'
@@ -23,7 +25,23 @@ export default function Page() {
 
   const handleSubmit = async () => {
     startTransition(async () => {
-      await submitOrder({ items, total }, clearOrder)
+      try {
+        await submitOrder({ items, total }, clearOrder)
+        toast({
+          title: '¡Listo!',
+          description: 'El pedido se registro correctamente.'
+        })
+      } catch (error) {
+        toast({
+          title: 'Algo salió mal.',
+          description: 'No se pudo registrar el pedido. Intente nuevamente.',
+          action: (
+            <ToastAction altText="Reintentar" onClick={handleSubmit}>
+              Reintentar
+            </ToastAction>
+          )
+        })
+      }
     })
   }
 

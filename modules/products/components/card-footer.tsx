@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import { toast } from 'sonner'
 
+import { toast } from '@/modules/core/hooks/use-toast'
 import { Button } from '@/modules/core/ui/button'
 import { useOrderStore } from '@/store/use-order'
 
@@ -18,7 +18,7 @@ export function CardFooter({ id, isAvailable, name, price }: Props) {
     if (!isAvailable) return
 
     addItem({ id, name, price, quantity: 1 })
-    toast.success(`${name} añadido al pedido`)
+    toast({ description: `${name} añadido al pedido` })
   }
 
   return (
