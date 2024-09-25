@@ -1,3 +1,17 @@
+export interface FindManyResponse {
+  id: string
+  total: number
+  status: string
+  createdAt: Date
+  orderItems: {
+    quantity: number
+    product: {
+      name: string
+      price: number
+    }
+  }[]
+}
+
 export interface Item {
   id: number
   name: string
@@ -21,12 +35,7 @@ export interface NewOrder {
   total: number
 }
 
-export interface Order {
-  id: string
-  total: number
-  status: string
-  createdAt: Date
-}
+export type Order = Omit<FindManyResponse, 'orderItems'>
 
 export interface OrderItem {
   name: string
@@ -35,9 +44,6 @@ export interface OrderItem {
 }
 
 export interface OrderWithItems {
-  id: string
-  total: number
-  status: OrderStatus
-  createdAt: Date
+  order: Order
   items: OrderItem[]
 }
