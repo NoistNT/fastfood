@@ -1,5 +1,3 @@
-import { toast } from 'sonner'
-
 import { create } from '@/modules/orders/actions/actions'
 import {
   ORDER_STATUS,
@@ -46,8 +44,7 @@ export const submitOrder = async (
   try {
     await create(newOrder)
     clearOrder()
-    toast.success('El pedido ha sido registrado')
   } catch (error) {
-    toast.error('No se pudo registrar el pedido. Intente nuevamente')
+    throw new Error('No se pudo registrar el pedido. Intente nuevamente')
   }
 }
