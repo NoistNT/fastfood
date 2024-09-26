@@ -48,6 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
+    "zod": "^3.23.8",
     "zustand": "^4.5.5"
   },
   "packageManager": "pnpm@9.11.0+sha256.1c0e33f70e5df9eede84a357bdfa0b1f9dba6e58194628d48a1055756f553754"
