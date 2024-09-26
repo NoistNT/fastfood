@@ -31,10 +31,10 @@ export default function Card({
           {description}
         </p>
         <CardFooter
-          id={id}
           isAvailable={isAvailable}
           name={name}
           price={price}
+          productId={id}
         />
       </div>
     </article>
