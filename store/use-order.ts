@@ -14,32 +14,32 @@ interface OrderStore {
 export const useOrderStore = create<OrderStore>((set) => ({
   items: [],
   addItem: (item) =>
-    set((state) => {
-      const existingItemIndex = state.items.findIndex(
+    set(({ items }) => {
+      const existingItemIndex = items.findIndex(
         (orderItem) => orderItem.productId === item.productId
       )
 
       if (existingItemIndex > -1) {
-        const updatedOrder = [...state.items]
+        const updatedOrder = [...items]
 
         updatedOrder[existingItemIndex].quantity += item.quantity
 
         return { items: updatedOrder }
       }
 
-      return { items: [...state.items, item] }
+      return { items: [...items, item] }
     }),
   incrementQuantity: (id) =>
-    set((state) => {
-      const updatedOrder = state.items.map((item) =>
+    set(({ items }) => {
+      const updatedOrder = items.map((item) =>
         item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
       )
 
       return { items: updatedOrder }
     }),
   decrementQuantity: (id) =>
-    set((state) => {
-      const updatedOrder = state.items.map((item) =>
+    set(({ items }) => {
+      const updatedOrder = items.map((item) =>
         item.productId === id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
@@ -48,8 +48,8 @@ export const useOrderStore = create<OrderStore>((set) => ({
       return { items: updatedOrder }
     }),
   removeItem: (id) =>
-    set((state) => ({
-      items: state.items.filter((item) => item.productId !== id)
+    set(({ items }) => ({
+      items: items.filter(({ productId }) => productId !== id)
     })),
   clearOrder: () => set({ items: [] })
 }))
