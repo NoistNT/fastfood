@@ -5,9 +5,9 @@ import { create } from 'zustand'
 interface OrderStore {
   items: Item[]
   addItem: (item: Item) => void
-  incrementQuantity: (id: number) => void
-  decrementQuantity: (id: number) => void
-  removeItem: (id: number) => void
+  incrementQuantity: (productId: number) => void
+  decrementQuantity: (productId: number) => void
+  removeItem: (productId: number) => void
   clearOrder: () => void
 }
 
@@ -16,7 +16,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   addItem: (item) =>
     set(({ items }) => {
       const existingItemIndex = items.findIndex(
-        (orderItem) => orderItem.productId === item.productId
+        ({ productId }) => productId === item.productId
       )
 
       if (existingItemIndex > -1) {
@@ -29,27 +29,29 @@ export const useOrderStore = create<OrderStore>((set) => ({
 
       return { items: [...items, item] }
     }),
-  incrementQuantity: (id) =>
+  incrementQuantity: (productId) =>
     set(({ items }) => {
       const updatedOrder = items.map((item) =>
-        item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.productId === productId
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
       )
 
       return { items: updatedOrder }
     }),
-  decrementQuantity: (id) =>
+  decrementQuantity: (productId) =>
     set(({ items }) => {
       const updatedOrder = items.map((item) =>
-        item.productId === id && item.quantity > 1
+        item.productId === productId && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
 
       return { items: updatedOrder }
     }),
-  removeItem: (id) =>
+  removeItem: (productId) =>
     set(({ items }) => ({
-      items: items.filter(({ productId }) => productId !== id)
+      items: items.filter((item) => item.productId !== productId)
     })),
   clearOrder: () => set({ items: [] })
 }))
