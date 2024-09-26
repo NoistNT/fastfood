@@ -3,6 +3,7 @@
 import type {
   FindManyResponse,
   NewOrder,
+  NewOrderItem,
   OrderStatus,
   OrderWithItems
 } from '@/modules/orders/types'
@@ -13,15 +14,15 @@ import { db } from '@/db/drizzle'
 import { orderItem, orders } from '@/db/schema'
 import {
   canTransition,
-  CreateItem,
   CreateNewOrder,
-  CreateOrderId,
-  isValidStatus
+  isValidStatus,
+  OrderId,
+  validateData
 } from '@/modules/orders/validate'
 
 const createItem = async (orderId: string, newOrder: NewOrder) => {
   try {
-    const [newOrderItems] = await db
+    const [newOrderItems]: NewOrderItem[] = await db
       .insert(orderItem)
       .values(
         newOrder.items.map(({ productId, quantity }) => ({
@@ -36,16 +37,11 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
         quantity: orderItem.quantity
       })
 
-    const { data, error, success } =
-      await CreateItem.safeParseAsync(newOrderItems)
-
-    if (!success) throw new Error(error.issues[0].message, { cause: error })
-
-    return data
+    return newOrderItems
   } catch (error) {
     const { message } = error as Error
 
-    throw new Error(`Error creating items for order ${orderId}.`, {
+    throw new Error(`Error creating item for order ${orderId}.`, {
       cause: message
     })
   }
@@ -53,22 +49,15 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
 
 export const create = async (newOrder: NewOrder) => {
   try {
-    const parseNewOrder = await CreateNewOrder.safeParseAsync(newOrder)
-
-    if (!parseNewOrder.success) {
-      throw new Error(parseNewOrder.error.issues[0].message)
-    }
-
+    const validatedNewOrder = validateData(CreateNewOrder, newOrder)
     const [orderId] = await db
       .insert(orders)
       .values(newOrder)
       .returning({ id: orders.id })
 
-    const { data, error, success } = CreateOrderId.safeParse(orderId)
+    const validatedOrderId = validateData(OrderId, orderId.id)
 
-    if (!success) throw new Error(error.issues[0].message, { cause: error })
-
-    return await createItem(data.id, newOrder)
+    return await createItem(validatedOrderId, validatedNewOrder)
   } catch (error) {
     const { message } = error as Error
 
