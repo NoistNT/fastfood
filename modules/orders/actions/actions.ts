@@ -11,36 +11,68 @@ import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/drizzle'
 import { orderItem, orders } from '@/db/schema'
-import { canTransition, isValidStatus } from '@/modules/orders/utils'
+import {
+  canTransition,
+  CreateItem,
+  CreateNewOrder,
+  CreateOrderId,
+  isValidStatus
+} from '@/modules/orders/validate'
 
 const createItem = async (orderId: string, newOrder: NewOrder) => {
   try {
-    await db.insert(orderItem).values(
-      newOrder.items.map(({ id, quantity }) => ({
-        orderId,
-        productId: id,
-        quantity
-      }))
-    )
-  } catch (error) {
-    const err = error as Error
+    const [newOrderItems] = await db
+      .insert(orderItem)
+      .values(
+        newOrder.items.map(({ productId, quantity }) => ({
+          orderId,
+          productId,
+          quantity
+        }))
+      )
+      .returning({
+        orderId: orderItem.orderId,
+        productId: orderItem.productId,
+        quantity: orderItem.quantity
+      })
 
-    throw new Error(
-      `No se pudo crear el item para la orden ${orderId}: ${err.message}`
-    )
+    const { data, error, success } =
+      await CreateItem.safeParseAsync(newOrderItems)
+
+    if (!success) throw new Error(error.issues[0].message, { cause: error })
+
+    return data
+  } catch (error) {
+    const { message } = error as Error
+
+    throw new Error(`Error creating items for order ${orderId}.`, {
+      cause: message
+    })
   }
 }
 
 export const create = async (newOrder: NewOrder) => {
   try {
-    const orderId = await db
+    const parseNewOrder = await CreateNewOrder.safeParseAsync(newOrder)
+
+    if (!parseNewOrder.success) {
+      throw new Error(parseNewOrder.error.issues[0].message)
+    }
+
+    const [orderId] = await db
       .insert(orders)
       .values(newOrder)
       .returning({ id: orders.id })
 
-    await createItem(orderId[0].id, newOrder)
+    const { data, error, success } = CreateOrderId.safeParse(orderId)
+
+    if (!success) throw new Error(error.issues[0].message, { cause: error })
+
+    return await createItem(data.id, newOrder)
   } catch (error) {
-    throw new Error('No se pudo registrar el pedido. Intente nuevamente')
+    const { message } = error as Error
+
+    throw new Error('Order could not be created.', { cause: message })
   }
 }
 
@@ -72,8 +104,11 @@ export const findAll = async () => {
 
     return ordersList(orders)
   } catch (error) {
+    const { message } = error as Error
+
     throw new Error(
-      'No se pudo obtener la lista de pedidos. Intente nuevamente'
+      'No orders found. Please try again later or contact support.',
+      { cause: message }
     )
   }
 }
@@ -97,10 +132,8 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
       .set({ status: newStatus })
       .where(eq(orders.id, orderId))
   } catch (error) {
-    const err = error as Error
+    const { message } = error as Error
 
-    throw new Error(
-      `No se pudo actualizar el estado de la orden ${orderId}: ${err.message}`
-    )
+    throw new Error(`Error updating status for order ${orderId}: ${message}`)
   }
 }
