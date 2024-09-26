@@ -28,16 +28,16 @@ export default function Page() {
       try {
         await submitOrder({ items, total }, clearOrder)
         toast({
-          title: '¡Listo!',
-          description: 'El pedido se registro correctamente.'
+          title: 'Done!',
+          description: 'Your order has been registered.'
         })
       } catch (error) {
         toast({
-          title: 'Algo salió mal.',
-          description: 'No se pudo registrar el pedido. Intente nuevamente.',
+          title: 'Something went wrong',
+          description: 'Your order could not be registered.',
           action: (
-            <ToastAction altText="Reintentar" onClick={handleSubmit}>
-              Reintentar
+            <ToastAction altText="Try again" onClick={handleSubmit}>
+              Try again
             </ToastAction>
           )
         })
