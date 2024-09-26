@@ -16,7 +16,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   addItem: (item) =>
     set((state) => {
       const existingItemIndex = state.items.findIndex(
-        (orderItem) => orderItem.id === item.id
+        (orderItem) => orderItem.productId === item.productId
       )
 
       if (existingItemIndex > -1) {
@@ -32,7 +32,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   incrementQuantity: (id) =>
     set((state) => {
       const updatedOrder = state.items.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+        item.productId === id ? { ...item, quantity: item.quantity + 1 } : item
       )
 
       return { items: updatedOrder }
@@ -40,7 +40,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   decrementQuantity: (id) =>
     set((state) => {
       const updatedOrder = state.items.map((item) =>
-        item.id === id && item.quantity > 1
+        item.productId === id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
@@ -49,7 +49,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
     }),
   removeItem: (id) =>
     set((state) => ({
-      items: state.items.filter((item) => item.id !== id)
+      items: state.items.filter((item) => item.productId !== id)
     })),
   clearOrder: () => set({ items: [] })
 }))

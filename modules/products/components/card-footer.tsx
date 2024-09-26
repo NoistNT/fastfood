@@ -5,25 +5,25 @@ import { Button } from '@/modules/core/ui/button'
 import { useOrderStore } from '@/store/use-order'
 
 interface Props {
-  id: number
+  productId: number
   isAvailable: boolean
   name: string
   price: number
 }
 
-export function CardFooter({ id, isAvailable, name, price }: Props) {
+export function CardFooter({ productId, isAvailable, name, price }: Props) {
   const { addItem } = useOrderStore()
 
   const handleAddItem = () => {
     if (!isAvailable) return
 
-    addItem({ id, name, price, quantity: 1 })
+    addItem({ productId, name, price, quantity: 1 })
     toast({ description: `${name} añadido al pedido` })
   }
 
   return (
     <div className="mt-4 flex w-full justify-center gap-4 sm:mt-0 sm:justify-end sm:gap-2">
-      <Link className="w-full sm:w-32" href={`/products/${id}`}>
+      <Link className="w-full sm:w-32" href={`/products/${productId}`}>
         <Button
           className="w-full transition-colors dark:hover:border-neutral-700 sm:w-32"
           type="button"

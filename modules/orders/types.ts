@@ -13,7 +13,7 @@ export interface FindManyResponse {
 }
 
 export interface Item {
-  id: number
+  productId: number
   name: string
   price: number
   quantity: number
@@ -28,7 +28,7 @@ export const ORDER_STATUS = {
 
 export type OrderStatus = keyof typeof ORDER_STATUS
 
-export type NewOrderItem = Pick<Item, 'id' | 'quantity'>
+export type NewOrderItem = Pick<Item, 'productId' | 'quantity'>
 
 export interface NewOrder {
   items: NewOrderItem[]

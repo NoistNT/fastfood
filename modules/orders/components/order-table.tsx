@@ -41,7 +41,7 @@ export function OrderTable({
       <TableBody>
         {items.map((item) => (
           <OrderItemRow
-            key={item.id}
+            key={item.productId}
             decrementQuantity={decrementQuantity}
             incrementQuantity={incrementQuantity}
             item={item}

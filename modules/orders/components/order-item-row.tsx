@@ -9,24 +9,24 @@ import { fixedPrice } from '@/modules/orders/utils'
 interface OrderItemRowProps {
   key: number
   item: Item
-  incrementQuantity: (id: number) => void
-  decrementQuantity: (id: number) => void
-  removeItem: (id: number) => void
+  incrementQuantity: (productId: number) => void
+  decrementQuantity: (productId: number) => void
+  removeItem: (productId: number) => void
 }
 
 export function OrderItemRow({
-  item: { id, name, price, quantity },
+  item: { productId, name, price, quantity },
   incrementQuantity,
   decrementQuantity,
   removeItem
 }: OrderItemRowProps) {
   const handleDecrement = () => {
-    if (quantity > 1) decrementQuantity(id)
+    if (quantity > 1) decrementQuantity(productId)
   }
 
   return (
     <TableRow
-      key={id}
+      key={productId}
       className="hover:bg-neutral-100 dark:hover:bg-neutral-800"
     >
       <TableCell className="font-medium">{name}</TableCell>
@@ -52,7 +52,7 @@ export function OrderItemRow({
           className="size-8 p-0 dark:hover:border-neutral-700"
           type="button"
           variant="outline"
-          onClick={() => incrementQuantity(id)}
+          onClick={() => incrementQuantity(productId)}
         >
           +
         </Button>
@@ -64,7 +64,7 @@ export function OrderItemRow({
           className="size-8 p-0 hover:bg-red-500"
           type="button"
           variant="outline"
-          onClick={() => removeItem(id)}
+          onClick={() => removeItem(productId)}
         >
           <TrashIcon />
         </Button>
