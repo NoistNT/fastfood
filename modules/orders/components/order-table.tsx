@@ -31,11 +31,11 @@ export function OrderTable({
     <Table className="border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
       <TableHeader className="bg-neutral-100 dark:bg-neutral-800">
         <TableRow className="text-neutral-600 dark:text-neutral-400">
-          <TableHead>Producto</TableHead>
-          <TableHead>Precio</TableHead>
-          <TableHead>Cantidad</TableHead>
+          <TableHead>Product</TableHead>
+          <TableHead>Price</TableHead>
+          <TableHead>Quantity</TableHead>
           <TableHead>Subtotal</TableHead>
-          <TableHead className="w-0">Quitar</TableHead>
+          <TableHead className="w-0">Remove</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
