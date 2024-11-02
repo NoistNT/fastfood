@@ -67,7 +67,8 @@ export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
   total: doublePrecision('total').notNull(),
   status: varchar('status').notNull().default(ORDER_STATUS.PENDING),
-  createdAt: timestamp('created_at').notNull().defaultNow()
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow()
 })
 
 export const ordersRelations = relations(orders, ({ many }) => ({
