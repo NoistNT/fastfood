@@ -9,30 +9,30 @@ module.exports = {
     require.resolve('@vercel/style-guide/eslint/typescript'),
     require.resolve('@vercel/style-guide/eslint/react'),
     require.resolve('@vercel/style-guide/eslint/next'),
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
-    project
+    project,
   },
   settings: {
-    'import/resolver': { typescript: { project } }
+    'import/resolver': { typescript: { project } },
   },
   rules: {
     'prettier/prettier': [
       'warn',
       {
         printWidth: 80,
-        trailingComma: 'none',
+        trailingComma: 'es5',
         tabWidth: 2,
         semi: false,
         singleQuote: true,
         bracketSpacing: true,
         arrowParens: 'always',
         endOfLine: 'auto',
-        plugins: ['prettier-plugin-tailwindcss']
-      }
+        plugins: ['prettier-plugin-tailwindcss'],
+      },
     ],
     'import/no-default-export': 'off',
     'import/order': [
@@ -46,17 +46,17 @@ module.exports = {
           'internal',
           'parent',
           'sibling',
-          'index'
+          'index',
         ],
         pathGroups: [
           {
             pattern: '~/**',
             group: 'external',
-            position: 'after'
-          }
+            position: 'after',
+          },
         ],
-        'newlines-between': 'always'
-      }
+        'newlines-between': 'always',
+      },
     ],
     'padding-line-between-statements': [
       'warn',
@@ -65,8 +65,8 @@ module.exports = {
       {
         blankLine: 'any',
         prev: ['const', 'let', 'var'],
-        next: ['const', 'let', 'var']
-      }
+        next: ['const', 'let', 'var'],
+      },
     ],
     'no-console': 'warn',
     'react/jsx-uses-react': 'off',
@@ -76,8 +76,8 @@ module.exports = {
         callbacksLast: true,
         shorthandFirst: true,
         noSortAlphabetically: false,
-        reservedFirst: true
-      }
+        reservedFirst: true,
+      },
     ],
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
@@ -96,15 +96,16 @@ module.exports = {
       {
         args: 'after-used',
         ignoreRestSiblings: false,
-        argsIgnorePattern: '^_.*?$'
-      }
+        argsIgnorePattern: '^_.*?$',
+      },
     ],
     '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/unbound-method': 'off',
+    '@typescript-eslint/await-thenable': 'off',
     '@next/next/no-img-element': 'off',
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/heading-has-content': 'off',
-    'jsx-a11y/no-static-element-interactions': 'off'
-  }
+    'jsx-a11y/no-static-element-interactions': 'off',
+  },
 }
