@@ -22,7 +22,7 @@ export function SubmitOrder({ handleSubmit, isPending }: Props) {
         variant="ghost"
         onClick={clearOrder}
       >
-        Cancelar Pedido
+        Cancel order
       </Button>
       <Link href="/products">
         <Button
@@ -30,17 +30,17 @@ export function SubmitOrder({ handleSubmit, isPending }: Props) {
           type="button"
           variant="secondary"
         >
-          Seguir agregando
+          Add more
         </Button>
       </Link>
       <Button
-        aria-disabled={isPending}
         className="dark:border dark:border-neutral-900"
+        disabled={isPending}
         type="submit"
-        variant="default"
+        variant={isPending ? 'secondary' : 'default'}
         onClick={handleSubmit}
       >
-        {isPending ? 'Registrando pedido' : 'Confirmar pedido'}
+        {isPending ? 'Registering...' : 'Confirm order'}
       </Button>
     </div>
   )

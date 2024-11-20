@@ -6,10 +6,10 @@ export function EmptyOrder() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-y-10 py-60">
       <p className="text-center text-secondary-foreground">
-        No hay productos en el pedido
+        You don&apos;t have any products in your order
       </p>
       <Link className="mx-auto" href="/products">
-        <Button variant="default">Añadir productos</Button>
+        <Button variant="default">Add products</Button>
       </Link>
     </div>
   )

@@ -13,7 +13,7 @@ export default function Header() {
           <Button variant="secondary">Dashboard</Button>
         </Link>
         <Link className="mr-[4.5rem] sm:mr-20" href="/order">
-          <Button variant="secondary">Ver pedido</Button>
+          <Button variant="secondary">Order</Button>
         </Link>
       </nav>
     </header>

@@ -29,7 +29,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
           type="button"
           variant="outline"
         >
-          Más info
+          More info
         </Button>
       </Link>
       <Button
@@ -42,7 +42,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
         variant={isAvailable ? 'default' : 'outline'}
         onClick={() => handleAddItem()}
       >
-        {isAvailable ? 'Añadir al pedido' : 'Sin Stock'}
+        {isAvailable ? 'Add to order' : 'Out of stock'}
       </Button>
     </div>
   )
