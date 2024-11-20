@@ -8,7 +8,7 @@ import {
   text,
   timestamp,
   uuid,
-  varchar
+  varchar,
 } from 'drizzle-orm/pg-core'
 
 import { ORDER_STATUS } from '@/modules/orders/types'
@@ -19,7 +19,7 @@ export const productIngredients = pgTable('product_ingredients', {
     .references(() => products.id, { onDelete: 'cascade' }),
   ingredientId: integer('ingredient_id')
     .notNull()
-    .references(() => ingredients.id, { onDelete: 'cascade' })
+    .references(() => ingredients.id, { onDelete: 'cascade' }),
 })
 
 export const productIngredientsRelations = relations(
@@ -27,12 +27,12 @@ export const productIngredientsRelations = relations(
   ({ one }) => ({
     product: one(products, {
       fields: [productIngredients.productId],
-      references: [products.id]
+      references: [products.id],
     }),
     ingredient: one(ingredients, {
       fields: [productIngredients.ingredientId],
-      references: [ingredients.id]
-    })
+      references: [ingredients.id],
+    }),
   })
 )
 
@@ -45,13 +45,13 @@ export const products = pgTable('products', {
   imgAlt: text('img_alt').notNull(),
   isVegetarian: boolean('is_vegetarian').notNull().default(false),
   isVegan: boolean('is_vegan').notNull().default(false),
-  isAvailable: boolean('is_available').notNull().default(true)
+  isAvailable: boolean('is_available').notNull().default(true),
 })
 
 export const productRelations = relations(products, ({ many }) => ({
   orders: many(orders),
   orderItems: many(orderItem),
-  ingredients: many(productIngredients)
+  ingredients: many(productIngredients),
 }))
 
 export const ingredients = pgTable('ingredients', {
@@ -60,7 +60,7 @@ export const ingredients = pgTable('ingredients', {
   price: doublePrecision('price').notNull(),
   isVegetarian: boolean('is_vegetarian').notNull().default(false),
   isVegan: boolean('is_vegan').notNull().default(false),
-  isAvailable: boolean('is_available').notNull().default(true)
+  isAvailable: boolean('is_available').notNull().default(true),
 })
 
 export const orders = pgTable('orders', {
@@ -68,11 +68,12 @@ export const orders = pgTable('orders', {
   total: doublePrecision('total').notNull(),
   status: varchar('status').notNull().default(ORDER_STATUS.PENDING),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow()
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
 export const ordersRelations = relations(orders, ({ many }) => ({
-  orderItems: many(orderItem)
+  orderItems: many(orderItem),
+  statusHistory: many(orderStatusHistory),
 }))
 
 export const orderItem = pgTable('order_item', {
@@ -83,16 +84,35 @@ export const orderItem = pgTable('order_item', {
   productId: integer('product_id')
     .notNull()
     .references(() => products.id, { onDelete: 'cascade' }),
-  quantity: integer('quantity').notNull()
+  quantity: integer('quantity').notNull(),
 })
 
 export const orderItemsRelations = relations(orderItem, ({ one }) => ({
   order: one(orders, {
     fields: [orderItem.orderId],
-    references: [orders.id]
+    references: [orders.id],
   }),
   product: one(products, {
     fields: [orderItem.productId],
-    references: [products.id]
-  })
+    references: [products.id],
+  }),
 }))
+
+export const orderStatusHistory = pgTable('order_status_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orderId: uuid('order_id')
+    .notNull()
+    .references(() => orders.id, { onDelete: 'cascade' }),
+  status: varchar('status').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+})
+
+export const orderStatusHistoryRelations = relations(
+  orderStatusHistory,
+  ({ one }) => ({
+    order: one(orders, {
+      fields: [orderStatusHistory.orderId],
+      references: [orders.id],
+    }),
+  })
+)
