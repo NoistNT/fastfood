@@ -13,8 +13,8 @@ export default async function Page() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <Table className="border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
-        <TableHeader className="bg-neutral-100 dark:bg-neutral-800">
+      <Table className="border border-neutral-200 dark:border-neutral-700 dark:bg-neutral-900">
+        <TableHeader className="bg-neutral-200 dark:bg-neutral-800">
           <TableRow className="text-neutral-600 dark:text-neutral-400">
             <TableHead className="w-1/5">Status</TableHead>
             <TableHead className="w-1/5">Total</TableHead>

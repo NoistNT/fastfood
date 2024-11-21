@@ -12,7 +12,7 @@ export function ExpandButton({ isExpanded, setIsExpanded }: Props) {
     <TableCell className="flex flex-col">
       <Button
         className={cn(
-          'h-7 w-20 border border-neutral-300 shadow-sm hover:border-neutral-400 dark:border-neutral-700 dark:hover:border-neutral-600',
+          'h-7 w-20 border border-neutral-400 shadow-sm hover:border-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:hover:border-neutral-500 dark:hover:bg-black/20',
           isExpanded ? 'mb-1.5' : ''
         )}
         variant="ghost"
