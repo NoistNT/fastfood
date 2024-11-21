@@ -1,48 +1,48 @@
 'use server'
 
-import type {
-  FindManyResponse,
-  NewOrder,
-  NewOrderItem,
-  OrderStatus,
-  OrderWithItems
-} from '@/modules/orders/types'
-
 import { eq } from 'drizzle-orm'
 
 import { db } from '@/db/drizzle'
-import { orderItem, orders } from '@/db/schema'
+import { orderItem, orders, orderStatusHistory } from '@/db/schema'
 import {
   canTransition,
   CreateNewOrder,
   isValidStatus,
   OrderId,
-  validateData
-} from '@/modules/orders/validate'
+  validateData,
+} from '@/modules/orders/helpers'
+import {
+  ORDER_STATUS,
+  type DashboardOrderWithItems,
+  type FindManyResponse,
+  type NewOrder,
+  type NewOrderItem,
+  type OrderStatus,
+} from '@/modules/orders/types'
 
 const createItem = async (orderId: string, newOrder: NewOrder) => {
   try {
-    const [newOrderItems]: NewOrderItem[] = await db
+    const [newOrderItem]: NewOrderItem[] = await db
       .insert(orderItem)
       .values(
         newOrder.items.map(({ productId, quantity }) => ({
           orderId,
           productId,
-          quantity
+          quantity,
         }))
       )
       .returning({
         orderId: orderItem.orderId,
         productId: orderItem.productId,
-        quantity: orderItem.quantity
+        quantity: orderItem.quantity,
       })
 
-    return newOrderItems
+    return newOrderItem
   } catch (error) {
     const { message } = error as Error
 
     throw new Error(`Error creating item for order ${orderId}.`, {
-      cause: message
+      cause: message,
     })
   }
 }
@@ -57,6 +57,12 @@ export const create = async (newOrder: NewOrder) => {
 
     const validatedOrderId = validateData(OrderId, orderId.id)
 
+    await db.insert(orderStatusHistory).values({
+      orderId: validatedOrderId,
+      status: ORDER_STATUS.PENDING,
+      createdAt: new Date(),
+    })
+
     return await createItem(validatedOrderId, validatedNewOrder)
   } catch (error) {
     const { message } = error as Error
@@ -65,33 +71,53 @@ export const create = async (newOrder: NewOrder) => {
   }
 }
 
-export const ordersList = (orders: FindManyResponse[]): OrderWithItems[] => {
+export const ordersList = async (
+  orders: FindManyResponse[]
+): Promise<DashboardOrderWithItems[]> => {
   return orders.map((order) => {
     if (!isValidStatus(order.status)) throw new Error('Invalid status')
 
     return {
-      order,
+      order: {
+        ...order,
+        statusHistory: [],
+        status: order.status,
+        createdAt: order.createdAt,
+      },
       items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
         name,
         quantity,
-        subtotal: quantity * price
-      }))
+        subtotal: quantity * price,
+      })),
     }
   })
 }
 
 export const findAll = async () => {
   try {
-    const orders: FindManyResponse[] = await db.query.orders.findMany({
+    const allOrders = await db.query.orders.findMany({
       with: {
         orderItems: {
           columns: { quantity: true },
-          with: { product: { columns: { name: true, price: true } } }
-        }
-      }
+          with: { product: { columns: { name: true, price: true } } },
+        },
+        statusHistory: { columns: { status: true, createdAt: true } },
+      },
     })
 
-    return ordersList(orders)
+    return allOrders.map((order) => ({
+      order: {
+        ...order,
+        orderItems: order.orderItems,
+        statusHistory: order.statusHistory,
+      },
+      items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
+        name,
+        quantity,
+        subtotal: quantity * price,
+      })),
+      statusHistory: order.statusHistory,
+    })) as DashboardOrderWithItems[]
   } catch (error) {
     const { message } = error as Error
 
@@ -107,7 +133,7 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
     if (!isValidStatus(newStatus)) throw new Error('Invalid status')
 
     const order = await db.query.orders.findFirst({
-      where: eq(orders.id, orderId)
+      where: eq(orders.id, orderId),
     })
 
     if (!order) throw new Error('Order not found')
@@ -116,10 +142,13 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
       throw new Error('Invalid transition')
     }
 
-    return await db
+    await db.insert(orderStatusHistory).values({ orderId, status: newStatus })
+    await db
       .update(orders)
-      .set({ status: newStatus })
+      .set({ status: newStatus, updatedAt: new Date() })
       .where(eq(orders.id, orderId))
+
+    return { success: true }
   } catch (error) {
     const { message } = error as Error
 
