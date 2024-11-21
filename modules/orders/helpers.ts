@@ -6,7 +6,7 @@ const statusTransitions: Record<OrderStatus, OrderStatus[]> = {
   [ORDER_STATUS.PENDING]: [ORDER_STATUS.PROCESSING],
   [ORDER_STATUS.PROCESSING]: [ORDER_STATUS.SHIPPED],
   [ORDER_STATUS.SHIPPED]: [ORDER_STATUS.DELIVERED],
-  [ORDER_STATUS.DELIVERED]: []
+  [ORDER_STATUS.DELIVERED]: [],
 }
 
 export const canTransition = (
@@ -25,7 +25,7 @@ export const OrderId = z.string().uuid('Invalid order ID')
 export const CreateItem = z.object({
   orderId: OrderId,
   productId: z.number(),
-  quantity: z.number().min(1, 'Quantity must be at least 1')
+  quantity: z.number().min(1, 'Quantity must be at least 1'),
 })
 
 export const CreateNewOrder = z.object({
@@ -33,11 +33,11 @@ export const CreateNewOrder = z.object({
     .array(
       z.object({
         productId: z.number(),
-        quantity: z.number().min(1, 'Quantity must be at least 1')
+        quantity: z.number().min(1, 'Quantity must be at least 1'),
       })
     )
     .nonempty('Order must have at least one item'),
-  total: z.number().positive('Order total must be a positive value')
+  total: z.number().positive('Order total must be a positive value'),
 })
 
 export const validateData = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
