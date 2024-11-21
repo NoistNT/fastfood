@@ -23,7 +23,7 @@ export const ORDER_STATUS = {
   PENDING: 'PENDING',
   PROCESSING: 'PROCESSING',
   SHIPPED: 'SHIPPED',
-  DELIVERED: 'DELIVERED'
+  DELIVERED: 'DELIVERED',
 } as const
 
 export type OrderStatus = keyof typeof ORDER_STATUS
@@ -35,7 +35,14 @@ export interface NewOrder {
   total: number
 }
 
-export type Order = Omit<FindManyResponse, 'orderItems'>
+export interface StatusHistory {
+  status: OrderStatus
+  createdAt: Date
+}
+
+export type Order = Omit<FindManyResponse, 'orderItems'> & {
+  statusHistory: StatusHistory[]
+}
 
 export interface OrderItem {
   name: string
@@ -46,4 +53,8 @@ export interface OrderItem {
 export interface OrderWithItems {
   order: Order
   items: OrderItem[]
+}
+
+export interface DashboardOrderWithItems extends OrderWithItems {
+  order: Order & StatusHistory
 }
