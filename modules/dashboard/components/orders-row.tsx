@@ -1,25 +1,66 @@
-import type { OrderWithItems } from '@/modules/orders/types'
+'use client'
+
+import type {
+  OrderStatus,
+  DashboardOrderWithItems,
+  StatusHistory,
+} from '@/modules/orders/types'
+
+import { useState } from 'react'
 
 import { TableCell, TableRow } from '@/modules/core/ui/table'
-import { ExpandableCell } from '@/modules/dashboard/components/expandable-cell'
+import { ExpandButton } from '@/modules/dashboard/components/expand-button'
+import { ExpandableRow } from '@/modules/dashboard/components/expandable-row'
 
 interface OrderItemRowProps {
-  orderWithItems: OrderWithItems
+  orderWithItems: DashboardOrderWithItems
 }
 
 export function OrdersRow({
   orderWithItems: {
-    order: { id, status, total, createdAt },
-    items
-  }
+    order: { id, status, total, createdAt, statusHistory },
+    items,
+  },
 }: OrderItemRowProps) {
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(status)
+  const [statusTransitions, setStatusTransitions] = useState<StatusHistory[]>(
+    statusHistory?.map(({ status, createdAt }) => ({
+      status,
+      createdAt: new Date(createdAt),
+    })) || []
+  )
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleStatusUpdate = (newStatus: OrderStatus) => {
+    setCurrentStatus(newStatus)
+    setStatusTransitions((prev) => [
+      ...prev,
+      { status: newStatus, createdAt: new Date() },
+    ])
+  }
+
   return (
-    <TableRow className="hover:bg-neutral-100 dark:hover:bg-neutral-800">
-      <TableCell className="w-1/5">{status}</TableCell>
-      <TableCell className="w-1/5">${total}</TableCell>
-      <TableCell className="w-1/5">{createdAt.toLocaleTimeString()}</TableCell>
-      <TableCell className="w-1/5">{createdAt.toLocaleDateString()}</TableCell>
-      <ExpandableCell id={id} items={items} />
-    </TableRow>
+    <>
+      <TableRow className="bg-neutral-100 font-semibold text-gray-500 hover:bg-white/55 dark:bg-neutral-900 dark:text-gray-300 dark:hover:bg-black/25">
+        <TableCell className="w-1/5">{currentStatus}</TableCell>
+        <TableCell className="w-1/5">${total}</TableCell>
+        <TableCell className="w-1/5">
+          {createdAt.toLocaleTimeString()}
+        </TableCell>
+        <TableCell className="w-1/5">
+          {createdAt.toLocaleDateString()}
+        </TableCell>
+        <ExpandButton isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+      </TableRow>
+      {isExpanded ? (
+        <ExpandableRow
+          currentStatus={currentStatus}
+          id={id}
+          items={items}
+          statusHistory={statusTransitions}
+          onStatusUpdate={handleStatusUpdate}
+        />
+      ) : null}
+    </>
   )
 }
