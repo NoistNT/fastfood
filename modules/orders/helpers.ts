@@ -38,6 +38,14 @@ export const CreateNewOrder = z.object({
     )
     .nonempty('Order must have at least one item'),
   total: z.number().positive('Order total must be a positive value'),
+  statusHistory: z
+    .array(
+      z.object({
+        status: z.nativeEnum(ORDER_STATUS),
+        createdAt: z.date(),
+      })
+    )
+    .nonempty('Status history must not be empty'),
 })
 
 export const validateData = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
