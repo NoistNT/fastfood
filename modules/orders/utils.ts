@@ -11,14 +11,9 @@ export const calculateTotal = (items: Item[]) => {
 }
 
 export const submitOrder = async (
-  { items, total }: NewOrder,
+  { items, total, statusHistory }: NewOrder,
   clearOrder: () => void
 ) => {
-  const newOrder: NewOrder = {
-    items: items.map(({ productId, quantity }) => ({ productId, quantity })),
-    total: fixedPrice(total)
-  }
-
-  await create(newOrder)
+  await create({ items, total: fixedPrice(total), statusHistory })
   clearOrder()
 }

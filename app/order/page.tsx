@@ -7,6 +7,7 @@ import { ToastAction } from '@/modules/core/ui/toast'
 import { EmptyOrder } from '@/modules/orders/components/empty-order'
 import { OrderTable } from '@/modules/orders/components/order-table'
 import { SubmitOrder } from '@/modules/orders/components/submit-order'
+import { ORDER_STATUS } from '@/modules/orders/types'
 import { calculateTotal, submitOrder } from '@/modules/orders/utils'
 import { useOrderStore } from '@/store/use-order'
 
@@ -16,7 +17,7 @@ export default function Page() {
     incrementQuantity,
     decrementQuantity,
     removeItem,
-    clearOrder
+    clearOrder,
   } = useOrderStore()
 
   const total = useMemo(() => calculateTotal(items), [items])
@@ -26,10 +27,19 @@ export default function Page() {
   const handleSubmit = async () => {
     startTransition(async () => {
       try {
-        await submitOrder({ items, total }, clearOrder)
+        await submitOrder(
+          {
+            items,
+            total,
+            statusHistory: [
+              { status: ORDER_STATUS.PENDING, createdAt: new Date() },
+            ],
+          },
+          clearOrder
+        )
         toast({
           title: 'Done!',
-          description: 'Your order has been registered.'
+          description: 'Your order has been registered.',
         })
       } catch (error) {
         toast({
@@ -39,7 +49,7 @@ export default function Page() {
             <ToastAction altText="Try again" onClick={handleSubmit}>
               Try again
             </ToastAction>
-          )
+          ),
         })
       }
     })
