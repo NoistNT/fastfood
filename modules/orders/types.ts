@@ -30,14 +30,15 @@ export type OrderStatus = keyof typeof ORDER_STATUS
 
 export type NewOrderItem = Pick<Item, 'productId' | 'quantity'>
 
-export interface NewOrder {
-  items: NewOrderItem[]
-  total: number
-}
-
 export interface StatusHistory {
   status: OrderStatus
   createdAt: Date
+}
+
+export interface NewOrder {
+  items: NewOrderItem[]
+  total: number
+  statusHistory: StatusHistory[]
 }
 
 export type Order = Omit<FindManyResponse, 'orderItems'> & {
