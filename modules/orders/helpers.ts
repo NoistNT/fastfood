@@ -12,9 +12,7 @@ const statusTransitions: Record<OrderStatus, OrderStatus[]> = {
 export const canTransition = (
   currentStatus: OrderStatus,
   newStatus: OrderStatus
-) => {
-  return statusTransitions[currentStatus].includes(newStatus)
-}
+) => statusTransitions[currentStatus].includes(newStatus)
 
 export const isValidStatus = (status: string): status is OrderStatus => {
   return Object.values(ORDER_STATUS).includes(status as OrderStatus)
