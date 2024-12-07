@@ -1,11 +1,17 @@
 {
-  "arrowParens": "always",
-  "bracketSpacing": true,
-  "endOfLine": "auto",
-  "printWidth": 80,
-  "semi": false,
-  "singleQuote": true,
+  "semi": true,
   "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
   "trailingComma": "es5",
-  "useTabs": false
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "singleAttributePerLine": true,
+  "quoteProps": "consistent",
+  "jsxSingleQuote": false,
+  "htmlWhitespaceSensitivity": "css",
+  "embeddedLanguageFormatting": "auto",
+  "plugins": []
 }
