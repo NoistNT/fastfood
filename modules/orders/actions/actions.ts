@@ -47,21 +47,25 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
   }
 }
 
+const insertAndGetOrderId = async (newOrder: NewOrder) => {
+  return await db.insert(orders).values(newOrder).returning({ id: orders.id })
+}
+
+const addStatus = async (orderId: string) => {
+  return await db.insert(orderStatusHistory).values({
+    orderId,
+    status: ORDER_STATUS.PENDING,
+    createdAt: new Date(),
+  })
+}
+
 export const create = async (newOrder: NewOrder) => {
   try {
     const validatedNewOrder = validateData(CreateNewOrder, newOrder)
-    const [orderId] = await db
-      .insert(orders)
-      .values(newOrder)
-      .returning({ id: orders.id })
-
+    const [orderId] = await insertAndGetOrderId(validatedNewOrder)
     const validatedOrderId = validateData(OrderId, orderId.id)
 
-    await db.insert(orderStatusHistory).values({
-      orderId: validatedOrderId,
-      status: ORDER_STATUS.PENDING,
-      createdAt: new Date(),
-    })
+    await addStatus(validatedOrderId)
 
     return await createItem(validatedOrderId, validatedNewOrder)
   } catch (error) {
