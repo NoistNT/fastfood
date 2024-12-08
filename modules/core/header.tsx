@@ -1,6 +1,6 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/modules/core/ui/button'
+import { Button } from '@/modules/core/ui/button';
 
 export default function Header() {
   return (
@@ -12,10 +12,13 @@ export default function Header() {
         <Link href="/dashboard">
           <Button variant="secondary">Dashboard</Button>
         </Link>
-        <Link className="mr-[4.5rem] sm:mr-20" href="/order">
+        <Link
+          className="mr-[4.5rem] sm:mr-20"
+          href="/order"
+        >
           <Button variant="secondary">Order</Button>
         </Link>
       </nav>
     </header>
-  )
+  );
 }

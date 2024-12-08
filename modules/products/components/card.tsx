@@ -1,17 +1,16 @@
-'use client'
+'use client';
 
-import type { ProductGeneralView } from '@/modules/products/types'
+import Image from 'next/image';
 
-import Image from 'next/image'
-
-import { CardFooter } from '@/modules/products/components/card-footer'
+import type { ProductGeneralView } from '@/modules/products/types';
+import { CardFooter } from '@/modules/products/components/card-footer';
 
 interface Props {
-  product: ProductGeneralView
+  product: ProductGeneralView;
 }
 
 export default function Card({
-  product: { id, imgAlt, imgSrc, name, description, price, isAvailable }
+  product: { id, imgAlt, imgSrc, name, description, price, isAvailable },
 }: Props) {
   return (
     <article className="flex h-full w-96 flex-col rounded-xl bg-white p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-black dark:shadow-neutral-900 sm:h-40 sm:w-full sm:max-w-xl sm:flex-row">
@@ -38,5 +37,5 @@ export default function Card({
         />
       </div>
     </article>
-  )
+  );
 }

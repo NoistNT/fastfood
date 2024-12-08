@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
 export default async function Footer() {
   return (
@@ -12,5 +12,5 @@ export default async function Footer() {
         Ariel Piazzano
       </Link>
     </footer>
-  )
+  );
 }

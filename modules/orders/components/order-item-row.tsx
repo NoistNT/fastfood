@@ -1,28 +1,27 @@
-import type { Item } from '@/modules/orders/types'
+import { TrashIcon } from '@radix-ui/react-icons';
 
-import { TrashIcon } from '@radix-ui/react-icons'
-
-import { Button } from '@/modules/core/ui/button'
-import { TableCell, TableRow } from '@/modules/core/ui/table'
-import { fixedPrice } from '@/modules/orders/utils'
+import type { Item } from '@/modules/orders/types';
+import { Button } from '@/modules/core/ui/button';
+import { TableCell, TableRow } from '@/modules/core/ui/table';
+import { fixedPrice } from '@/modules/orders/utils';
 
 interface OrderItemRowProps {
-  key: number
-  item: Item
-  incrementQuantity: (productId: number) => void
-  decrementQuantity: (productId: number) => void
-  removeItem: (productId: number) => void
+  key: number;
+  item: Item;
+  incrementQuantity: (productId: number) => void;
+  decrementQuantity: (productId: number) => void;
+  removeItem: (productId: number) => void;
 }
 
 export function OrderItemRow({
   item: { productId, name, price, quantity },
   incrementQuantity,
   decrementQuantity,
-  removeItem
+  removeItem,
 }: OrderItemRowProps) {
   const handleDecrement = () => {
-    if (quantity > 1) decrementQuantity(productId)
-  }
+    if (quantity > 1) decrementQuantity(productId);
+  };
 
   return (
     <TableRow
@@ -70,5 +69,5 @@ export function OrderItemRow({
         </Button>
       </TableCell>
     </TableRow>
-  )
+  );
 }

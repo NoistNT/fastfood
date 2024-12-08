@@ -1,15 +1,9 @@
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/modules/core/ui/table'
-import { OrdersRow } from '@/modules/dashboard/components/orders-row'
-import { findAll } from '@/modules/orders/actions/actions'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/modules/core/ui/table';
+import { OrdersRow } from '@/modules/dashboard/components/orders-row';
+import { findAll } from '@/modules/orders/actions/actions';
 
 export default async function Page() {
-  const ordersWithItems = await findAll()
+  const ordersWithItems = await findAll();
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -33,5 +27,5 @@ export default async function Page() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

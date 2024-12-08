@@ -1,16 +1,16 @@
-'use server'
+'use server';
 
-import { eq } from 'drizzle-orm'
+import { eq } from 'drizzle-orm';
 
-import { db } from '@/db/drizzle'
-import { orderItem, orders, orderStatusHistory } from '@/db/schema'
+import { db } from '@/db/drizzle';
+import { orderItem, orders, orderStatusHistory } from '@/db/schema';
 import {
   canTransition,
   CreateNewOrder,
   isValidStatus,
   OrderId,
   validateData,
-} from '@/modules/orders/helpers'
+} from '@/modules/orders/helpers';
 import {
   ORDER_STATUS,
   type DashboardOrderWithItems,
@@ -18,7 +18,7 @@ import {
   type NewOrder,
   type NewOrderItem,
   type OrderStatus,
-} from '@/modules/orders/types'
+} from '@/modules/orders/types';
 
 const createItem = async (orderId: string, newOrder: NewOrder) => {
   try {
@@ -35,51 +35,51 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
         orderId: orderItem.orderId,
         productId: orderItem.productId,
         quantity: orderItem.quantity,
-      })
+      });
 
-    return newOrderItem
+    return newOrderItem;
   } catch (error) {
-    const { message } = error as Error
+    const { message } = error as Error;
 
     throw new Error(`Error creating item for order ${orderId}.`, {
       cause: message,
-    })
+    });
   }
-}
+};
 
 const insertAndGetOrderId = async (newOrder: NewOrder) => {
-  return await db.insert(orders).values(newOrder).returning({ id: orders.id })
-}
+  return await db.insert(orders).values(newOrder).returning({ id: orders.id });
+};
 
 const addStatus = async (orderId: string) => {
   return await db.insert(orderStatusHistory).values({
     orderId,
     status: ORDER_STATUS.PENDING,
     createdAt: new Date(),
-  })
-}
+  });
+};
 
 export const create = async (newOrder: NewOrder) => {
   try {
-    const validatedNewOrder = validateData(CreateNewOrder, newOrder)
-    const [orderId] = await insertAndGetOrderId(validatedNewOrder)
-    const validatedOrderId = validateData(OrderId, orderId.id)
+    const validatedNewOrder = validateData(CreateNewOrder, newOrder);
+    const [orderId] = await insertAndGetOrderId(validatedNewOrder);
+    const validatedOrderId = validateData(OrderId, orderId.id);
 
-    await addStatus(validatedOrderId)
+    await addStatus(validatedOrderId);
 
-    return await createItem(validatedOrderId, validatedNewOrder)
+    return await createItem(validatedOrderId, validatedNewOrder);
   } catch (error) {
-    const { message } = error as Error
+    const { message } = error as Error;
 
-    throw new Error('Order could not be created.', { cause: message })
+    throw new Error('Order could not be created.', { cause: message });
   }
-}
+};
 
 export const ordersList = async (
   orders: FindManyResponse[]
 ): Promise<DashboardOrderWithItems[]> => {
   return orders.map((order) => {
-    if (!isValidStatus(order.status)) throw new Error('Invalid status')
+    if (!isValidStatus(order.status)) throw new Error('Invalid status');
 
     return {
       order: {
@@ -93,9 +93,9 @@ export const ordersList = async (
         quantity,
         subtotal: quantity * price,
       })),
-    }
-  })
-}
+    };
+  });
+};
 
 export const findAll = async () => {
   try {
@@ -107,7 +107,7 @@ export const findAll = async () => {
         },
         statusHistory: { columns: { status: true, createdAt: true } },
       },
-    })
+    });
 
     return allOrders.map((order) => ({
       order: {
@@ -121,41 +121,40 @@ export const findAll = async () => {
         subtotal: quantity * price,
       })),
       statusHistory: order.statusHistory,
-    })) as DashboardOrderWithItems[]
+    })) as DashboardOrderWithItems[];
   } catch (error) {
-    const { message } = error as Error
+    const { message } = error as Error;
 
-    throw new Error(
-      'No orders found. Please try again later or contact support.',
-      { cause: message }
-    )
+    throw new Error('No orders found. Please try again later or contact support.', {
+      cause: message,
+    });
   }
-}
+};
 
 export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
   try {
-    if (!isValidStatus(newStatus)) throw new Error('Invalid status')
+    if (!isValidStatus(newStatus)) throw new Error('Invalid status');
 
     const order = await db.query.orders.findFirst({
       where: eq(orders.id, orderId),
-    })
+    });
 
-    if (!order) throw new Error('Order not found')
+    if (!order) throw new Error('Order not found');
 
     if (!canTransition(order.status as OrderStatus, newStatus)) {
-      throw new Error('Invalid transition')
+      throw new Error('Invalid transition');
     }
 
-    await db.insert(orderStatusHistory).values({ orderId, status: newStatus })
+    await db.insert(orderStatusHistory).values({ orderId, status: newStatus });
     await db
       .update(orders)
       .set({ status: newStatus, updatedAt: new Date() })
-      .where(eq(orders.id, orderId))
+      .where(eq(orders.id, orderId));
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    const { message } = error as Error
+    const { message } = error as Error;
 
-    throw new Error(`Error updating status for order ${orderId}: ${message}`)
+    throw new Error(`Error updating status for order ${orderId}: ${message}`);
   }
-}
+};

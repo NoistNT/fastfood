@@ -1,29 +1,32 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { toast } from '@/modules/core/hooks/use-toast'
-import { Button } from '@/modules/core/ui/button'
-import { useOrderStore } from '@/store/use-order'
+import { toast } from '@/modules/core/hooks/use-toast';
+import { Button } from '@/modules/core/ui/button';
+import { useOrderStore } from '@/store/use-order';
 
 interface Props {
-  productId: number
-  isAvailable: boolean
-  name: string
-  price: number
+  productId: number;
+  isAvailable: boolean;
+  name: string;
+  price: number;
 }
 
 export function CardFooter({ productId, isAvailable, name, price }: Props) {
-  const { addItem } = useOrderStore()
+  const { addItem } = useOrderStore();
 
   const handleAddItem = () => {
-    if (!isAvailable) return
+    if (!isAvailable) return;
 
-    addItem({ productId, name, price, quantity: 1 })
-    toast({ description: `${name} añadido al pedido` })
-  }
+    addItem({ productId, name, price, quantity: 1 });
+    toast({ description: `${name} añadido al pedido` });
+  };
 
   return (
     <div className="mt-4 flex w-full justify-center gap-4 sm:mt-0 sm:justify-end sm:gap-2">
-      <Link className="w-full sm:w-32" href={`/products/${productId}`}>
+      <Link
+        className="w-full sm:w-32"
+        href={`/products/${productId}`}
+      >
         <Button
           className="w-full transition-colors dark:hover:border-neutral-700 sm:w-32"
           type="button"
@@ -45,5 +48,5 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
         {isAvailable ? 'Add to order' : 'Out of stock'}
       </Button>
     </div>
-  )
+  );
 }

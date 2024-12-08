@@ -1,6 +1,6 @@
-import { defineConfig } from 'drizzle-kit'
+import { defineConfig } from 'drizzle-kit';
 
-import { DB_URL } from './constants'
+import { DB_URL } from './constants';
 
 export default defineConfig({
   schema: './db/schema.ts',
@@ -8,5 +8,5 @@ export default defineConfig({
   out: './drizzle',
   dbCredentials: { url: DB_URL },
   verbose: true,
-  strict: true
-})
+  strict: true,
+});

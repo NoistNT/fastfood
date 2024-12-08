@@ -1,39 +1,37 @@
-import type { Metadata } from 'next'
+import type { Metadata } from 'next';
 
-import { Inter as FontSans } from 'next/font/google'
+import { Inter as FontSans } from 'next/font/google';
 
-import { cn } from '@/lib/utils'
-import Footer from '@/modules/core/footer'
-import Header from '@/modules/core/header'
-import { ThemeProvider } from '@/modules/core/theme-provider'
-import { ModeToggle } from '@/modules/core/ui/mode-toggle'
-import { Toaster } from '@/modules/core/ui/toaster'
+import { cn } from '@/lib/utils';
+import Footer from '@/modules/core/footer';
+import Header from '@/modules/core/header';
+import { ThemeProvider } from '@/modules/core/theme-provider';
+import { ModeToggle } from '@/modules/core/ui/mode-toggle';
+import { Toaster } from '@/modules/core/ui/toaster';
 
-import './globals.css'
+import './globals.css';
 
 const fontSans = FontSans({
   subsets: ['latin'],
-  variable: '--font-sans'
-})
+  variable: '--font-sans',
+});
 
 export const metadata: Metadata = {
   title: 'Fast Food',
-  description: 'Fast food app'
-}
+  description: 'Fast food app',
+};
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning lang="en">
-      <body
-        className={cn(
-          'min-h-screen bg-secondary font-sans antialiased',
-          fontSans.variable
-        )}
-      >
+    <html
+      suppressHydrationWarning
+      lang="en"
+    >
+      <body className={cn('min-h-screen bg-secondary font-sans antialiased', fontSans.variable)}>
         <ThemeProvider
           disableTransitionOnChange
           enableSystem
@@ -50,5 +48,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

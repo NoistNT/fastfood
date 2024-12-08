@@ -1,6 +1,6 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/modules/core/ui/button'
+import { Button } from '@/modules/core/ui/button';
 
 export default function Page() {
   return (
@@ -9,5 +9,5 @@ export default function Page() {
         <Button variant="default">Get Started</Button>
       </Link>
     </div>
-  )
+  );
 }

@@ -1,43 +1,39 @@
-import type { Item } from '@/modules/orders/types'
+import { create } from 'zustand';
 
-import { create } from 'zustand'
+import type { Item } from '@/modules/orders/types';
 
 interface OrderStore {
-  items: Item[]
-  addItem: (item: Item) => void
-  incrementQuantity: (productId: number) => void
-  decrementQuantity: (productId: number) => void
-  removeItem: (productId: number) => void
-  clearOrder: () => void
+  items: Item[];
+  addItem: (item: Item) => void;
+  incrementQuantity: (productId: number) => void;
+  decrementQuantity: (productId: number) => void;
+  removeItem: (productId: number) => void;
+  clearOrder: () => void;
 }
 
 export const useOrderStore = create<OrderStore>((set) => ({
   items: [],
   addItem: (item) =>
     set(({ items }) => {
-      const existingItemIndex = items.findIndex(
-        ({ productId }) => productId === item.productId
-      )
+      const existingItemIndex = items.findIndex(({ productId }) => productId === item.productId);
 
       if (existingItemIndex > -1) {
-        const updatedOrder = [...items]
+        const updatedOrder = [...items];
 
-        updatedOrder[existingItemIndex].quantity += item.quantity
+        updatedOrder[existingItemIndex].quantity += item.quantity;
 
-        return { items: updatedOrder }
+        return { items: updatedOrder };
       }
 
-      return { items: [...items, item] }
+      return { items: [...items, item] };
     }),
   incrementQuantity: (productId) =>
     set(({ items }) => {
       const updatedOrder = items.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
+        item.productId === productId ? { ...item, quantity: item.quantity + 1 } : item
+      );
 
-      return { items: updatedOrder }
+      return { items: updatedOrder };
     }),
   decrementQuantity: (productId) =>
     set(({ items }) => {
@@ -45,13 +41,13 @@ export const useOrderStore = create<OrderStore>((set) => ({
         item.productId === productId && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
-      )
+      );
 
-      return { items: updatedOrder }
+      return { items: updatedOrder };
     }),
   removeItem: (productId) =>
     set(({ items }) => ({
-      items: items.filter((item) => item.productId !== productId)
+      items: items.filter((item) => item.productId !== productId),
     })),
-  clearOrder: () => set({ items: [] })
-}))
+  clearOrder: () => set({ items: [] }),
+}));

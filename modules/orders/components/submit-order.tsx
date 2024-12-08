@@ -1,17 +1,17 @@
-import type { MouseEventHandler } from 'react'
+import type { MouseEventHandler } from 'react';
 
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/modules/core/ui/button'
-import { useOrderStore } from '@/store/use-order'
+import { Button } from '@/modules/core/ui/button';
+import { useOrderStore } from '@/store/use-order';
 
 interface Props {
-  handleSubmit: MouseEventHandler<HTMLButtonElement>
-  isPending: boolean
+  handleSubmit: MouseEventHandler<HTMLButtonElement>;
+  isPending: boolean;
 }
 
 export function SubmitOrder({ handleSubmit, isPending }: Props) {
-  const { clearOrder } = useOrderStore()
+  const { clearOrder } = useOrderStore();
 
   return (
     <div className="flex items-center justify-end gap-2 py-1.5">
@@ -43,5 +43,5 @@ export function SubmitOrder({ handleSubmit, isPending }: Props) {
         {isPending ? 'Registering...' : 'Confirm order'}
       </Button>
     </div>
-  )
+  );
 }

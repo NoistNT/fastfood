@@ -69,7 +69,7 @@ export const ingredientsSeed = [
     isVegan: true,
     isAvailable: true,
   },
-]
+];
 
 export const productsSeed = [
   {
@@ -107,8 +107,7 @@ export const productsSeed = [
   },
   {
     name: 'Falafel Pita',
-    description:
-      'A Mediterranean pita filled with falafel, veggies, and hummus',
+    description: 'A Mediterranean pita filled with falafel, veggies, and hummus',
     price: 6.49,
     imgSrc:
       'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
@@ -205,7 +204,7 @@ export const productsSeed = [
     isVegan: false,
     isAvailable: true,
   },
-]
+];
 
 export const productIngredientsSeed = [
   // Classic Burger
@@ -266,4 +265,4 @@ export const productIngredientsSeed = [
   // Bean Burrito
   { productId: 12, ingredientId: 7 }, // Beans
   { productId: 12, ingredientId: 8 }, // Rice
-]
+];

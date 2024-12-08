@@ -1,24 +1,14 @@
-import type { ProductWithIngredients } from '@/modules/products/types'
+import Image from 'next/image';
 
-import Image from 'next/image'
-
-import { cn } from '@/lib/utils'
+import type { ProductWithIngredients } from '@/modules/products/types';
+import { cn } from '@/lib/utils';
 
 interface Props {
-  product: ProductWithIngredients
+  product: ProductWithIngredients;
 }
 
 export default function DetailCard({
-  product: {
-    name,
-    description,
-    imgAlt,
-    imgSrc,
-    price,
-    ingredients,
-    isVegan,
-    isVegetarian
-  }
+  product: { name, description, imgAlt, imgSrc, price, ingredients, isVegan, isVegetarian },
 }: Props) {
   return (
     <section className="max-w-lg rounded-3xl border-2 border-neutral-200 dark:border-neutral-700">
@@ -37,9 +27,7 @@ export default function DetailCard({
             ${price}
           </p>
         </div>
-        <p className="px-1 text-neutral-500/85 dark:text-neutral-400/85">
-          {description}
-        </p>
+        <p className="px-1 text-neutral-500/85 dark:text-neutral-400/85">{description}</p>
         <div className="mt-5 h-0.5 w-full bg-neutral-200 dark:bg-neutral-700" />
         <div className="mt-10">
           <h3 className="mb-2 ml-2 text-lg font-semibold">Ingredients</h3>
@@ -94,5 +82,5 @@ export default function DetailCard({
         </ul>
       </div>
     </section>
-  )
+  );
 }

@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils'
-import { Button } from '@/modules/core/ui/button'
-import { TableCell } from '@/modules/core/ui/table'
+import { cn } from '@/lib/utils';
+import { Button } from '@/modules/core/ui/button';
+import { TableCell } from '@/modules/core/ui/table';
 
 interface Props {
-  isExpanded: boolean
-  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>
+  isExpanded: boolean;
+  setIsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function ExpandButton({ isExpanded, setIsExpanded }: Props) {
@@ -21,5 +21,5 @@ export function ExpandButton({ isExpanded, setIsExpanded }: Props) {
         {isExpanded ? 'Collapse' : 'Expand'}
       </Button>
     </TableCell>
-  )
+  );
 }

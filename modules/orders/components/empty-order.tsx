@@ -1,6 +1,6 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
-import { Button } from '@/modules/core/ui/button'
+import { Button } from '@/modules/core/ui/button';
 
 export function EmptyOrder() {
   return (
@@ -8,9 +8,12 @@ export function EmptyOrder() {
       <p className="text-center text-secondary-foreground">
         You don&apos;t have any products in your order
       </p>
-      <Link className="mx-auto" href="/products">
+      <Link
+        className="mx-auto"
+        href="/products"
+      >
         <Button variant="default">Add products</Button>
       </Link>
     </div>
-  )
+  );
 }
