@@ -1,13 +1,13 @@
 export interface FindManyResponse {
   id: string;
-  total: number;
+  total: string;
   status: string;
   createdAt: Date;
   orderItems: {
     quantity: number;
     product: {
       name: string;
-      price: number;
+      price: string;
     };
   }[];
 }
@@ -15,7 +15,7 @@ export interface FindManyResponse {
 export interface Item {
   productId: number;
   name: string;
-  price: number;
+  price: string;
   quantity: number;
 }
 
@@ -36,8 +36,9 @@ export interface StatusHistory {
 }
 
 export interface NewOrder {
+  userId: string;
   items: NewOrderItem[];
-  total: number;
+  total: string;
   statusHistory: StatusHistory[];
 }
 
@@ -48,7 +49,7 @@ export type Order = Omit<FindManyResponse, 'orderItems'> & {
 export interface OrderItem {
   name: string;
   quantity: number;
-  subtotal: number;
+  subtotal: string;
 }
 
 export interface OrderWithItems {
