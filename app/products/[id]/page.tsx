@@ -3,7 +3,7 @@ import { findAll, findOne } from '@/modules/products/actions/actions';
 import DetailCard from '@/modules/products/components/detail-card';
 
 interface Props {
-  params: { id: number };
+  params: Promise<{ id: number }>;
 }
 
 export async function generateMetadata({ params }: Props) {
