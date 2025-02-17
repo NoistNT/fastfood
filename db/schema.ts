@@ -1,8 +1,9 @@
 import { relations } from 'drizzle-orm';
 import {
   boolean,
-  doublePrecision,
+  index,
   integer,
+  numeric,
   pgTable,
   serial,
   text,
@@ -13,14 +14,35 @@ import {
 
 import { ORDER_STATUS } from '@/modules/orders/types';
 
-export const productIngredients = pgTable('product_ingredients', {
-  productId: integer('product_id')
-    .notNull()
-    .references(() => products.id, { onDelete: 'cascade' }),
-  ingredientId: integer('ingredient_id')
-    .notNull()
-    .references(() => ingredients.id, { onDelete: 'cascade' }),
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().unique().defaultRandom(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+
+export const usersRelations = relations(users, ({ many }) => ({
+  orders: many(orders),
+}));
+
+export const productIngredients = pgTable(
+  'product_ingredients',
+  {
+    productId: integer('product_id')
+      .notNull()
+      .references(() => products.id, { onDelete: 'cascade' }),
+    ingredientId: integer('ingredient_id')
+      .notNull()
+      .references(() => ingredients.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    index('product_ingredients_product_id_ingredient_id_index').on(
+      table.productId,
+      table.ingredientId
+    ),
+  ]
+);
 
 export const productIngredientsRelations = relations(productIngredients, ({ one }) => ({
   product: one(products, {
@@ -37,7 +59,7 @@ export const products = pgTable('products', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull(),
-  price: doublePrecision('price').notNull(),
+  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
   imgSrc: text('img_src').notNull(),
   imgAlt: text('img_alt').notNull(),
   isVegetarian: boolean('is_vegetarian').notNull().default(false),
@@ -54,7 +76,7 @@ export const productRelations = relations(products, ({ many }) => ({
 export const ingredients = pgTable('ingredients', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
-  price: doublePrecision('price').notNull(),
+  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
   isVegetarian: boolean('is_vegetarian').notNull().default(false),
   isVegan: boolean('is_vegan').notNull().default(false),
   isAvailable: boolean('is_available').notNull().default(true),
@@ -62,7 +84,10 @@ export const ingredients = pgTable('ingredients', {
 
 export const orders = pgTable('orders', {
   id: uuid('id').primaryKey().defaultRandom(),
-  total: doublePrecision('total').notNull(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  total: numeric('total', { precision: 10, scale: 2 }).notNull(),
   status: varchar('status').notNull().default(ORDER_STATUS.PENDING),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -102,6 +127,7 @@ export const orderStatusHistory = pgTable('order_status_history', {
     .references(() => orders.id, { onDelete: 'cascade' }),
   status: varchar('status').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export const orderStatusHistoryRelations = relations(orderStatusHistory, ({ one }) => ({
