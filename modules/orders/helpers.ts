@@ -25,6 +25,7 @@ export const CreateItem = z.object({
 });
 
 export const CreateNewOrder = z.object({
+  userId: z.string().uuid('Invalid user ID'),
   items: z
     .array(
       z.object({
@@ -33,7 +34,7 @@ export const CreateNewOrder = z.object({
       })
     )
     .nonempty('Order must have at least one item'),
-  total: z.number().positive('Order total must be a positive value'),
+  total: z.string().nonempty('Total must not be empty'),
   statusHistory: z
     .array(
       z.object({
