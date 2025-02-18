@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 
-import type { OrderStatus, DashboardOrderWithItems, StatusHistory } from '@/modules/orders/types';
 import { TableCell, TableRow } from '@/modules/core/ui/table';
 import { ExpandButton } from '@/modules/dashboard/components/expand-button';
 import { ExpandableRow } from '@/modules/dashboard/components/expandable-row';
+import type { DashboardOrderWithItems, OrderStatus, StatusHistory } from '@/modules/orders/types';
 
 interface OrderItemRowProps {
   orderWithItems: DashboardOrderWithItems;

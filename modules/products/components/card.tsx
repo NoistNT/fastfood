@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 
-import type { ProductGeneralView } from '@/modules/products/types';
 import { CardFooter } from '@/modules/products/components/card-footer';
+import type { ProductGeneralView } from '@/modules/products/types';
 
 interface Props {
   product: ProductGeneralView;
