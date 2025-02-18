@@ -39,11 +39,9 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
 
     return newOrderItem;
   } catch (error) {
-    const { message } = error as Error;
+    console.error(error as Error);
 
-    throw new Error(`Error creating item for order ${orderId}.`, {
-      cause: message,
-    });
+    throw new Error(`Error creating item for order ${orderId}.`);
   }
 };
 
@@ -59,9 +57,21 @@ const addStatus = async (orderId: string) => {
   });
 };
 
-export const create = async (newOrder: NewOrder) => {
+export const create = async (newOrder: Omit<NewOrder, 'userId'>) => {
   try {
-    const validatedNewOrder = validateData(CreateNewOrder, newOrder);
+    // Fetch an existing user ID from the database to associate with the order.
+    // This is a temporary solution until we have user authentication in place.
+    const existingUser = await db.query.users.findFirst();
+    if (!existingUser) {
+      throw new Error('No users found in the database.');
+    }
+
+    const validatedNewOrder = validateData(CreateNewOrder, {
+      ...newOrder,
+      userId: existingUser.id, // Use an existing user ID
+      total: newOrder.total,
+    });
+
     const [orderId] = await insertAndGetOrderId(validatedNewOrder);
     const validatedOrderId = validateData(OrderId, orderId.id);
 
@@ -69,9 +79,8 @@ export const create = async (newOrder: NewOrder) => {
 
     return await createItem(validatedOrderId, validatedNewOrder);
   } catch (error) {
-    const { message } = error as Error;
-
-    throw new Error('Order could not be created.', { cause: message });
+    console.error(error as Error);
+    throw new Error('Order could not be created.');
   }
 };
 
@@ -91,7 +100,7 @@ export const ordersList = async (
       items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
         name,
         quantity,
-        subtotal: quantity * price,
+        subtotal: (quantity * parseFloat(price)).toString(),
       })),
     };
   });
@@ -118,16 +127,13 @@ export const findAll = async () => {
       items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
         name,
         quantity,
-        subtotal: quantity * price,
+        subtotal: (quantity * parseFloat(price)).toString(),
       })),
       statusHistory: order.statusHistory,
     })) as DashboardOrderWithItems[];
   } catch (error) {
-    const { message } = error as Error;
-
-    throw new Error('No orders found. Please try again later or contact support.', {
-      cause: message,
-    });
+    console.error(error as Error);
+    throw new Error('No orders found. Please try again later or contact support.');
   }
 };
 
@@ -153,8 +159,7 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
 
     return { success: true };
   } catch (error) {
-    const { message } = error as Error;
-
-    throw new Error(`Error updating status for order ${orderId}: ${message}`);
+    console.error(error as Error);
+    throw new Error(`Error updating status for order ${orderId}`);
   }
 };

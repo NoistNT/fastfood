@@ -1,4 +1,3 @@
-import type { Item } from '@/modules/orders/types';
 import {
   Table,
   TableBody,
@@ -9,14 +8,15 @@ import {
   TableRow,
 } from '@/modules/core/ui/table';
 import { OrderItemRow } from '@/modules/orders/components/order-item-row';
-import { fixedPrice } from '@/modules/orders/utils';
+import type { Item } from '@/modules/orders/types';
+import { toFixed } from '@/modules/orders/utils';
 
 interface OrderTableProps {
   items: Item[];
   incrementQuantity: (id: number) => void;
   decrementQuantity: (id: number) => void;
   removeItem: (id: number) => void;
-  total: number;
+  total: string;
 }
 
 export function OrderTable({
@@ -51,7 +51,7 @@ export function OrderTable({
       <TableFooter>
         <TableRow className="bg-neutral-100 font-semibold hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700">
           <TableCell colSpan={3}>Total</TableCell>
-          <TableCell colSpan={4}>${fixedPrice(total)}</TableCell>
+          <TableCell colSpan={4}>${toFixed(total)}</TableCell>
         </TableRow>
       </TableFooter>
     </Table>

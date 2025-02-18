@@ -1,9 +1,9 @@
 import { TrashIcon } from '@radix-ui/react-icons';
 
-import type { Item } from '@/modules/orders/types';
 import { Button } from '@/modules/core/ui/button';
 import { TableCell, TableRow } from '@/modules/core/ui/table';
-import { fixedPrice } from '@/modules/orders/utils';
+import type { Item } from '@/modules/orders/types';
+import { toFixed } from '@/modules/orders/utils';
 
 interface OrderItemRowProps {
   key: number;
@@ -29,7 +29,7 @@ export function OrderItemRow({
       className="hover:bg-neutral-100 dark:hover:bg-neutral-800"
     >
       <TableCell className="font-medium">{name}</TableCell>
-      <TableCell>${fixedPrice(price)}</TableCell>
+      <TableCell>${price}</TableCell>
       <TableCell>
         <Button
           aria-label="Decrease quantity"
@@ -56,7 +56,7 @@ export function OrderItemRow({
           +
         </Button>
       </TableCell>
-      <TableCell>${fixedPrice(price * quantity)}</TableCell>
+      <TableCell>${toFixed(String(parseFloat(price) * quantity))}</TableCell>
       <TableCell>
         <Button
           aria-label="Remove item"

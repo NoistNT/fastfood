@@ -8,7 +8,7 @@ interface Props {
   productId: number;
   isAvailable: boolean;
   name: string;
-  price: number;
+  price: string;
 }
 
 export function CardFooter({ productId, isAvailable, name, price }: Props) {
