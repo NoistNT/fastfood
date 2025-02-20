@@ -3,9 +3,10 @@ import type { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
-import Footer from '@/modules/core/footer';
-import Header from '@/modules/core/header';
+import Footer from '@/modules/core/components/footer';
+import Header from '@/modules/core/components/header';
 import { ThemeProvider } from '@/modules/core/theme-provider';
+import { BackgroundWall } from '@/modules/core/ui/background-wall';
 import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { Toaster } from '@/modules/core/ui/toaster';
 
@@ -31,7 +32,7 @@ export default function RootLayout({
       suppressHydrationWarning
       lang="en"
     >
-      <body className={cn('min-h-screen bg-secondary font-sans antialiased', fontSans.variable)}>
+      <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}>
         <ThemeProvider
           disableTransitionOnChange
           enableSystem
@@ -39,11 +40,12 @@ export default function RootLayout({
           defaultTheme="system"
         >
           <Toaster />
-          <div className="fixed right-4 top-3.5">
+          <div className="fixed right-4 bottom-4 z-10">
             <ModeToggle />
           </div>
           <Header />
-          {children}
+          <BackgroundWall />
+          <main className="flex-grow">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>
