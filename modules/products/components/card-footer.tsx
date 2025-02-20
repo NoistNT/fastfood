@@ -18,7 +18,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
     if (!isAvailable) return;
 
     addItem({ productId, name, price, quantity: 1 });
-    toast({ description: `${name} añadido al pedido` });
+    toast({ description: `${name} added to order` });
   };
 
   return (
@@ -28,7 +28,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
         href={`/products/${productId}`}
       >
         <Button
-          className="w-full transition-colors dark:hover:border-neutral-700 sm:w-32"
+          className="w-full transition-colors tracking-tighter dark:hover:border-neutral-700 sm:w-32"
           type="button"
           variant="outline"
         >
@@ -38,8 +38,8 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
       <Button
         className={
           isAvailable
-            ? 'w-full transition-colors dark:bg-neutral-50 sm:w-32'
-            : 'w-full cursor-not-allowed bg-rose-100 font-semibold text-red-500 hover:bg-rose-100 hover:text-red-500 dark:border-neutral-700 dark:bg-rose-900 dark:text-red-200 dark:hover:bg-rose-900 sm:w-32'
+            ? 'w-full tracking-tighter transition-colors dark:bg-neutral-50 sm:w-32'
+            : 'w-full tracking-tighter cursor-not-allowed bg-rose-100 font-semibold text-red-500 hover:bg-rose-100 hover:text-red-500 dark:border-neutral-700 dark:bg-rose-900 dark:text-red-200 dark:hover:bg-rose-900 sm:w-32'
         }
         type="button"
         variant={isAvailable ? 'default' : 'outline'}
