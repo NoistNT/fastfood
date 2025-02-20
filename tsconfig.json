@@ -22,7 +22,7 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": { "@/*": ["./*"] },
-    "target": "ES2023"
+    "target": "ESNext"
   },
   "include": [
     "next-env.d.ts",
