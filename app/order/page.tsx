@@ -53,7 +53,7 @@ export default function Page() {
   if (!items.length) return <EmptyOrder />;
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl h-full flex flex-col justify-center">
       <OrderTable
         decrementQuantity={decrementQuantity}
         incrementQuantity={incrementQuantity}
