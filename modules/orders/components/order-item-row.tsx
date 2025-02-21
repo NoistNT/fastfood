@@ -31,41 +31,43 @@ export function OrderItemRow({
       <TableCell className="font-medium">{name}</TableCell>
       <TableCell>${price}</TableCell>
       <TableCell>
-        <Button
-          aria-label="Decrease quantity"
-          className="size-8 p-0 dark:hover:border-neutral-700"
-          type="button"
-          variant="outline"
-          onClick={handleDecrement}
-        >
-          -
-        </Button>
-        <input
-          disabled
-          className="mx-1.5 h-7 w-8 rounded-md border border-neutral-200 text-center text-sm font-semibold text-black dark:border-neutral-700 dark:text-white"
-          type="text"
-          value={quantity}
-        />
-        <Button
-          aria-label="Increase quantity"
-          className="size-8 p-0 dark:hover:border-neutral-700"
-          type="button"
-          variant="outline"
-          onClick={() => incrementQuantity(productId)}
-        >
-          +
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            aria-label="Decrease quantity"
+            className="size-8 p-0 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            type="button"
+            variant="outline"
+            onClick={handleDecrement}
+          >
+            -
+          </Button>
+          <input
+            disabled
+            className="mx-1.5 h-8 w-10 rounded-md border border-neutral-200 text-center text-sm font-semibold text-black dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+            type="text"
+            value={quantity}
+          />
+          <Button
+            aria-label="Increase quantity"
+            className="size-8 p-0 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+            type="button"
+            variant="outline"
+            onClick={() => incrementQuantity(productId)}
+          >
+            +
+          </Button>
+        </div>
       </TableCell>
       <TableCell>${toFixed(String(parseFloat(price) * quantity))}</TableCell>
       <TableCell>
         <Button
           aria-label="Remove item"
-          className="size-8 p-0 hover:bg-red-500"
+          className="size-8 p-0 hover:bg-rose-50 dark:hover:bg-rose-900/20"
           type="button"
           variant="outline"
           onClick={() => removeItem(productId)}
         >
-          <TrashIcon />
+          <TrashIcon className="text-rose-400 dark:text-red-300" />
         </Button>
       </TableCell>
     </TableRow>
