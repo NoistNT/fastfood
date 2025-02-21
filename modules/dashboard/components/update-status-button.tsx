@@ -8,7 +8,7 @@ interface Props {
 
 export function UpdateStatusButton({ nextStatus, isChangingStatus, handleUpdateStatus }: Props) {
   return (
-    <div className="mt-6">
+    <div className="mt-2 flex justify-end">
       {nextStatus ? (
         <Button
           className="min-w-32"

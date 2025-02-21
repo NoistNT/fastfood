@@ -33,7 +33,7 @@ export function OrdersRow({
 
   return (
     <>
-      <TableRow className="bg-neutral-100 font-semibold text-gray-500 hover:bg-white/55 dark:bg-neutral-900 dark:text-gray-300 dark:hover:bg-black/25">
+      <TableRow className="bg-neutral-50 font-semibold text-neutral-700 hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700">
         <TableCell className="w-1/5">{currentStatus}</TableCell>
         <TableCell className="w-1/5">${total}</TableCell>
         <TableCell className="w-1/5">{createdAt.toLocaleTimeString()}</TableCell>

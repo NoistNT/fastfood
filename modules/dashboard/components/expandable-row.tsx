@@ -47,39 +47,39 @@ export function ExpandableRow({ id, items, currentStatus, statusHistory, onStatu
   };
 
   return (
-    <TableRow className="bg-white hover:bg-white dark:bg-black">
+    <TableRow>
       <TableCell colSpan={5}>
-        <div className="grid grid-cols-1 gap-6 p-2 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 p-4 lg:grid-cols-2">
           <div>
-            <h3 className="mb-2 text-base font-semibold text-gray-700 dark:text-white">
+            <h3 className="mb-4 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
               Order Details
             </h3>
-            <ul className="w-full space-y-1.5">
+            <ul className="w-full space-y-2">
               {items.map(({ name, quantity }) => (
                 <li
                   key={name}
-                  className="flex justify-between border-b border-neutral-200 p-1.5 text-gray-700 dark:border-neutral-800 dark:text-gray-300"
+                  className="flex justify-between rounded-lg bg-neutral-100 p-3 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                 >
-                  <span className="text-gray-700 dark:text-gray-300">{name}</span>
-                  <span className="text-gray-600 dark:text-gray-400">x {quantity}</span>
+                  <span>{name}</span>
+                  <span className="font-medium">x {quantity}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div>
-            <h3 className="mb-2 text-base font-semibold text-gray-700 dark:text-white">
+            <h3 className="mb-4 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
               Status History
             </h3>
-            <ul className="w-full space-y-1.5">
+            <ul className="w-full space-y-2">
               {[...statusHistory]
                 .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
                 .map(({ status, createdAt }) => (
                   <li
                     key={`${status}-${createdAt.getTime()}`}
-                    className="flex justify-between border-b border-neutral-200 p-1.5 text-gray-700 dark:border-neutral-800 dark:text-gray-300"
+                    className="flex justify-between rounded-lg bg-neutral-100 p-3 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                   >
-                    <span className="text-gray-700 dark:text-gray-300">{status}</span>
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span>{status}</span>
+                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
                       {createdAt.toLocaleString(undefined, {
                         year: 'numeric',
                         month: 'short',
