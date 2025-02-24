@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 
+import { toTitleCase } from '@/lib/utils';
 import { toast } from '@/modules/core/hooks/use-toast';
 import { TableCell, TableRow } from '@/modules/core/ui/table';
 import { updateStatus } from '@/modules/orders/actions/actions';
@@ -47,18 +48,16 @@ export function ExpandableRow({ id, items, currentStatus, statusHistory, onStatu
   };
 
   return (
-    <TableRow>
+    <TableRow className="bg-purple-100 hover:bg-gradient-to-r hover:from-pink-100/80 hover:to-violet-200/80 dark:bg-indigo-950/50 dark:hover:from-indigo-950/70 dark:hover:to-purple-950/50 tracking-tight">
       <TableCell colSpan={5}>
-        <div className="grid grid-cols-1 gap-6 p-4 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 p-4 lg:grid-cols-2 tracking-tight">
           <div>
-            <h3 className="mb-4 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-              Order Details
-            </h3>
+            <h3 className="mb-4 font-medium text-foreground">Order Details</h3>
             <ul className="w-full space-y-2">
               {items.map(({ name, quantity }) => (
                 <li
                   key={name}
-                  className="flex justify-between rounded-lg bg-neutral-100 p-3 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                  className="flex justify-between rounded-md bg-neutral-100 p-1.5 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                 >
                   <span>{name}</span>
                   <span className="font-medium">x {quantity}</span>
@@ -67,18 +66,16 @@ export function ExpandableRow({ id, items, currentStatus, statusHistory, onStatu
             </ul>
           </div>
           <div>
-            <h3 className="mb-4 text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-              Status History
-            </h3>
+            <h3 className="mb-4 font-medium tracking-tight text-foreground">Status History</h3>
             <ul className="w-full space-y-2">
               {[...statusHistory]
                 .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
                 .map(({ status, createdAt }) => (
                   <li
                     key={`${status}-${createdAt.getTime()}`}
-                    className="flex justify-between rounded-lg bg-neutral-100 p-3 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                    className="flex justify-between rounded-md bg-neutral-100 p-1.5 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
                   >
-                    <span>{status}</span>
+                    <span>{toTitleCase(status)}</span>
                     <span className="text-sm text-neutral-600 dark:text-neutral-400">
                       {createdAt.toLocaleString(undefined, {
                         year: 'numeric',
@@ -94,6 +91,7 @@ export function ExpandableRow({ id, items, currentStatus, statusHistory, onStatu
           </div>
         </div>
         <UpdateStatusButton
+          currentStatus={currentStatus}
           handleUpdateStatus={handleUpdateStatus}
           isChangingStatus={isChangingStatus}
           nextStatus={nextStatus as OrderStatus}
