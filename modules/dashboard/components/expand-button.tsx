@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+// import { cn } from '@/lib/utils';
 import { Button } from '@/modules/core/ui/button';
 import { TableCell } from '@/modules/core/ui/table';
 
@@ -11,14 +11,13 @@ export function ExpandButton({ isExpanded, setIsExpanded }: Props) {
   return (
     <TableCell className="flex flex-col">
       <Button
-        className={cn(
-          'h-8 w-24 border border-neutral-300 bg-white text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700',
-          isExpanded ? 'mb-2' : ''
-        )}
-        variant="ghost"
+        className="bg-background/60 tracking-normal"
+        variant="outline"
+        size="sm"
+        type="button"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        {isExpanded ? 'Collapse' : 'Expand'}
+        {isExpanded ? 'Hide' : 'Show'}
       </Button>
     </TableCell>
   );
