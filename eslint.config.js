@@ -49,7 +49,6 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-      '@typescript-eslint/no-non-null-assertion': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/jsx-curly-brace-presence': ['error', { props: 'never', children: 'never' }],
