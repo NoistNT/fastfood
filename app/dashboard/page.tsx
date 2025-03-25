@@ -1,6 +1,6 @@
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/modules/core/ui/table';
-import { OrdersRow } from '@/modules/dashboard/components/orders-row';
 import { findAll } from '@/modules/orders/actions/actions';
+import { OrdersRow } from '@/modules/orders/components/orders-row';
 
 export default async function Page() {
   const ordersWithItems = await findAll();
