@@ -34,6 +34,7 @@ export default function Page() {
           description: 'Your order has been registered.',
         });
       } catch (error) {
+        console.error('Error submitting order:', error);
         toast({
           title: 'Something went wrong',
           description: 'Your order could not be registered.',
@@ -45,6 +46,30 @@ export default function Page() {
               Try again
             </ToastAction>
           ),
+        });
+      }
+    });
+  };
+
+  const handlePay = async () => {
+    startTransition(async () => {
+      try {
+        const response = await fetch('/api/payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: 'Order Payment',
+            quantity: items.length,
+            price: +total,
+          }),
+        });
+        const data = await response.json();
+        window.location.href = data.init_point;
+      } catch (error) {
+        console.error('Error in handlePay:', error);
+        toast({
+          title: 'Payment Error',
+          description: 'There was an error processing your payment.',
         });
       }
     });
@@ -62,6 +87,7 @@ export default function Page() {
         total={total}
       />
       <SubmitOrder
+        handlePay={handlePay}
         handleSubmit={handleSubmit}
         isPending={isPending}
       />
