@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
-import type { ProductWithIngredients } from '@/modules/products/types';
 import { cn } from '@/lib/utils';
+import type { ProductWithIngredients } from '@/modules/products/types';
 
 interface Props {
   product: ProductWithIngredients;
