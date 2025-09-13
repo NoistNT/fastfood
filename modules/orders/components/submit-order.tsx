@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
 import { useOrderStore } from '@/store/use-order';
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
+  const t = useTranslations('Orders.submitOrder');
   const { clearOrder } = useOrderStore();
 
   return (
@@ -23,7 +25,7 @@ export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
         variant={isPending ? 'secondary' : 'default'}
         onClick={handlePay}
       >
-        {isPending ? 'Redirecting...' : 'Checkout'}
+        {isPending ? t('redirecting...') : t('checkout')}
       </Button>
       <Button
         aria-disabled={isPending}
@@ -32,7 +34,7 @@ export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
         variant="ghost"
         onClick={clearOrder}
       >
-        Cancel order
+        {t('cancel')}
       </Button>
       <Link href="/products">
         <Button
@@ -40,7 +42,7 @@ export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
           type="button"
           variant="secondary"
         >
-          Add more
+          {t('addMore')}
         </Button>
       </Link>
       <Button
@@ -50,7 +52,7 @@ export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
         variant={isPending ? 'secondary' : 'default'}
         onClick={handleSubmit}
       >
-        {isPending ? 'Registering...' : 'Confirm order'}
+        {isPending ? t('registering') : t('confirm')}
       </Button>
     </div>
   );

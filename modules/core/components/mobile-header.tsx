@@ -1,4 +1,5 @@
 import { Menu } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
 import {
@@ -12,6 +13,7 @@ import {
 import { SheetItem } from '@/modules/core/ui/sheet-item';
 
 export function MobileHeader() {
+  const t = useTranslations('Header');
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -29,15 +31,24 @@ export function MobileHeader() {
         className="bg-popover backdrop-blur-sm border-l"
       >
         <SheetHeader>
-          <SheetTitle>Mobile Navigation</SheetTitle>
+          <SheetTitle>{t('title')}</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col gap-y-2 mt-6">
-          <SheetItem title="Order" />
-          <SheetItem title="Dashboard" />
-          <SheetItem title="Profile" />
+          <SheetItem
+            title={t('order')}
+            href="/order"
+          />
+          <SheetItem
+            title={t('dashboard')}
+            href="/dashboard"
+          />
+          <SheetItem
+            title={t('profile')}
+            href="/profile"
+          />
         </nav>
         <SheetFooter className="absolute bottom-4 right-4">
-          <Button variant="ghost">Logout</Button>
+          <Button variant="ghost">{t('logout')}</Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>

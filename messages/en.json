@@ -1,0 +1,94 @@
+{
+  "getStarted": "Get Started",
+
+  "Header": {
+    "title": "FastFood",
+    "order": "Order",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+
+  "ModeToggle": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+
+  "CardFooter": {
+    "moreInfo": "More Info",
+    "addToOrder": "Add to Order",
+    "outOfStock": "Out of Stock",
+    "addedToOrder": "added to order"
+  },
+
+  "Orders": {
+    "emptyOrder": "You don&apos;t have any products in your order",
+    "addProducts": "Add products",
+    "table": {
+      "header": "Orders List",
+      "columns": {
+        "product": "Product",
+        "price": "Price",
+        "quantity": "Quantity",
+        "subtotal": "Subtotal",
+        "remove": "Remove"
+      },
+      "footer": {
+        "total": "Total"
+      }
+    },
+    "submitOrder": {
+      "redirecting": "Redirecting...",
+      "checkout": "Checkout",
+      "cancel": "Cancel order",
+      "addMore": "Add more products",
+      "registering": "Registering order...",
+      "confirm": "Confirm order"
+    },
+    "submitToast": {
+      "successTitle": "Done!",
+      "successDescription": "Your order has been registered.",
+      "errorTitle": "Something went wrong",
+      "errorDescription": "Your order could not be registered.",
+      "actionText": "Try again"
+    },
+    "handlePayToast": {
+      "errorTitle": "Payment Error",
+      "errorDescription": "There was an error processing your payment."
+    },
+    "helpers": {
+      "invalidId": "Invalid order ID",
+      "invalidQuantity": "Quantity must be a positive integer",
+      "orderNonEmpty": "Order cannot be empty",
+      "statusNonEmpty": "Status history cannot be empty"
+    }
+  },
+
+  "Footer": {
+    "title": "FastFood",
+    "description": "Serving the best fast food in town!",
+    "address": {
+      "street": "123 Fast Food Lane",
+      "city": "Food City, FC 12345"
+    },
+    "phone": "(123) 456-7890",
+    "navigation": {
+      "home": "Home",
+      "menu": "Menu",
+      "about": "About"
+    },
+    "menu": {
+      "burgers": "Burgers",
+      "sandwiches": "Sandwiches",
+      "pizzas": "Pizzas"
+    },
+    "about": {
+      "story": "Our Story",
+      "franchise": "Franchise",
+      "contact": "Contact"
+    },
+    "tos": "Terms of Service",
+    "privacyPolicy": "Privacy Policy"
+  }
+}

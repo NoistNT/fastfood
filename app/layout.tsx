@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { NextIntlClientProvider } from 'next-intl';
 import { Inter as FontSans } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
@@ -32,23 +33,25 @@ export default function RootLayout({
       suppressHydrationWarning
       lang="en"
     >
-      <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}>
-        <ThemeProvider
-          disableTransitionOnChange
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-        >
-          <Toaster />
-          <div className="fixed right-4 bottom-4 z-10">
-            <ModeToggle />
-          </div>
-          <Header />
-          <BackgroundWall />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </ThemeProvider>
-      </body>
+      <NextIntlClientProvider>
+        <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}>
+          <ThemeProvider
+            disableTransitionOnChange
+            enableSystem
+            attribute="class"
+            defaultTheme="system"
+          >
+            <Toaster />
+            <div className="fixed right-4 bottom-4 z-10">
+              <ModeToggle />
+            </div>
+            <Header />
+            <BackgroundWall />
+            <main className="flex-grow">{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </body>
+      </NextIntlClientProvider>
     </html>
   );
 }

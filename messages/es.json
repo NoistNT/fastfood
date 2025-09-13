@@ -1,0 +1,94 @@
+{
+  "getStarted": "Empezar",
+
+  "Header": {
+    "title": "QVC",
+    "order": "Pedido",
+    "dashboard": "Panel de Control",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+
+  "ModeToggle": {
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+
+  "CardFooter": {
+    "moreInfo": "Más información",
+    "addToOrder": "Agregar al Pedido",
+    "outOfStock": "Agotado",
+    "addedToOrder": "agregado al pedido"
+  },
+
+  "Orders": {
+    "emptyOrder": "No tienes productos en tu pedido",
+    "addProducts": "Agregar productos",
+    "table": {
+      "header": "Lista de Pedidos",
+      "columns": {
+        "product": "Producto",
+        "price": "Precio",
+        "quantity": "Cantidad",
+        "subtotal": "Subtotal",
+        "remove": "Eliminar"
+      },
+      "footer": {
+        "total": "Total"
+      }
+    },
+    "submitOrder": {
+      "redirecting": "Redirigiendo...",
+      "checkout": "Pagar",
+      "cancel": "Cancelar pedido",
+      "addMore": "Agregar más productos",
+      "registering": "Registrando pedido...",
+      "confirm": "Confirmar pedido"
+    },
+    "submitToast": {
+      "successTitle": "Listo!",
+      "successDescription": "Tu pedido ha sido registrado exitosamente.",
+      "errorTitle": "Algo salió mal",
+      "errorDescription": "No se pudo registrar tu pedido.",
+      "actionText": "Reintentar"
+    },
+    "handlePayToast": {
+      "errorTitle": "Error de Pago",
+      "errorDescription": "Hubo un error al procesar el pago"
+    },
+    "helpers": {
+      "invalidId": "ID del pedido inválido",
+      "invalidQuantity": "La cantidad debe ser un número entero positivo",
+      "orderNonEmpty": "El pedido no puede estar vacío",
+      "statusNonEmpty": "El historial de estado no puede estar vacío"
+    }
+  },
+
+  "Footer": {
+    "title": "QVC",
+    "description": "Los mejores sandwiches en la ciudad!",
+    "address": {
+      "street": "Valentin Berrondo 123",
+      "city": "Catamarca, Capital"
+    },
+    "phone": "(383) 412-3456",
+    "navigation": {
+      "home": "Inicio",
+      "menu": "Menú",
+      "about": "Nosotros"
+    },
+    "menu": {
+      "burgers": "Burgers",
+      "sandwiches": "Sandwiches",
+      "pizzas": "Pizzas"
+    },
+    "about": {
+      "story": "Nuestra Historia",
+      "franchise": "Franquicias",
+      "contact": "Contacto"
+    },
+    "tos": "Términos y Condiciones",
+    "privacyPolicy": "Política de Privacidad"
+  }
+}

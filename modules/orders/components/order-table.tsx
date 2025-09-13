@@ -1,3 +1,5 @@
+import { useTranslations } from 'next-intl';
+
 import {
   Table,
   TableBody,
@@ -26,16 +28,17 @@ export function OrderTable({
   removeItem,
   total,
 }: OrderTableProps) {
+  const t = useTranslations('Orders.table');
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700">
       <Table className="w-full bg-white dark:bg-neutral-900">
         <TableHeader className="sticky top-0 bg-neutral-100 dark:bg-neutral-800">
           <TableRow className="text-neutral-600 dark:text-neutral-400">
-            <TableHead>Product</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Subtotal</TableHead>
-            <TableHead className="w-0">Remove</TableHead>
+            <TableHead>{t('columns.product')}</TableHead>
+            <TableHead>{t('columns.price')}</TableHead>
+            <TableHead>{t('columns.quantity')}</TableHead>
+            <TableHead>{t('columns.subtotal')}</TableHead>
+            <TableHead className="w-0">{t('columns.remove')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -51,7 +54,7 @@ export function OrderTable({
         </TableBody>
         <TableFooter className="sticky bottom-0 bg-neutral-100 dark:bg-neutral-800">
           <TableRow className="font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-700">
-            <TableCell colSpan={3}>Total</TableCell>
+            <TableCell colSpan={3}>{t('footer.total')}</TableCell>
             <TableCell colSpan={4}>${toFixed(total)}</TableCell>
           </TableRow>
         </TableFooter>

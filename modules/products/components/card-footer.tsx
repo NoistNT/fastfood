@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { toast } from '@/modules/core/hooks/use-toast';
 import { Button } from '@/modules/core/ui/button';
@@ -12,13 +13,13 @@ interface Props {
 }
 
 export function CardFooter({ productId, isAvailable, name, price }: Props) {
+  const t = useTranslations('CardFooter');
   const { addItem } = useOrderStore();
 
   const handleAddItem = () => {
     if (!isAvailable) return;
-
     addItem({ productId, name, price, quantity: 1 });
-    toast({ description: `${name} added to order` });
+    toast({ description: `${name} ${t('addedToOrder')}` });
   };
 
   return (
@@ -32,7 +33,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
           type="button"
           variant="outline"
         >
-          More info
+          {t('moreInfo')}
         </Button>
       </Link>
       <Button
@@ -45,7 +46,7 @@ export function CardFooter({ productId, isAvailable, name, price }: Props) {
         variant={isAvailable ? 'default' : 'outline'}
         onClick={() => handleAddItem()}
       >
-        {isAvailable ? 'Add to order' : 'Out of stock'}
+        {isAvailable ? t('addToOrder') : t('outOfStock')}
       </Button>
     </div>
   );

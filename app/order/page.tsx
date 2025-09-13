@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo, useTransition } from 'react';
 
 import { toast } from '@/modules/core/hooks/use-toast';
@@ -12,6 +13,7 @@ import { calculateTotal, submitOrder } from '@/modules/orders/utils';
 import { useOrderStore } from '@/store/use-order';
 
 export default function Page() {
+  const t = useTranslations('Orders');
   const { items, incrementQuantity, decrementQuantity, removeItem, clearOrder } = useOrderStore();
 
   const total = useMemo(() => calculateTotal(items), [items]);
@@ -30,20 +32,20 @@ export default function Page() {
           clearOrder
         );
         toast({
-          title: 'Done!',
-          description: 'Your order has been registered.',
+          title: t('submitToast.successTitle'),
+          description: t('submitToast.successDescription'),
         });
       } catch (error) {
         console.error('Error submitting order:', error);
         toast({
-          title: 'Something went wrong',
-          description: 'Your order could not be registered.',
+          title: t('submitToast.errorTitle'),
+          description: t('submitToast.errorDescription'),
           action: (
             <ToastAction
-              altText="Try again"
+              altText={t('submitToast.actionText')}
               onClick={handleSubmit}
             >
-              Try again
+              {t('submitToast.actionText')}
             </ToastAction>
           ),
         });
@@ -68,8 +70,8 @@ export default function Page() {
       } catch (error) {
         console.error('Error in handlePay:', error);
         toast({
-          title: 'Payment Error',
-          description: 'There was an error processing your payment.',
+          title: t('handlePayToast.errorTitle'),
+          description: t('handlePayToast.errorDescription'),
         });
       }
     });

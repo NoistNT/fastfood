@@ -1,44 +1,43 @@
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function Footer() {
+  const t = useTranslations('Footer');
   const navigationItems = [
     {
-      title: 'Home',
+      title: t('navigation.home'),
       href: '/',
-      description: '',
     },
     {
-      title: 'Menu',
-      description: 'Explore our delicious offerings.',
+      title: t('navigation.menu'),
       items: [
         {
-          title: 'Burgers',
+          title: t('menu.burgers'),
           href: '/menu/burgers',
         },
         {
-          title: 'Pizzas',
+          title: t('menu.pizzas'),
           href: '/menu/pizzas',
         },
         {
-          title: 'Sandwichs',
-          href: '/menu/sandwichs',
+          title: t('menu.sandwiches'),
+          href: '/menu/sandwiches',
         },
       ],
     },
     {
-      title: 'About Us',
-      description: 'Learn more about our story.',
+      title: t('navigation.about'),
       items: [
         {
-          title: 'Our Story',
+          title: t('about.story'),
           href: '/about',
         },
         {
-          title: 'Franchise',
+          title: t('about.franchise'),
           href: '/franchise',
         },
         {
-          title: 'Contact Us',
+          title: t('about.contact'),
           href: '/contact',
         },
       ],
@@ -52,21 +51,19 @@ export default function Footer() {
           <div className="flex gap-8 flex-col items-start">
             <div className="flex gap-2 flex-col">
               <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-left">
-                FastFood
+                {t('title')}
               </h2>
-              <p className="text-lg max-w-lg text-primary/75 text-left">
-                Serving the best fast food in town!
-              </p>
+              <p className="text-lg max-w-lg text-primary/75 text-left">{t('description')}</p>
             </div>
             <div className="flex gap-20 flex-row">
               <div className="flex flex-col text-sm max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
-                <p>123 Fast Food Lane</p>
-                <p>Food City, FC 12345</p>
-                <p>Phone: (123) 456-7890</p>
+                <p>{t('address.street')}</p>
+                <p>{t('address.city')}</p>
+                <p>{t('phone')}</p>
               </div>
               <div className="flex flex-col text-sm max-w-lg leading-relaxed tracking-tight text-muted-foreground text-left">
-                <Link href="/">Terms of Service</Link>
-                <Link href="/">Privacy Policy</Link>
+                <Link href="/">{t('tos')}</Link>
+                <Link href="/">{t('privacyPolicy')}</Link>
               </div>
             </div>
           </div>

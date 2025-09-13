@@ -16,7 +16,7 @@ export const isValidStatus = (status: string): status is OrderStatus => {
   return Object.values(ORDER_STATUS).includes(status as OrderStatus);
 };
 
-export const OrderId = z.string().uuid('Invalid order ID');
+export const OrderId = z.uuid('Invalid order ID');
 
 export const CreateItem = z.object({
   orderId: OrderId,
@@ -25,7 +25,7 @@ export const CreateItem = z.object({
 });
 
 export const CreateNewOrder = z.object({
-  userId: z.string().uuid('Invalid user ID'),
+  userId: z.uuid('Invalid user ID'),
   items: z
     .array(
       z.object({
@@ -38,7 +38,7 @@ export const CreateNewOrder = z.object({
   statusHistory: z
     .array(
       z.object({
-        status: z.nativeEnum(ORDER_STATUS),
+        status: z.enum(ORDER_STATUS),
         createdAt: z.date(),
       })
     )

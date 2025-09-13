@@ -5,12 +5,13 @@ import { SheetClose } from '@/modules/core/ui/sheet';
 
 interface Props {
   title: string;
+  href: string;
 }
 
-export function SheetItem({ title }: Props) {
+export function SheetItem({ title, href }: Props) {
   return (
     <SheetClose asChild>
-      <Link href={`/${title.toLowerCase()}`}>
+      <Link href={href}>
         <Button
           variant="ghost"
           className="w-full"
