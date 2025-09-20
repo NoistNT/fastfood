@@ -1,5 +1,7 @@
 {
-  "getStarted": "Empezar",
+  "Home": {
+    "getStarted": "Empezar"
+  },
 
   "Header": {
     "title": "QVC",
@@ -43,7 +45,7 @@
       "checkout": "Pagar",
       "cancel": "Cancelar pedido",
       "addMore": "Agregar más productos",
-      "registering": "Registrando pedido...",
+      "registering": "Registrando...",
       "confirm": "Confirmar pedido"
     },
     "submitToast": {
@@ -59,10 +61,61 @@
     },
     "helpers": {
       "invalidId": "ID del pedido inválido",
-      "invalidQuantity": "La cantidad debe ser un número entero positivo",
-      "orderNonEmpty": "El pedido no puede estar vacío",
-      "statusNonEmpty": "El historial de estado no puede estar vacío"
+      "invalidQuantity": "La cantidad debe ser al menos 1",
+      "orderNonEmpty": "El pedido debe tener al menos un artículo",
+      "statusNonEmpty": "El historial de estado no puede estar vacío",
+      "invalidUserId": "ID de usuario inválido",
+      "totalNonEmpty": "El total no puede estar vacío"
+    },
+    "errors": {
+      "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+      "noUsers": "No se encontraron usuarios en la base de datos.",
+      "createOrderError": "No se pudo crear el pedido.",
+      "invalidStatus": "Estado inválido",
+      "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
+      "orderNotFound": "Pedido no encontrado",
+      "invalidTransition": "Transición inválida",
+      "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
     }
+  },
+
+  "Dashboard": {
+    "title": "Dashboard de Pedidos",
+    "table": {
+      "header": {
+        "status": "Estado",
+        "total": "Total",
+        "time": "Hora",
+        "date": "Fecha",
+        "details": "Detalles"
+      },
+      "row": {
+        "viewDetails": "Ver Detalles",
+        "status": {
+          "PENDING": "Pendiente",
+          "PROCESSING": "Procesando",
+          "SHIPPED": "Enviado",
+          "DELIVERED": "Entregado"
+        }
+      }
+    },
+    "details": {
+      "title": "Detalles del pedido",
+      "items": "Productos",
+      "statusHistory": "Historial de estado",
+      "confirmation": {
+        "title": "Confirmar Actualización de Estado",
+        "description": "Estás seguro que querés cambiar el estado de",
+        "to": "a",
+        "cancel": "Cancelar",
+        "updating": "Actualizando...",
+        "confirm": "Confirmar"
+      }
+    }
+  },
+
+  "Error": {
+    "title": "Algo salió mal"
   },
 
   "Footer": {

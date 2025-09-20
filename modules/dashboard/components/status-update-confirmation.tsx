@@ -1,4 +1,5 @@
-import { toTitleCase } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
+
 import { Button } from '@/modules/core/ui/button';
 import {
   Dialog,
@@ -26,6 +27,9 @@ export function StatusUpdateConfirmation({
   onConfirm,
   isLoading,
 }: Props) {
+  const t = useTranslations('Dashboard.details.confirmation');
+  const tStatus = useTranslations('Dashboard.table.row');
+
   return (
     <Dialog
       open={open}
@@ -33,11 +37,17 @@ export function StatusUpdateConfirmation({
     >
       <DialogContent className="tracking-tight">
         <DialogHeader>
-          <DialogTitle className="tracking-tighter mb-2">Confirm Status Update</DialogTitle>
+          <DialogTitle className="tracking-tighter mb-2">{t('title')}</DialogTitle>
           <DialogDescription className="my-2">
-            Are you sure you want to change the status from{' '}
-            <span className="font-semibold">{toTitleCase(currentStatus)}</span> to{' '}
-            <span className="font-semibold">{toTitleCase(nextStatus)}</span>?
+            {t('description')}{' '}
+            <span className="font-semibold text-rose-400 dark:text-violet-500">
+              {tStatus(`status.${currentStatus}`)}
+            </span>{' '}
+            {t('to')}{' '}
+            <span className="font-semibold text-rose-400 dark:text-violet-500">
+              {tStatus(`status.${nextStatus}`)}
+            </span>
+            ?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -48,7 +58,7 @@ export function StatusUpdateConfirmation({
             disabled={isLoading}
             size="sm"
           >
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             className="w-full bg-violet-500 hover:bg-violet-400 dark:bg-violet-900 dark:hover:bg-violet-800 dark:text-foreground"
@@ -57,7 +67,7 @@ export function StatusUpdateConfirmation({
             variant="default"
             size="sm"
           >
-            {isLoading ? 'Updating...' : 'Confirm'}
+            {isLoading ? t('updating') : t('confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

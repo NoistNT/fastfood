@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { toTitleCase } from '@/lib/utils';
 import { toast } from '@/modules/core/hooks/use-toast';
 import {
   Dialog,
@@ -34,6 +34,8 @@ export function OrderDetailsDialog({
   onStatusUpdate,
   children,
 }: Props) {
+  const t = useTranslations('Dashboard.details');
+  const tRow = useTranslations('Dashboard.table.row');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const nextStatus = useMemo(() => {
@@ -59,6 +61,7 @@ export function OrderDetailsDialog({
       setIsChangingStatus(false);
     }
   };
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -69,12 +72,12 @@ export function OrderDetailsDialog({
         }}
       >
         <DialogHeader>
-          <DialogTitle className="mx-auto lg:pt-1.5 tracking-tighter">Order Details</DialogTitle>
+          <DialogTitle className="mx-auto lg:pt-1.5 tracking-tighter">{t('title')}</DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-1 gap-6 p-2 lg:px-4">
           <div>
-            <h3 className="mb-4 font-medium tracking-tighter">Items</h3>
+            <h3 className="mb-4 font-medium tracking-tighter">{t('items')}</h3>
             <ul className="w-full space-y-2">
               {items.map(({ name, quantity }) => (
                 <li
@@ -89,7 +92,7 @@ export function OrderDetailsDialog({
           </div>
 
           <div>
-            <h3 className="mb-4 font-medium tracking-tighter">Status History</h3>
+            <h3 className="mb-4 font-medium tracking-tighter">{t('statusHistory')}</h3>
             <div className="relative">
               <div className="absolute left-4 h-full w-0.5 bg-neutral-200 dark:bg-neutral-700" />
               <ul className="w-full space-y-2 text-xs">
@@ -102,7 +105,7 @@ export function OrderDetailsDialog({
                     >
                       <div className="absolute left-0 top-0 h-2 w-2 rounded-full bg-current transition-all" />
                       <div className="flex justify-between rounded-md bg-neutral-50 p-2 transition-all hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-800">
-                        <span className="font-medium">{toTitleCase(status)}</span>
+                        <span className="font-medium">{tRow(`status.${status}`)}</span>
                         <span className="text-xs text-muted-foreground font-medium">
                           {createdAt.toLocaleString(undefined, {
                             year: 'numeric',

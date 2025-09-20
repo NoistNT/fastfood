@@ -16,34 +16,38 @@ export const isValidStatus = (status: string): status is OrderStatus => {
   return Object.values(ORDER_STATUS).includes(status as OrderStatus);
 };
 
-export const OrderId = z.uuid('Invalid order ID');
+export const getOrderSchemas = (t: (key: string) => string) => {
+  const OrderId = z.uuid(t('invalidId'));
 
-export const CreateItem = z.object({
-  orderId: OrderId,
-  productId: z.number(),
-  quantity: z.number().min(1, 'Quantity must be at least 1'),
-});
+  const CreateItem = z.object({
+    orderId: OrderId,
+    productId: z.number(),
+    quantity: z.number().min(1, t('invalidQuantity')),
+  });
 
-export const CreateNewOrder = z.object({
-  userId: z.uuid('Invalid user ID'),
-  items: z
-    .array(
-      z.object({
-        productId: z.number(),
-        quantity: z.number().min(1, 'Quantity must be at least 1'),
-      })
-    )
-    .nonempty('Order must have at least one item'),
-  total: z.string().nonempty('Total must not be empty'),
-  statusHistory: z
-    .array(
-      z.object({
-        status: z.enum(ORDER_STATUS),
-        createdAt: z.date(),
-      })
-    )
-    .nonempty('Status history must not be empty'),
-});
+  const CreateNewOrder = z.object({
+    userId: z.uuid(t('invalidUserId')),
+    items: z
+      .array(
+        z.object({
+          productId: z.number(),
+          quantity: z.number().min(1, t('invalidQuantity')),
+        })
+      )
+      .nonempty(t('orderNonEmpty')),
+    total: z.string().nonempty(t('totalNonEmpty')),
+    statusHistory: z
+      .array(
+        z.object({
+          status: z.enum(ORDER_STATUS),
+          createdAt: z.date(),
+        })
+      )
+      .nonempty(t('statusNonEmpty')),
+  });
+
+  return { OrderId, CreateItem, CreateNewOrder };
+};
 
 export const validateData = <T>(schema: z.ZodSchema<T>, data: unknown): T => {
   const { data: validatedData, error, success } = schema.safeParse(data);

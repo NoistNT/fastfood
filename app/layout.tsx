@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import { Inter as FontSans } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
@@ -23,17 +24,21 @@ export const metadata: Metadata = {
   description: 'Fast food app',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  const messages = await getMessages();
+
   return (
     <html
       suppressHydrationWarning
-      lang="en"
+      lang={locale}
     >
-      <NextIntlClientProvider>
+      <NextIntlClientProvider messages={messages}>
         <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}>
           <ThemeProvider
             disableTransitionOnChange

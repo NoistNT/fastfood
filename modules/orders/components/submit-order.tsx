@@ -25,7 +25,7 @@ export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
         variant={isPending ? 'secondary' : 'default'}
         onClick={handlePay}
       >
-        {isPending ? t('redirecting...') : t('checkout')}
+        {isPending ? t('redirecting') : t('checkout')}
       </Button>
       <Button
         aria-disabled={isPending}

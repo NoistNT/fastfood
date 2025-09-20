@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { toTitleCase } from '@/lib/utils';
 import { Button } from '@/modules/core/ui/button';
 import { StatusUpdateConfirmation } from '@/modules/dashboard/components/status-update-confirmation';
 
@@ -17,6 +17,7 @@ export function UpdateStatusButton({
   isChangingStatus,
   handleUpdateStatus,
 }: Props) {
+  const t = useTranslations('Dashboard.table.row');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   if (!nextStatus) return null;
@@ -32,7 +33,7 @@ export function UpdateStatusButton({
           size="sm"
           onClick={() => setIsDialogOpen(true)}
         >
-          {toTitleCase(currentStatus)} → {toTitleCase(nextStatus)}
+          {t(`status.${currentStatus}`)} → {t(`status.${nextStatus}`)}
         </Button>
       </div>
 

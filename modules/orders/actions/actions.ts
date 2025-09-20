@@ -1,14 +1,14 @@
 'use server';
 
 import { eq } from 'drizzle-orm';
+import { getTranslations } from 'next-intl/server';
 
 import { db } from '@/db/drizzle';
 import { orderItem, orders, orderStatusHistory } from '@/db/schema';
 import {
   canTransition,
-  CreateNewOrder,
+  getOrderSchemas,
   isValidStatus,
-  OrderId,
   validateData,
 } from '@/modules/orders/helpers';
 import {
@@ -20,7 +20,11 @@ import {
   type OrderStatus,
 } from '@/modules/orders/types';
 
-const createItem = async (orderId: string, newOrder: NewOrder) => {
+const createItem = async (
+  orderId: string,
+  newOrder: NewOrder,
+  t: (key: string, values?: { orderId: string }) => string
+) => {
   try {
     const [newOrderItem]: NewOrderItem[] = await db
       .insert(orderItem)
@@ -40,8 +44,7 @@ const createItem = async (orderId: string, newOrder: NewOrder) => {
     return newOrderItem;
   } catch (error) {
     console.error(error as Error);
-
-    throw new Error(`Error creating item for order ${orderId}.`);
+    throw new Error(t('createItemError', { orderId }));
   }
 };
 
@@ -58,12 +61,14 @@ const addStatus = async (orderId: string) => {
 };
 
 export const create = async (newOrder: Omit<NewOrder, 'userId'>) => {
+  const t = await getTranslations('Orders');
+  const { OrderId, CreateNewOrder } = getOrderSchemas((key) => t(`helpers.${key}`));
   try {
     // Fetch an existing user ID from the database to associate with the order.
     // This is a temporary solution until we have user authentication in place.
     const existingUser = await db.query.users.findFirst();
     if (!existingUser) {
-      throw new Error('No users found in the database.');
+      throw new Error(t('errors.noUsers'));
     }
 
     const validatedNewOrder = validateData(CreateNewOrder, {
@@ -77,18 +82,25 @@ export const create = async (newOrder: Omit<NewOrder, 'userId'>) => {
 
     await addStatus(validatedOrderId);
 
-    return await createItem(validatedOrderId, validatedNewOrder);
+    return await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
+      t(`errors.${key}`, values)
+    );
   } catch (error) {
     console.error(error as Error);
-    throw new Error('Order could not be created.');
+    if (error instanceof Error && error.message.includes(t('errors.noUsers'))) {
+      throw error;
+    }
+    throw new Error(t('errors.createOrderError'));
   }
 };
 
 export const ordersList = async (
   orders: FindManyResponse[]
 ): Promise<DashboardOrderWithItems[]> => {
+  const t = await getTranslations('Orders.errors');
+
   return orders.map((order) => {
-    if (!isValidStatus(order.status)) throw new Error('Invalid status');
+    if (!isValidStatus(order.status)) throw new Error(t('invalidStatus'));
 
     return {
       order: {
@@ -107,6 +119,7 @@ export const ordersList = async (
 };
 
 export const findAll = async () => {
+  const t = await getTranslations('Orders.errors');
   try {
     const allOrders = await db.query.orders.findMany({
       with: {
@@ -133,22 +146,23 @@ export const findAll = async () => {
     })) as DashboardOrderWithItems[];
   } catch (error) {
     console.error(error as Error);
-    throw new Error('No orders found. Please try again later or contact support.');
+    throw new Error(t('noOrders'));
   }
 };
 
 export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const t = await getTranslations('Orders.errors');
   try {
-    if (!isValidStatus(newStatus)) throw new Error('Invalid status');
+    if (!isValidStatus(newStatus)) throw new Error(t('invalidStatus'));
 
     const order = await db.query.orders.findFirst({
       where: eq(orders.id, orderId),
     });
 
-    if (!order) throw new Error('Order not found');
+    if (!order) throw new Error(t('orderNotFound'));
 
     if (!canTransition(order.status as OrderStatus, newStatus)) {
-      throw new Error('Invalid transition');
+      throw new Error(t('invalidTransition'));
     }
 
     await db.insert(orderStatusHistory).values({ orderId, status: newStatus });
@@ -160,6 +174,6 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
     return { success: true };
   } catch (error) {
     console.error(error as Error);
-    throw new Error(`Error updating status for order ${orderId}`);
+    throw new Error(t('updateStatusError', { orderId }));
   }
 };

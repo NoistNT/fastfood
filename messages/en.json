@@ -1,5 +1,7 @@
 {
-  "getStarted": "Get Started",
+  "Home": {
+    "getStarted": "Get Started"
+  },
 
   "Header": {
     "title": "FastFood",
@@ -23,7 +25,7 @@
   },
 
   "Orders": {
-    "emptyOrder": "You don&apos;t have any products in your order",
+    "emptyOrder": "You don't have any products in your order",
     "addProducts": "Add products",
     "table": {
       "header": "Orders List",
@@ -43,7 +45,7 @@
       "checkout": "Checkout",
       "cancel": "Cancel order",
       "addMore": "Add more products",
-      "registering": "Registering order...",
+      "registering": "Registering...",
       "confirm": "Confirm order"
     },
     "submitToast": {
@@ -59,10 +61,61 @@
     },
     "helpers": {
       "invalidId": "Invalid order ID",
-      "invalidQuantity": "Quantity must be a positive integer",
-      "orderNonEmpty": "Order cannot be empty",
-      "statusNonEmpty": "Status history cannot be empty"
+      "invalidQuantity": "Quantity must be at least 1",
+      "orderNonEmpty": "Order must have at least one item",
+      "statusNonEmpty": "Status history must not be empty",
+      "invalidUserId": "Invalid user ID",
+      "totalNonEmpty": "Total must not be empty"
+    },
+    "errors": {
+      "createItemError": "Error creating item for order {orderId}.",
+      "noUsers": "No users found in the database.",
+      "createOrderError": "Order could not be created.",
+      "invalidStatus": "Invalid status",
+      "noOrders": "No orders found. Please try again later or contact support.",
+      "orderNotFound": "Order not found",
+      "invalidTransition": "Invalid transition",
+      "updateStatusError": "Error updating status for order {orderId}"
     }
+  },
+
+  "Dashboard": {
+    "title": "Orders Dashboard",
+    "table": {
+      "header": {
+        "status": "Status",
+        "total": "Total",
+        "time": "Time",
+        "date": "Date",
+        "details": "Details"
+      },
+      "row": {
+        "viewDetails": "View Details",
+        "status": {
+          "PENDING": "Pending",
+          "PROCESSING": "Processing",
+          "SHIPPED": "Shipped",
+          "DELIVERED": "Delivered"
+        }
+      }
+    },
+    "details": {
+      "title": "Order Details",
+      "items": "Items",
+      "statusHistory": "Status History",
+      "confirmation": {
+        "title": "Confirm Status Update",
+        "description": "Are you sure you want to change the status from",
+        "to": "to",
+        "cancel": "Cancel",
+        "updating": "Updating...",
+        "confirm": "Confirm"
+      }
+    }
+  },
+
+  "Error": {
+    "title": "Something went wrong"
   },
 
   "Footer": {
