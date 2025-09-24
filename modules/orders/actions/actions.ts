@@ -1,6 +1,6 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, lt } from 'drizzle-orm';
 import { getTranslations } from 'next-intl/server';
 
 import { db } from '@/db/drizzle';
@@ -118,10 +118,18 @@ export const ordersList = async (
   });
 };
 
-export const findAll = async () => {
+export const findAll = async (date: Date | undefined) => {
   const t = await getTranslations('Orders.errors');
   try {
+    const where = date
+      ? and(
+          gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
+          lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
+        )
+      : undefined;
+
     const allOrders = await db.query.orders.findMany({
+      where,
       with: {
         orderItems: {
           columns: { quantity: true },

@@ -99,6 +99,9 @@
         }
       }
     },
+    "date_picker": {
+      "pick_a_date": "Seleccionar fecha"
+    },
     "details": {
       "title": "Detalles del pedido",
       "items": "Productos",

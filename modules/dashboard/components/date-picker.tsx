@@ -1,0 +1,42 @@
+import { useTranslations } from 'next-intl';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/modules/core/ui/button';
+import { Calendar } from '@/modules/core/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/modules/core/ui/popover';
+
+interface DatePickerProps {
+  date: Date | undefined;
+  setDate: (date: Date | undefined) => void;
+}
+
+export default function DatePicker({ date, setDate }: DatePickerProps) {
+  const t = useTranslations('Dashboard.date_picker');
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            'w-1/5 justify-start text-left font-normal',
+            !date && 'text-muted-foreground'
+          )}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? format(date, 'PPP') : <span>{t('pick_a_date')}</span>}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={setDate}
+          autoFocus
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
