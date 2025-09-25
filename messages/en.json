@@ -81,6 +81,7 @@
 
   "Dashboard": {
     "title": "Orders Dashboard",
+    "totalSales": "Total Sales",
     "table": {
       "header": {
         "status": "Status",
@@ -97,7 +98,8 @@
           "SHIPPED": "Shipped",
           "DELIVERED": "Delivered"
         }
-      }
+      },
+      "empty": "There are no registered sales for this period."
     },
     "date_picker": {
       "pick_a_date": "Pick a date"

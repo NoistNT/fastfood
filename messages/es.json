@@ -81,6 +81,7 @@
 
   "Dashboard": {
     "title": "Dashboard de Pedidos",
+    "totalSales": "Ventas Totales",
     "table": {
       "header": {
         "status": "Estado",
@@ -97,7 +98,8 @@
           "SHIPPED": "Enviado",
           "DELIVERED": "Entregado"
         }
-      }
+      },
+      "empty": "No hay ventas registradas para este período."
     },
     "date_picker": {
       "pick_a_date": "Seleccionar fecha"
