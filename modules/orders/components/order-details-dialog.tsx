@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
 import { toast } from '@/modules/core/hooks/use-toast';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@/modules/core/ui/dialog';
 import { UpdateStatusButton } from '@/modules/dashboard/components/update-status-button';
 import { updateStatus } from '@/modules/orders/actions/actions';
+import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 import { canTransition } from '@/modules/orders/helpers';
 import { ORDER_STATUS, type OrderItem, type OrderStatus } from '@/modules/orders/types';
 
@@ -35,7 +36,6 @@ export function OrderDetailsDialog({
   children,
 }: Props) {
   const t = useTranslations('Dashboard.details');
-  const tRow = useTranslations('Dashboard.table.row');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const nextStatus = useMemo(() => {
@@ -82,7 +82,7 @@ export function OrderDetailsDialog({
               {items.map(({ name, quantity }) => (
                 <li
                   key={name}
-                  className="flex justify-between rounded-md text-xs bg-neutral-100 p-2 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                  className="flex justify-between rounded-md text-xs bg-neutral-200 p-2 text-muted-foreground dark:bg-neutral-800"
                 >
                   <span className="text-xs text-muted-foreground font-medium">{name}</span>
                   <span className="font-medium">x {quantity}</span>
@@ -94,18 +94,18 @@ export function OrderDetailsDialog({
           <div>
             <h3 className="mb-4 font-medium tracking-tighter">{t('statusHistory')}</h3>
             <div className="relative">
-              <div className="absolute left-4 h-full w-0.5 bg-neutral-200 dark:bg-neutral-700" />
-              <ul className="w-full space-y-2 text-xs">
+              <div className="absolute left-4 h-full w-0.5 bg-neutral-200 dark:bg-neutral-800" />
+              <ul className="w-full space-y-1 text-xs">
                 {[...statusHistory]
                   .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
                   .map(({ status, createdAt }) => (
                     <li
                       key={`${status}-${createdAt.getTime()}`}
-                      className="relative pl-8 transition-all"
+                      className="relative pl-8"
                     >
-                      <div className="absolute left-0 top-0 h-2 w-2 rounded-full bg-current transition-all" />
-                      <div className="flex justify-between rounded-md bg-neutral-50 p-2 transition-all hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-800">
-                        <span className="font-medium">{tRow(`status.${status}`)}</span>
+                      <div className="absolute left-0 top-3 h-2 w-2 rounded-full bg-current" />
+                      <div className="flex justify-between rounded-sm bg-neutral-200/90 p-2 pl-0 dark:bg-neutral-900">
+                        <OrderStatusBadge status={status} />
                         <span className="text-xs text-muted-foreground font-medium">
                           {createdAt.toLocaleString(undefined, {
                             year: 'numeric',

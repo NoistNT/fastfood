@@ -22,11 +22,16 @@ export function UpdateStatusButton({
 
   if (!nextStatus) return null;
 
+  const onConfirm = () => {
+    handleUpdateStatus();
+    setIsDialogOpen(false);
+  };
+
   return (
     <>
       <div className="mt-4 flex justify-center">
         <Button
-          className="w-full md:w-1/2 bg-gradient-to-r from-rose-50 to-violet-50 dark:from-indigo-900 dark:to-purple-900 hover:from-rose-100 hover:to-violet-100 dark:hover:from-indigo-800 dark:hover:to-purple-800"
+          className="w-full md:w-1/2 bg-rose-100 dark:bg-violet-900 hover:bg-rose-200 dark:hover:bg-violet-800 border border-gray-300 dark:border-gray-600"
           disabled={isChangingStatus}
           type="button"
           variant="outline"
@@ -42,7 +47,7 @@ export function UpdateStatusButton({
         onOpenChange={setIsDialogOpen}
         currentStatus={currentStatus}
         nextStatus={nextStatus}
-        onConfirm={handleUpdateStatus}
+        onConfirm={onConfirm}
         isLoading={isChangingStatus}
       />
     </>
