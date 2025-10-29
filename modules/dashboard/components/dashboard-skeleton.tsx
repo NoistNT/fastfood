@@ -1,28 +1,20 @@
+import { Loader2 } from 'lucide-react';
+
 import { TableBody, TableCell, TableRow } from '@/modules/core/ui/table';
-import { Skeleton } from '@/modules/core/ui/skeleton';
 
 export default function DashboardSkeleton() {
   return (
     <TableBody>
-      {Array.from({ length: 8 }).map((_, i) => (
-        <TableRow key={i}>
-          <TableCell>
-            <Skeleton className="h-5 w-22" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-5 w-22" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-5 w-22" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-5 w-22" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-8 w-full" />
-          </TableCell>
-        </TableRow>
-      ))}
+      <TableRow>
+        <TableCell
+          colSpan={5}
+          className="h-64 text-center text-muted-foreground"
+        >
+          <div className="flex items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
+        </TableCell>
+      </TableRow>
     </TableBody>
   );
 }
