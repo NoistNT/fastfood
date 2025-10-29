@@ -20,7 +20,10 @@ export default function DatePicker({ date, setDate }: DatePickerProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={cn('justify-center text-left font-normal', !date && 'text-muted-foreground')}
+          className={cn(
+            'justify-center text-left tracking-tight',
+            !date && 'text-muted-foreground'
+          )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? format(new Date(date), 'E, d MMM - yyyy') : <span>{t('pick_a_date')}</span>}

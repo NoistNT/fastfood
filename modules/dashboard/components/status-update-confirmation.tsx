@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/modules/core/ui/button';
 import {
@@ -9,6 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/modules/core/ui/dialog';
+import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
+import type { OrderStatus } from '@/modules/orders/types';
 
 interface Props {
   open: boolean;
@@ -28,7 +31,6 @@ export function StatusUpdateConfirmation({
   isLoading,
 }: Props) {
   const t = useTranslations('Dashboard.details.confirmation');
-  const tStatus = useTranslations('Dashboard.table.row');
 
   return (
     <Dialog
@@ -39,15 +41,8 @@ export function StatusUpdateConfirmation({
         <DialogHeader>
           <DialogTitle className="tracking-tighter mb-2">{t('title')}</DialogTitle>
           <DialogDescription className="my-2">
-            {t('description')}{' '}
-            <span className="font-semibold text-rose-400 dark:text-violet-500">
-              {tStatus(`status.${currentStatus}`)}
-            </span>{' '}
-            {t('to')}{' '}
-            <span className="font-semibold text-rose-400 dark:text-violet-500">
-              {tStatus(`status.${nextStatus}`)}
-            </span>
-            ?
+            {t('description')} <OrderStatusBadge status={currentStatus as OrderStatus} /> {t('to')}{' '}
+            <OrderStatusBadge status={nextStatus as OrderStatus} />?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -67,7 +62,13 @@ export function StatusUpdateConfirmation({
             variant="default"
             size="sm"
           >
-            {isLoading ? t('updating') : t('confirm')}
+            {isLoading ? (
+              <span>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              </span>
+            ) : (
+              t('confirm')
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

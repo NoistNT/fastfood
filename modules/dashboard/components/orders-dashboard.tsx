@@ -43,13 +43,11 @@ export default function OrdersDashboard({
   return (
     <div className="mx-auto flex h-full max-w-5xl flex-1 flex-col py-8 px-1.5">
       <div className="flex items-center justify-between mb-4 md:mb-5">
-        <h1 className="text-lg md:text-xl font-medium text-primary tracking-tighter">
-          {t('title')}
-        </h1>
+        <h1 className="text-lg md:text-xl font-medium tracking-tighter">{t('title')}</h1>
         <div className="flex items-center gap-6">
-          <h2 className="text-base md:text-lg text-muted-foreground tracking-tighter">
+          <span className="text-primary text-sm font-medium bg-primary-foreground px-2 py-2 rounded-md shadow-xs">
             {date && `${t('totalSales')}: ${formattedTotalSales}`}
-          </h2>
+          </span>
           <DatePicker
             date={date}
             setDate={handleDateChange}
@@ -57,15 +55,15 @@ export default function OrdersDashboard({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700">
+      <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
         <Table className="w-full">
-          <TableHeader className="sticky top-0 bg-gradient-to-r from-pink-100 to-violet-200 dark:from-indigo-950 dark:to-purple-950 tracking-tight">
+          <TableHeader className="sticky top-0 bg-white dark:bg-black tracking-tight">
             <TableRow>
-              <TableHead className="w-1/5">{tHeader('status')}</TableHead>
-              <TableHead className="w-1/5">{tHeader('total')}</TableHead>
-              <TableHead className="w-1/5">{tHeader('time')}</TableHead>
-              <TableHead className="w-1/5">{tHeader('date')}</TableHead>
-              <TableHead className="w-1/5">{tHeader('details')}</TableHead>
+              <TableHead className="w-1/5 text-primary">{tHeader('status')}</TableHead>
+              <TableHead className="w-1/5 text-primary">{tHeader('total')}</TableHead>
+              <TableHead className="w-1/5 text-primary">{tHeader('time')}</TableHead>
+              <TableHead className="w-1/5 text-primary">{tHeader('date')}</TableHead>
+              <TableHead className="w-1/5 text-primary">{tHeader('details')}</TableHead>
             </TableRow>
           </TableHeader>
           {orders ? (
@@ -83,7 +81,7 @@ export default function OrdersDashboard({
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="text-center text-base text-muted-foreground"
+                    className="text-center text-base text-muted-foreground tracking-tighter"
                   >
                     {t('table.empty')}
                   </TableCell>
