@@ -22,20 +22,19 @@ interface OrderItemRowProps {
 
 export function OrdersRow({
   orderWithItems: {
-    order: { id, status, total, createdAt, statusHistory },
+    order: { id, status, total, createdAt: rawCreatedAt, statusHistory },
     items,
   },
 }: OrderItemRowProps) {
+  const createdAt = new Date(rawCreatedAt);
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>(status);
   const [statusTransitions, setStatusTransitions] = useState<StatusHistory[]>(
-    statusHistory?.map(({ status, createdAt }) => ({
-      status,
-      createdAt: new Date(createdAt),
-    })) || []
+    statusHistory?.map(({ status, createdAt }) => ({ status, createdAt: new Date(createdAt) })) ||
+      []
   );
   const t = useTranslations('Dashboard.table.row');
 
-  const formattedDate = new Date(createdAt)
+  const formattedDate = createdAt
     .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
     .replace(/\//g, '-');
 
@@ -64,8 +63,8 @@ export function OrdersRow({
                 onStatusUpdate={handleStatusUpdate}
               >
                 <Button
-                  className="size-8 group bg-neutral-100 dark:bg-neutral-800 group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 text-primary outline-1 dark:outline-muted-foreground"
-                  variant="outline"
+                  className="size-8 group text-primary outline-1 outline-neutral-300 dark:outline-muted"
+                  variant="ghost"
                   size="icon"
                   type="button"
                 >
