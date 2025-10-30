@@ -7,7 +7,7 @@ export function EmptyOrder() {
   const t = useTranslations('Orders');
   return (
     <div className="mx-auto h-full flex max-w-5xl flex-1 flex-col justify-center items-center gap-y-6">
-      <p className="text-center md:text-lg text-muted-foreground tracking-tight">
+      <p className="text-center md:text-lg text-muted-foreground tracking-tighter">
         {t('emptyOrder')}
       </p>
       <Link

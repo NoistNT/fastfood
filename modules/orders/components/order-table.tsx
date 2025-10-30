@@ -30,15 +30,15 @@ export function OrderTable({
 }: OrderTableProps) {
   const t = useTranslations('Orders.table');
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700">
-      <Table className="w-full bg-white dark:bg-neutral-900">
-        <TableHeader className="sticky top-0 bg-neutral-100 dark:bg-neutral-800">
-          <TableRow className="text-neutral-600 dark:text-neutral-400">
-            <TableHead>{t('columns.product')}</TableHead>
-            <TableHead>{t('columns.price')}</TableHead>
-            <TableHead>{t('columns.quantity')}</TableHead>
-            <TableHead>{t('columns.subtotal')}</TableHead>
-            <TableHead className="w-0">{t('columns.remove')}</TableHead>
+    <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
+      <Table className="w-full">
+        <TableHeader className="sticky top-0 bg-white dark:bg-black tracking-tight">
+          <TableRow>
+            <TableHead className="w-2/5 text-primary">{t('columns.product')}</TableHead>
+            <TableHead className="w-1/5 text-primary">{t('columns.price')}</TableHead>
+            <TableHead className="w-1/5 text-primary">{t('columns.quantity')}</TableHead>
+            <TableHead className="w-1/5 text-primary">{t('columns.subtotal')}</TableHead>
+            <TableHead className="w-0 text-primary">{t('columns.remove')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -52,10 +52,20 @@ export function OrderTable({
             />
           ))}
         </TableBody>
-        <TableFooter className="sticky bottom-0 bg-neutral-100 dark:bg-neutral-800">
-          <TableRow className="font-semibold hover:bg-neutral-200 dark:hover:bg-neutral-700">
-            <TableCell colSpan={3}>{t('footer.total')}</TableCell>
-            <TableCell colSpan={4}>${toFixed(total)}</TableCell>
+        <TableFooter className="sticky bottom-0 bg-white dark:bg-black outline-1 outline-neutral-300 dark:outline-neutral-700">
+          <TableRow className="font-semibold">
+            <TableCell
+              colSpan={4}
+              className="text-primary"
+            >
+              {t('footer.total')}
+            </TableCell>
+            <TableCell
+              colSpan={1}
+              className="text-primary"
+            >
+              ${toFixed(total)}
+            </TableCell>
           </TableRow>
         </TableFooter>
       </Table>
