@@ -148,5 +148,11 @@
     },
     "tos": "Terms of Service",
     "privacyPolicy": "Privacy Policy"
+  },
+  "Common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "description": "Are you sure you want to remove",
+    "title": "Remove Item"
   }
 }

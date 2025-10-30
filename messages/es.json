@@ -148,5 +148,11 @@
     },
     "tos": "Términos y Condiciones",
     "privacyPolicy": "Política de Privacidad"
+  },
+  "Common": {
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "description": "¿Estás seguro que querés eliminar",
+    "title": "Eliminar Item"
   }
 }
