@@ -1,12 +1,13 @@
 'use server';
 
+import { revalidateTag, unstable_cache as cache } from 'next/cache';
 import { eq } from 'drizzle-orm';
 
 import type { ProductGeneralView, ProductWithIngredients } from '@/modules/products/types';
 import { db } from '@/db/drizzle';
 import { products } from '@/db/schema';
 
-export const findAll = async (): Promise<ProductGeneralView[]> => {
+const fetchAllProducts = async (): Promise<ProductGeneralView[]> => {
   return await db.query.products.findMany({
     columns: {
       id: true,
@@ -20,7 +21,7 @@ export const findAll = async (): Promise<ProductGeneralView[]> => {
   });
 };
 
-export const findOne = async (id: number): Promise<ProductWithIngredients | null> => {
+const fetchOneProduct = async (id: number): Promise<ProductWithIngredients | null> => {
   const productWithIngredients = await db.query.products.findFirst({
     where: eq(products.id, id),
     with: {
@@ -39,3 +40,11 @@ export const findOne = async (id: number): Promise<ProductWithIngredients | null
     ingredients: ingredients.map(({ ingredient }) => ingredient.name),
   };
 };
+
+const getCachedFindAll = cache(fetchAllProducts, ['products-findAll'], { tags: ['products'] });
+const getCachedFindOne = cache(fetchOneProduct, ['products-findOne'], { tags: ['products'] });
+
+export const findAll = getCachedFindAll;
+export const findOne = getCachedFindOne;
+
+export const revalidateProducts = async () => revalidateTag('products', 'max');
