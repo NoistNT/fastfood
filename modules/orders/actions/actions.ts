@@ -2,6 +2,7 @@
 
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { getTranslations } from 'next-intl/server';
+import { revalidateTag, unstable_cache as cache } from 'next/cache';
 
 import { db } from '@/db/drizzle';
 import { orderItem, orders, orderStatusHistory } from '@/db/schema';
@@ -82,9 +83,13 @@ export const create = async (newOrder: Omit<NewOrder, 'userId'>) => {
 
     await addStatus(validatedOrderId);
 
-    return await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
+    const createdItem = await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
       t(`errors.${key}`, values)
     );
+
+    revalidateTag('orders', 'max');
+
+    return createdItem;
   } catch (error) {
     console.error(error as Error);
     if (error instanceof Error && error.message.includes(t('errors.noUsers'))) {
@@ -118,45 +123,50 @@ export const ordersList = async (
   });
 };
 
-export const findAll = async (date: Date | undefined) => {
-  const t = await getTranslations('Orders.errors');
-  try {
-    const where = date
-      ? and(
-          gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
-          lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
-        )
-      : undefined;
+export const findAll = cache(
+  async (date: Date | undefined) => {
+    const t = await getTranslations('Orders.errors');
+    try {
+      const where = date
+        ? and(
+            gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
+            lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
+          )
+        : undefined;
 
-    const allOrders = await db.query.orders.findMany({
-      where,
-      with: {
-        orderItems: {
-          columns: { quantity: true },
-          with: { product: { columns: { name: true, price: true } } },
+      const allOrders = await db.query.orders.findMany({
+        where,
+        with: {
+          orderItems: {
+            columns: { quantity: true },
+            with: { product: { columns: { name: true, price: true } } },
+          },
+          statusHistory: { columns: { status: true, createdAt: true } },
         },
-        statusHistory: { columns: { status: true, createdAt: true } },
-      },
-    });
+        orderBy: orders.createdAt,
+      });
 
-    return allOrders.map((order) => ({
-      order: {
-        ...order,
-        orderItems: order.orderItems,
+      return allOrders.map((order) => ({
+        order: {
+          ...order,
+          orderItems: order.orderItems,
+          statusHistory: order.statusHistory,
+        },
+        items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
+          name,
+          quantity,
+          subtotal: (quantity * parseFloat(price)).toString(),
+        })),
         statusHistory: order.statusHistory,
-      },
-      items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
-        name,
-        quantity,
-        subtotal: (quantity * parseFloat(price)).toString(),
-      })),
-      statusHistory: order.statusHistory,
-    })) as DashboardOrderWithItems[];
-  } catch (error) {
-    console.error(error as Error);
-    throw new Error(t('noOrders'));
-  }
-};
+      })) as DashboardOrderWithItems[];
+    } catch (error) {
+      console.error(error as Error);
+      throw new Error(t('noOrders'));
+    }
+  },
+  ['orders-findAll'],
+  { tags: ['orders'] }
+);
 
 export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
   const t = await getTranslations('Orders.errors');
@@ -179,9 +189,13 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
       .set({ status: newStatus, updatedAt: new Date() })
       .where(eq(orders.id, orderId));
 
+    revalidateTag('orders', 'max');
+
     return { success: true };
   } catch (error) {
     console.error(error as Error);
     throw new Error(t('updateStatusError', { orderId }));
   }
 };
+
+export const revalidateOrders = async () => revalidateTag('orders', 'max');
