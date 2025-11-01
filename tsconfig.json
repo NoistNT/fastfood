@@ -30,8 +30,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "tailwind.config.ts",
-    "eslint.config.js",
-    ".next/dev/types/**/*.ts"
+    "eslint.config.ts",
+    ".next/dev/types/**/*.ts",
+    "types"
   ],
   "exclude": ["node_modules"]
 }
