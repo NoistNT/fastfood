@@ -24,27 +24,16 @@ const fetchAllProducts = async (): Promise<ProductGeneralView[]> => {
 const fetchOneProduct = async (id: number): Promise<ProductWithIngredients | null> => {
   const productWithIngredients = await db.query.products.findFirst({
     where: eq(products.id, id),
-    with: {
-      ingredients: {
-        with: { ingredient: { columns: { name: true } } },
-      },
-    },
+    with: { ingredients: { with: { ingredient: { columns: { name: true } } } } },
   });
 
   if (!productWithIngredients) return null;
-
   const { ingredients, ...product } = productWithIngredients;
 
-  return {
-    ...product,
-    ingredients: ingredients.map(({ ingredient }) => ingredient.name),
-  };
+  return { ...product, ingredients: ingredients.map(({ ingredient }) => ingredient.name) };
 };
 
-const getCachedFindAll = cache(fetchAllProducts, ['products-findAll'], { tags: ['products'] });
-const getCachedFindOne = cache(fetchOneProduct, ['products-findOne'], { tags: ['products'] });
-
-export const findAll = getCachedFindAll;
-export const findOne = getCachedFindOne;
+export const findAll = cache(fetchAllProducts, ['products-findAll'], { tags: ['products'] });
+export const findOne = cache(fetchOneProduct, ['products-findOne'], { tags: ['products'] });
 
 export const revalidateProducts = async () => revalidateTag('products', 'max');
