@@ -1,15 +1,16 @@
+import type { Linter } from 'eslint';
+
 import js from '@eslint/js';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import prettier from 'eslint-config-prettier';
-import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
+import next from 'eslint-config-next';
 
 export default [
   js.configs.recommended,
+  ...next,
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -31,16 +32,11 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
-      'react': reactPlugin,
-      'react-hooks': reactHooksPlugin,
       'react-refresh': reactRefreshPlugin,
       'prettier': prettierPlugin,
-      'import': importPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      ...reactPlugin.configs.recommended.rules,
-      ...reactHooksPlugin.configs.recommended.rules,
       ...prettier.rules,
       'prettier/prettier': ['error'],
       'no-console': ['warn'],
@@ -63,7 +59,7 @@ export default [
           'groups': ['type', 'builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
           'pathGroups': [
             {
-              pattern: '@/**',
+              pattern: '@/*',
               group: 'internal',
               position: 'after',
             },
@@ -84,4 +80,4 @@ export default [
   {
     ignores: ['.next/**', 'node_modules/**'],
   },
-];
+] as Linter.Config[];
