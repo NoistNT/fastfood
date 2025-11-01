@@ -93,9 +93,11 @@ export function OrderItemRow({
         title={t('title')}
         description={
           <Fragment>
-            {t('description')} <span className="font-bold text-foreground">{name}</span>?
+            {t('description')} <span className="font-bold text-foreground">{name}?</span>
           </Fragment>
         }
+        cancelText={t('cancel')}
+        confirmText={t('confirm')}
       />
     </Fragment>
   );

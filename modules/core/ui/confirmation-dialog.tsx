@@ -1,5 +1,4 @@
 import { Loader2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
 import { type ReactNode } from 'react';
 
 import { Button } from '@/modules/core/ui/button';
@@ -19,6 +18,8 @@ interface ConfirmationDialogProps {
   description: ReactNode;
   onConfirm: () => void;
   isLoading?: boolean;
+  cancelText: string;
+  confirmText: string;
 }
 
 export function ConfirmationDialog({
@@ -28,9 +29,9 @@ export function ConfirmationDialog({
   description,
   onConfirm,
   isLoading = false,
+  cancelText,
+  confirmText,
 }: ConfirmationDialogProps) {
-  const t = useTranslations('Common');
-
   return (
     <Dialog
       open={open}
@@ -49,7 +50,7 @@ export function ConfirmationDialog({
             disabled={isLoading}
             size="sm"
           >
-            {t('cancel')}
+            {cancelText}
           </Button>
           <Button
             className="w-full bg-violet-500 hover:bg-violet-400 dark:bg-violet-900 dark:hover:bg-violet-800 dark:text-foreground"
@@ -63,7 +64,7 @@ export function ConfirmationDialog({
                 <Loader2 className="mr-2 size-4 animate-spin" />
               </span>
             ) : (
-              t('confirm')
+              confirmText
             )}
           </Button>
         </DialogFooter>
