@@ -1,3 +1,5 @@
+import type { OrderStatus } from '@/modules/orders/types';
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -5,8 +7,8 @@ import { Button } from '@/modules/core/ui/button';
 import { StatusUpdateConfirmation } from '@/modules/dashboard/components/status-update-confirmation';
 
 interface Props {
-  nextStatus: string;
-  currentStatus: string;
+  nextStatus: OrderStatus;
+  currentStatus: OrderStatus;
   isChangingStatus: boolean;
   handleUpdateStatus: () => void;
 }
