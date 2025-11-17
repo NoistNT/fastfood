@@ -1,5 +1,3 @@
-import type { Metadata } from 'next';
-
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { Inter as FontSans } from 'next/font/google';
@@ -12,31 +10,20 @@ import { BackgroundWall } from '@/modules/core/ui/background-wall';
 import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { Toaster } from '@/modules/core/ui/toaster';
 
-import './globals.css';
+import '@/app/globals.css';
 
 const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
 });
 
-export const metadata: Metadata = {
-  title: 'Fast Food',
-  description: 'Fast food app',
-};
-
-export default async function RootLayout({
-  children,
-  params: { locale },
-}: Readonly<{
-  children: React.ReactNode;
-  params: { locale: string };
-}>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const messages = await getMessages();
 
   return (
     <html
       suppressHydrationWarning
-      lang={locale}
+      lang="en"
     >
       <NextIntlClientProvider messages={messages}>
         <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}>
@@ -52,7 +39,7 @@ export default async function RootLayout({
             </div>
             <Header />
             <BackgroundWall />
-            <main className="flex-grow">{children}</main>
+            <main className="grow">{children}</main>
             <Footer />
           </ThemeProvider>
         </body>
