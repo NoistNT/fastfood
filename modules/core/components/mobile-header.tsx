@@ -2,14 +2,8 @@ import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/modules/core/ui/sheet';
+import { SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/modules/core/ui/sheet';
+import { Sheet, SheetTrigger } from '@/modules/core/ui/utils-sheet';
 import { SheetItem } from '@/modules/core/ui/sheet-item';
 
 export function MobileHeader() {

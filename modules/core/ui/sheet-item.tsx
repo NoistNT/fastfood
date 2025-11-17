@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { Button } from '@/modules/core/ui/button';
-import { SheetClose } from '@/modules/core/ui/sheet';
+import { SheetClose } from '@/modules/core/ui/utils-sheet';
 
 interface Props {
   title: string;
