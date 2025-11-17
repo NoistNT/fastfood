@@ -123,46 +123,46 @@ export const ordersList = async (
   });
 };
 
-export const findAll = cache(
-  async (date: Date | undefined) => {
-    const t = await getTranslations('Orders.errors');
-    try {
-      const where = date
-        ? and(
-            gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
-            lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
-          )
-        : undefined;
+export async function findAll(date?: Date): Promise<DashboardOrderWithItems[]> {
+  const t = await getTranslations('Orders.errors');
+  try {
+    return await cachedFindAll(date);
+  } catch (err) {
+    console.error(err);
+    throw new Error(t('noOrders'));
+  }
+}
 
-      const allOrders = await db.query.orders.findMany({
-        where,
-        with: {
-          orderItems: {
-            columns: { quantity: true },
-            with: { product: { columns: { name: true, price: true } } },
-          },
-          statusHistory: { columns: { status: true, createdAt: true } },
-        },
-        orderBy: orders.createdAt,
-      });
+const cachedFindAll = cache(
+  async (date?: Date): Promise<DashboardOrderWithItems[]> => {
+    const where = date
+      ? and(
+          gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
+          lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
+        )
+      : undefined;
 
-      return allOrders.map((order) => ({
-        order: {
-          ...order,
-          orderItems: order.orderItems,
-          statusHistory: order.statusHistory,
+    const allOrders = await db.query.orders.findMany({
+      where,
+      with: {
+        orderItems: {
+          columns: { quantity: true },
+          with: { product: { columns: { name: true, price: true } } },
         },
-        items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
-          name,
-          quantity,
-          subtotal: (quantity * parseFloat(price)).toString(),
-        })),
-        statusHistory: order.statusHistory,
-      })) as DashboardOrderWithItems[];
-    } catch (error) {
-      console.error(error as Error);
-      throw new Error(t('noOrders'));
-    }
+        statusHistory: { columns: { status: true, createdAt: true } },
+      },
+      orderBy: orders.createdAt,
+    });
+
+    return allOrders.map((order) => ({
+      order: { ...order, statusHistory: order.statusHistory },
+      items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
+        name,
+        quantity,
+        subtotal: (quantity * parseFloat(price)).toString(),
+      })),
+      statusHistory: order.statusHistory,
+    })) as DashboardOrderWithItems[];
   },
   ['orders-findAll'],
   { tags: ['orders'] }
