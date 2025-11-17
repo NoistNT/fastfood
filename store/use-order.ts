@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-
 import type { Item } from '@/modules/orders/types';
+
+import { create } from 'zustand';
 
 interface OrderStore {
   items: Item[];

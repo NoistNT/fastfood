@@ -1,6 +1,7 @@
-import { BASE_URL } from '@/constants';
 import { findAll, findOne } from '@/modules/products/actions/actions';
 import DetailCard from '@/modules/products/components/detail-card';
+
+import { BASE_URL } from '@/constants';
 
 interface Props {
   params: Promise<{ id: number }>;

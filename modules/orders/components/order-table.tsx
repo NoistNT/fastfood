@@ -1,3 +1,5 @@
+import type { Item } from '@/modules/orders/types';
+
 import { useTranslations } from 'next-intl';
 
 import {
@@ -10,7 +12,6 @@ import {
   TableRow,
 } from '@/modules/core/ui/table';
 import { OrderItemRow } from '@/modules/orders/components/order-item-row';
-import type { Item } from '@/modules/orders/types';
 import { toFixed } from '@/modules/orders/utils';
 
 interface OrderTableProps {

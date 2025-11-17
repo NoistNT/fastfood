@@ -1,10 +1,11 @@
 'use server';
 
+import type { User } from '@/modules/users/types';
+
 import { eq } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
-import type { User } from '@/modules/users/types';
 
 export const findAllUsers = async (): Promise<User[]> => {
   return await db.query.users.findMany();

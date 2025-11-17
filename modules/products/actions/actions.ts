@@ -1,9 +1,10 @@
 'use server';
 
+import type { ProductGeneralView, ProductWithIngredients } from '@/modules/products/types';
+
 import { revalidateTag, unstable_cache as cache } from 'next/cache';
 import { eq } from 'drizzle-orm';
 
-import type { ProductGeneralView, ProductWithIngredients } from '@/modules/products/types';
 import { db } from '@/db/drizzle';
 import { products } from '@/db/schema';
 

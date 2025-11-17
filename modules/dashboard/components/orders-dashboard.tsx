@@ -1,9 +1,10 @@
 'use client';
 
+import type { DashboardOrderWithItems } from '@/modules/orders/types';
+
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
 
-import type { DashboardOrderWithItems } from '@/modules/orders/types';
 import {
   Table,
   TableBody,

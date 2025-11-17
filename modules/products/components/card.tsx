@@ -1,9 +1,10 @@
 'use client';
 
+import type { ProductGeneralView } from '@/modules/products/types';
+
 import Image from 'next/image';
 
 import { CardFooter } from '@/modules/products/components/card-footer';
-import type { ProductGeneralView } from '@/modules/products/types';
 
 interface Props {
   product: ProductGeneralView;

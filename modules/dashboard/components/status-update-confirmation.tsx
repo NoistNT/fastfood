@@ -1,9 +1,10 @@
+import type { OrderStatus } from '@/modules/orders/types';
+
 import { useTranslations } from 'next-intl';
 import { Fragment } from 'react/jsx-runtime';
 
 import { ConfirmationDialog } from '@/modules/core/ui/confirmation-dialog';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
-import type { OrderStatus } from '@/modules/orders/types';
 
 interface Props {
   open: boolean;

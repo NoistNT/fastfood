@@ -1,5 +1,7 @@
 'use client';
 
+import type { DashboardOrderWithItems, OrderStatus, StatusHistory } from '@/modules/orders/types';
+
 import { FileTextIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -14,7 +16,6 @@ import {
 } from '@/modules/core/ui/tooltip';
 import { OrderDetailsDialog } from '@/modules/orders/components/order-details-dialog';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
-import type { DashboardOrderWithItems, OrderStatus, StatusHistory } from '@/modules/orders/types';
 
 interface OrderItemRowProps {
   orderWithItems: DashboardOrderWithItems;

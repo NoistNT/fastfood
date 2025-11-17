@@ -1,3 +1,5 @@
+import type { Item } from '@/modules/orders/types';
+
 import { Minus, Plus, Trash2Icon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
@@ -6,7 +8,6 @@ import { Fragment, useState } from 'react';
 import { Button } from '@/modules/core/ui/button';
 import { ConfirmationDialog } from '@/modules/core/ui/confirmation-dialog';
 import { TableCell, TableRow } from '@/modules/core/ui/table';
-import type { Item } from '@/modules/orders/types';
 import { toFixed } from '@/modules/orders/utils';
 
 interface OrderItemRowProps {
