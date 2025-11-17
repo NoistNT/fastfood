@@ -123,6 +123,12 @@
     "title": "Algo salió mal"
   },
 
+  "NotFound": {
+    "title": "404 PAGE NOT FOUND",
+    "description": "La página que estás buscando no existe.",
+    "goHome": "Ir a Inicio"
+  },
+
   "Footer": {
     "title": "QVC",
     "description": "Los mejores sandwiches en la ciudad!",

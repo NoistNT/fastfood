@@ -123,6 +123,12 @@
     "title": "Something went wrong"
   },
 
+  "NotFound": {
+    "title": "404 PAGE NOT FOUND",
+    "description": "The page you are looking for does not exist.",
+    "goHome": "Go Home"
+  },
+
   "Footer": {
     "title": "FastFood",
     "description": "Serving the best fast food in town!",
