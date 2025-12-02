@@ -37,8 +37,8 @@ export async function POST(req: Request) {
 
     const response = await new Preference(mercadopago).create({ body: preference });
     return NextResponse.json(response);
-  } catch (error) {
-    console.error('Error creating payment:', error);
+  } catch (_error) {
+    // console.error('Error creating payment:', error);
     return NextResponse.json({ error: 'Failed to create payment' }, { status: 500 });
   }
 }
