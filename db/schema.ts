@@ -4,15 +4,22 @@ import {
   index,
   integer,
   numeric,
+  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
   uuid,
-  varchar,
 } from 'drizzle-orm/pg-core';
 
 import { ORDER_STATUS } from '@/modules/orders/types';
+
+export const orderStatusEnum = pgEnum('order_status', [
+  ORDER_STATUS.PENDING,
+  ORDER_STATUS.PROCESSING,
+  ORDER_STATUS.SHIPPED,
+  ORDER_STATUS.DELIVERED,
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().unique().defaultRandom(),
@@ -22,9 +29,7 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
-  orders: many(orders),
-}));
+export const usersRelations = relations(users, ({ many }) => ({ orders: many(orders) }));
 
 export const productIngredients = pgTable(
   'product_ingredients',
@@ -88,7 +93,7 @@ export const orders = pgTable('orders', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   total: numeric('total', { precision: 10, scale: 2 }).notNull(),
-  status: varchar('status').notNull().default(ORDER_STATUS.PENDING),
+  status: orderStatusEnum('status').notNull().default(ORDER_STATUS.PENDING),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -125,7 +130,7 @@ export const orderStatusHistory = pgTable('order_status_history', {
   orderId: uuid('order_id')
     .notNull()
     .references(() => orders.id, { onDelete: 'cascade' }),
-  status: varchar('status').notNull(),
+  status: orderStatusEnum('status').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
