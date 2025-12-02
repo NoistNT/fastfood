@@ -1,58 +1,30 @@
-'use client';
+import { getTranslations } from 'next-intl/server';
+import { Suspense } from 'react';
 
-import type { DashboardOrderWithItems } from '@/modules/orders/types';
-
-import { useTranslations } from 'next-intl';
-import { useSearchParams, useRouter } from 'next/navigation';
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/modules/core/ui/table';
-import { OrdersRow } from '@/modules/orders/components/orders-row';
+import { Table, TableHead, TableHeader, TableRow } from '@/modules/core/ui/table';
 import DashboardSkeleton from '@/modules/dashboard/components/dashboard-skeleton';
-import DatePicker from '@/modules/dashboard/components/date-picker';
+import DatePickerClient from '@/modules/dashboard/components/date-picker-client';
+import OrdersTable from '@/modules/dashboard/components/orders-table';
+import TotalSales from '@/modules/dashboard/components/total-sales';
+import TotalSalesSkeleton from '@/modules/dashboard/components/total-sales-skeleton';
 
-export default function OrdersDashboard({
-  orders,
-  totalSales,
-}: {
-  orders: DashboardOrderWithItems[];
-  totalSales: number;
-}) {
-  const t = useTranslations('Dashboard');
-  const tHeader = useTranslations('Dashboard.table.header');
-  const searchParams = useSearchParams();
-  const router = useRouter();
+interface Props {
+  date: Date;
+}
 
-  const date = new Date(searchParams.get('date') || new Date());
-
-  const formattedTotalSales = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(totalSales);
-
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) router.push(`/dashboard?date=${date.toISOString()}`);
-    else router.push('/dashboard');
-  };
+export default async function OrdersDashboard({ date }: Props) {
+  const t = await getTranslations('Dashboard');
+  const tHeader = await getTranslations('Dashboard.table.header');
 
   return (
     <div className="mx-auto flex h-full max-w-5xl flex-1 flex-col py-8 px-1.5">
       <div className="flex items-center justify-between mb-4 md:mb-5">
         <h1 className="text-lg md:text-xl font-medium tracking-tighter">{t('title')}</h1>
         <div className="flex items-center gap-6">
-          <span className="text-primary text-sm font-medium bg-primary-foreground px-2 py-2 rounded-md shadow-xs">
-            {date && `${t('totalSales')}: ${formattedTotalSales}`}
-          </span>
-          <DatePicker
-            date={date}
-            setDate={handleDateChange}
-          />
+          <Suspense fallback={<TotalSalesSkeleton />}>
+            <TotalSales date={date} />
+          </Suspense>
+          <DatePickerClient date={date} />
         </div>
       </div>
 
@@ -67,31 +39,9 @@ export default function OrdersDashboard({
               <TableHead className="w-1/5 text-primary">{tHeader('details')}</TableHead>
             </TableRow>
           </TableHeader>
-          {orders ? (
-            orders.length > 0 ? (
-              <TableBody>
-                {orders.map((dashboardOrderWithItems) => (
-                  <OrdersRow
-                    key={dashboardOrderWithItems.order.id}
-                    orderWithItems={dashboardOrderWithItems}
-                  />
-                ))}
-              </TableBody>
-            ) : (
-              <TableBody>
-                <TableRow>
-                  <TableCell
-                    colSpan={5}
-                    className="text-center text-base text-muted-foreground tracking-tighter"
-                  >
-                    {t('table.empty')}
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            )
-          ) : (
-            <DashboardSkeleton />
-          )}
+          <Suspense fallback={<DashboardSkeleton />}>
+            <OrdersTable date={date} />
+          </Suspense>
         </Table>
       </div>
     </div>
