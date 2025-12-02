@@ -8,7 +8,6 @@ import { ToastAction } from '@/modules/core/ui/toast';
 import { EmptyOrder } from '@/modules/orders/components/empty-order';
 import { OrderTable } from '@/modules/orders/components/order-table';
 import { SubmitOrder } from '@/modules/orders/components/submit-order';
-import { ORDER_STATUS } from '@/modules/orders/types';
 import { calculateTotal, submitOrder } from '@/modules/orders/utils';
 import { useOrderStore } from '@/store/use-order';
 
@@ -23,20 +22,12 @@ export default function Page() {
   const handleSubmit = async () => {
     startTransition(async () => {
       try {
-        await submitOrder(
-          {
-            items,
-            total,
-            statusHistory: [{ status: ORDER_STATUS.PENDING, createdAt: new Date() }],
-          },
-          clearOrder
-        );
+        await submitOrder({ items, total }, clearOrder);
         toast({
           title: t('submitToast.successTitle'),
           description: t('submitToast.successDescription'),
         });
-      } catch (error) {
-        console.error('Error submitting order:', error);
+      } catch (_error) {
         toast({
           title: t('submitToast.errorTitle'),
           description: t('submitToast.errorDescription'),
@@ -67,8 +58,7 @@ export default function Page() {
         });
         const data = await response.json();
         window.location.href = data.init_point;
-      } catch (error) {
-        console.error('Error in handlePay:', error);
+      } catch (_error) {
         toast({
           title: t('handlePayToast.errorTitle'),
           description: t('handlePayToast.errorDescription'),

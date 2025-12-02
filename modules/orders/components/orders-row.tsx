@@ -1,6 +1,6 @@
 'use client';
 
-import type { DashboardOrderWithItems, OrderStatus, StatusHistory } from '@/modules/orders/types';
+import type { DashboardOrderView, OrderStatus, OrderStatusHistory } from '@/modules/orders/types';
 
 import { FileTextIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -18,7 +18,7 @@ import { OrderDetailsDialog } from '@/modules/orders/components/order-details-di
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 
 interface OrderItemRowProps {
-  orderWithItems: DashboardOrderWithItems;
+  orderWithItems: DashboardOrderView;
 }
 
 export function OrdersRow({
@@ -29,7 +29,9 @@ export function OrdersRow({
 }: OrderItemRowProps) {
   const createdAt = new Date(rawCreatedAt);
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>(status);
-  const [statusTransitions, setStatusTransitions] = useState<StatusHistory[]>(
+  const [statusTransitions, setStatusTransitions] = useState<
+    Pick<OrderStatusHistory, 'status' | 'createdAt'>[]
+  >(
     statusHistory?.map(({ status, createdAt }) => ({ status, createdAt: new Date(createdAt) })) ||
       []
   );

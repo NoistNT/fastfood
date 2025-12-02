@@ -1,4 +1,4 @@
-import type { Item } from '@/modules/orders/types';
+import type { CartItem } from '@/modules/orders/types';
 
 import { useTranslations } from 'next-intl';
 
@@ -15,7 +15,7 @@ import { OrderItemRow } from '@/modules/orders/components/order-item-row';
 import { toFixed } from '@/modules/orders/utils';
 
 interface OrderTableProps {
-  items: Item[];
+  items: CartItem[];
   incrementQuantity: (id: number) => void;
   decrementQuantity: (id: number) => void;
   removeItem: (id: number) => void;

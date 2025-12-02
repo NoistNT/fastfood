@@ -1,7 +1,6 @@
-import type { InferSelectModel } from 'drizzle-orm';
-import type { products } from '@/db/schema';
+import type { Product } from '@/types/db';
 
-export type Product = InferSelectModel<typeof products>;
+export type { Product };
 
 export type ProductGeneralView = Omit<Product, 'isVegan' | 'isVegetarian'>;
 

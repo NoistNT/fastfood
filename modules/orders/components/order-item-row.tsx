@@ -1,4 +1,4 @@
-import type { Item } from '@/modules/orders/types';
+import type { CartItem } from '@/modules/orders/types';
 
 import { Minus, Plus, Trash2Icon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -12,7 +12,7 @@ import { toFixed } from '@/modules/orders/utils';
 
 interface OrderItemRowProps {
   key: number;
-  item: Item;
+  item: CartItem;
   incrementQuantity: (productId: number) => void;
   decrementQuantity: (productId: number) => void;
   removeItem: (productId: number) => void;

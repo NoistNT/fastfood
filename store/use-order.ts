@@ -1,10 +1,10 @@
-import type { Item } from '@/modules/orders/types';
+import type { CartItem } from '@/modules/orders/types';
 
 import { create } from 'zustand';
 
 interface OrderStore {
-  items: Item[];
-  addItem: (item: Item) => void;
+  items: CartItem[];
+  addItem: (item: CartItem) => void;
   incrementQuantity: (productId: number) => void;
   decrementQuantity: (productId: number) => void;
   removeItem: (productId: number) => void;

@@ -39,11 +39,11 @@ export const getOrderSchemas = (t: (key: string) => string) => {
     statusHistory: z
       .array(
         z.object({
-          status: z.enum(ORDER_STATUS),
+          status: z.enum(Object.values(ORDER_STATUS) as [OrderStatus, ...OrderStatus[]]),
           createdAt: z.date(),
         })
       )
-      .nonempty(t('statusNonEmpty')),
+      .optional(),
   });
 
   return { OrderId, CreateItem, CreateNewOrder };

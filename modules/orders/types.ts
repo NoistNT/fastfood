@@ -1,23 +1,5 @@
-export interface FindManyResponse {
-  id: string;
-  total: string;
-  status: string;
-  createdAt: Date;
-  orderItems: {
-    quantity: number;
-    product: {
-      name: string;
-      price: string;
-    };
-  }[];
-}
-
-export interface Item {
-  productId: number;
-  name: string;
-  price: string;
-  quantity: number;
-}
+import type { Order, OrderStatusHistory, Product, NewOrder, NewOrderItem } from '@/types/db';
+export type { Order, OrderStatusHistory, Product, NewOrder, NewOrderItem };
 
 export const ORDER_STATUS = {
   PENDING: 'PENDING',
@@ -26,37 +8,48 @@ export const ORDER_STATUS = {
   DELIVERED: 'DELIVERED',
 } as const;
 
-export type OrderStatus = keyof typeof ORDER_STATUS;
-
-export type NewOrderItem = Pick<Item, 'productId' | 'quantity'>;
-
-export interface StatusHistory {
-  status: OrderStatus;
-  createdAt: Date;
-}
-
-export interface NewOrder {
-  userId: string;
-  items: NewOrderItem[];
-  total: string;
-  statusHistory: StatusHistory[];
-}
-
-export type Order = Omit<FindManyResponse, 'orderItems'> & {
-  statusHistory: StatusHistory[];
-};
-
-export interface OrderItem {
-  name: string;
+// View model for a product in an order context
+export interface OrderProductView {
+  id: Product['id'];
+  name: Product['name'];
   quantity: number;
   subtotal: string;
 }
 
-export interface OrderWithItems {
-  order: Order;
-  items: OrderItem[];
+// View model for an order
+export interface OrderView extends Order {
+  statusHistory: OrderStatusHistory[];
 }
 
-export interface DashboardOrderWithItems extends OrderWithItems {
-  order: Order & StatusHistory;
+// View model for an order with its items (products)
+export interface OrderWithProductsView {
+  order: OrderView;
+  items: OrderProductView[];
+}
+
+// Type for the status of an order
+export type OrderStatus = keyof typeof ORDER_STATUS;
+export type OrderNextStatus = OrderStatus | undefined;
+
+// Type for the dashboard, which might have some extra properties
+export type DashboardOrderView = OrderWithProductsView;
+
+// Type for the shopping cart
+export interface CartItem {
+  productId: number;
+  name: string;
+  price: string;
+  quantity: number;
+}
+
+// Types for creating new orders
+export interface NewOrderRequestItem {
+  productId: NewOrderItem['productId'];
+  quantity: NewOrderItem['quantity'];
+}
+export interface NewOrderRequest extends Omit<
+  NewOrder,
+  'id' | 'status' | 'createdAt' | 'updatedAt'
+> {
+  items: NewOrderRequestItem[];
 }
