@@ -14,43 +14,28 @@ import {
 } from '@/modules/orders/helpers';
 import {
   ORDER_STATUS,
-  type DashboardOrderWithItems,
-  type FindManyResponse,
-  type NewOrder,
-  type NewOrderItem,
+  type DashboardOrderView,
+  type NewOrderRequest,
   type OrderStatus,
 } from '@/modules/orders/types';
 
 const createItem = async (
   orderId: string,
-  newOrder: NewOrder,
+  newOrder: NewOrderRequest,
   t: (key: string, values?: { orderId: string }) => string
 ) => {
   try {
-    const [newOrderItem]: NewOrderItem[] = await db
+    await db
       .insert(orderItem)
-      .values(
-        newOrder.items.map(({ productId, quantity }) => ({
-          orderId,
-          productId,
-          quantity,
-        }))
-      )
-      .returning({
-        orderId: orderItem.orderId,
-        productId: orderItem.productId,
-        quantity: orderItem.quantity,
-      });
-
-    return newOrderItem;
-  } catch (error) {
-    console.error(error as Error);
+      .values(newOrder.items.map(({ productId, quantity }) => ({ orderId, productId, quantity })));
+  } catch (_error) {
     throw new Error(t('createItemError', { orderId }));
   }
 };
 
-const insertAndGetOrderId = async (newOrder: NewOrder) => {
-  return await db.insert(orders).values(newOrder).returning({ id: orders.id });
+const insertAndGetOrderId = async (newOrder: NewOrderRequest) => {
+  const { items: _items, ...orderData } = newOrder;
+  return await db.insert(orders).values(orderData).returning({ id: orders.id });
 };
 
 const addStatus = async (orderId: string) => {
@@ -61,80 +46,43 @@ const addStatus = async (orderId: string) => {
   });
 };
 
-export const create = async (newOrder: Omit<NewOrder, 'userId'>) => {
+export const create = async (newOrderData: Omit<NewOrderRequest, 'userId'>) => {
   const t = await getTranslations('Orders');
   const { OrderId, CreateNewOrder } = getOrderSchemas((key) => t(`helpers.${key}`));
   try {
-    // Fetch an existing user ID from the database to associate with the order.
-    // This is a temporary solution until we have user authentication in place.
     const existingUser = await db.query.users.findFirst();
-    if (!existingUser) {
-      throw new Error(t('errors.noUsers'));
-    }
+    if (!existingUser) throw new Error(t('errors.noUsers'));
 
-    const validatedNewOrder = validateData(CreateNewOrder, {
-      ...newOrder,
-      userId: existingUser.id, // Use an existing user ID
-      total: newOrder.total,
-    });
+    const newOrder: NewOrderRequest = { ...newOrderData, userId: existingUser.id };
+    const validatedNewOrder = validateData(CreateNewOrder, newOrder);
 
     const [orderId] = await insertAndGetOrderId(validatedNewOrder);
     const validatedOrderId = validateData(OrderId, orderId.id);
 
     await addStatus(validatedOrderId);
 
-    const createdItem = await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
+    await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
       t(`errors.${key}`, values)
     );
 
     revalidateTag('orders', 'max');
-
-    return createdItem;
   } catch (error) {
-    console.error(error as Error);
-    if (error instanceof Error && error.message.includes(t('errors.noUsers'))) {
-      throw error;
-    }
+    if (error instanceof Error && error.message.includes(t('errors.noUsers'))) throw error;
     throw new Error(t('errors.createOrderError'));
   }
 };
 
-export const ordersList = async (
-  orders: FindManyResponse[]
-): Promise<DashboardOrderWithItems[]> => {
-  const t = await getTranslations('Orders.errors');
-
-  return orders.map((order) => {
-    if (!isValidStatus(order.status)) throw new Error(t('invalidStatus'));
-
-    return {
-      order: {
-        ...order,
-        statusHistory: [],
-        status: order.status,
-        createdAt: order.createdAt,
-      },
-      items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
-        name,
-        quantity,
-        subtotal: (quantity * parseFloat(price)).toString(),
-      })),
-    };
-  });
-};
-
-export async function findAll(date?: Date): Promise<DashboardOrderWithItems[]> {
+export async function findAll(date?: Date): Promise<DashboardOrderView[]> {
   const t = await getTranslations('Orders.errors');
   try {
     return await cachedFindAll(date);
-  } catch (err) {
-    console.error(err);
+  } catch (_error) {
     throw new Error(t('noOrders'));
   }
 }
 
 const cachedFindAll = cache(
-  async (date?: Date): Promise<DashboardOrderWithItems[]> => {
+  async (date?: Date): Promise<DashboardOrderView[]> => {
     const where = date
       ? and(
           gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
@@ -147,22 +95,24 @@ const cachedFindAll = cache(
       with: {
         orderItems: {
           columns: { quantity: true },
-          with: { product: { columns: { name: true, price: true } } },
+          with: { product: { columns: { id: true, name: true, price: true } } },
         },
-        statusHistory: { columns: { status: true, createdAt: true } },
+        statusHistory: {
+          columns: { status: true, createdAt: true, id: true, orderId: true, updatedAt: true },
+        },
       },
       orderBy: orders.createdAt,
     });
 
     return allOrders.map((order) => ({
       order: { ...order, statusHistory: order.statusHistory },
-      items: order.orderItems.map(({ product: { name, price }, quantity }) => ({
+      items: order.orderItems.map(({ product: { id, name, price }, quantity }) => ({
+        id,
         name,
         quantity,
         subtotal: (quantity * parseFloat(price)).toString(),
       })),
-      statusHistory: order.statusHistory,
-    })) as DashboardOrderWithItems[];
+    }));
   },
   ['orders-findAll'],
   { tags: ['orders'] }
@@ -173,15 +123,9 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
   try {
     if (!isValidStatus(newStatus)) throw new Error(t('invalidStatus'));
 
-    const order = await db.query.orders.findFirst({
-      where: eq(orders.id, orderId),
-    });
-
+    const order = await db.query.orders.findFirst({ where: eq(orders.id, orderId) });
     if (!order) throw new Error(t('orderNotFound'));
-
-    if (!canTransition(order.status as OrderStatus, newStatus)) {
-      throw new Error(t('invalidTransition'));
-    }
+    if (!canTransition(order.status, newStatus)) throw new Error(t('invalidTransition'));
 
     await db.insert(orderStatusHistory).values({ orderId, status: newStatus });
     await db
@@ -192,9 +136,8 @@ export const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
     revalidateTag('orders', 'max');
 
     return { success: true };
-  } catch (error) {
-    console.error(error as Error);
-    throw new Error(t('updateStatusError', { orderId }));
+  } catch (_error) {
+    throw new Error(t('errors.updateStatusError', { orderId }));
   }
 };
 

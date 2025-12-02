@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -13,16 +14,18 @@ import { UpdateStatusButton } from '@/modules/dashboard/components/update-status
 import { updateStatus } from '@/modules/orders/actions/actions';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 import { canTransition } from '@/modules/orders/helpers';
-import { ORDER_STATUS, type OrderItem, type OrderStatus } from '@/modules/orders/types';
+import {
+  ORDER_STATUS,
+  type OrderProductView,
+  type OrderStatus,
+  type OrderStatusHistory,
+} from '@/modules/orders/types';
 
 interface Props {
   id: string;
-  items: Pick<OrderItem, 'name' | 'quantity'>[];
+  items: OrderProductView[];
   currentStatus: OrderStatus;
-  statusHistory: {
-    status: OrderStatus;
-    createdAt: Date;
-  }[];
+  statusHistory: Pick<OrderStatusHistory, 'status' | 'createdAt'>[];
   onStatusUpdate: (newStatus: OrderStatus) => void;
   children: React.ReactNode;
 }
@@ -79,12 +82,17 @@ export function OrderDetailsDialog({
           <div>
             <h3 className="mb-4 font-medium tracking-tighter">{t('items')}</h3>
             <ul className="w-full space-y-2">
-              {items.map(({ name, quantity }) => (
+              {items.map(({ id, name, quantity }) => (
                 <li
-                  key={name}
+                  key={id}
                   className="flex justify-between rounded-md text-xs bg-neutral-200 p-2 text-muted-foreground dark:bg-neutral-800"
                 >
-                  <span className="text-xs text-muted-foreground font-medium">{name}</span>
+                  <Link
+                    href={`/products/${id}`}
+                    className="text-xs text-muted-foreground font-medium hover:underline"
+                  >
+                    {name}
+                  </Link>
                   <span className="font-medium">x {quantity}</span>
                 </li>
               ))}
@@ -126,7 +134,7 @@ export function OrderDetailsDialog({
           currentStatus={currentStatus}
           handleUpdateStatus={handleUpdateStatus}
           isChangingStatus={isChangingStatus}
-          nextStatus={nextStatus as OrderStatus}
+          nextStatus={nextStatus}
         />
       </DialogContent>
     </Dialog>
