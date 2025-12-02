@@ -18,21 +18,11 @@ export type ToasterToast = Omit<ToastProps, 'ref'> & {
 
 type ToastInput = Omit<ToasterToast, 'id'>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const actionTypes = {
-  ADD_TOAST: 'ADD_TOAST',
-  UPDATE_TOAST: 'UPDATE_TOAST',
-  DISMISS_TOAST: 'DISMISS_TOAST',
-  REMOVE_TOAST: 'REMOVE_TOAST',
-} as const;
-
-type ActionType = typeof actionTypes;
-
 type Action =
-  | { type: ActionType['ADD_TOAST']; toast: ToasterToast }
-  | { type: ActionType['UPDATE_TOAST']; toast: Partial<ToasterToast> }
-  | { type: ActionType['DISMISS_TOAST']; toastId?: string }
-  | { type: ActionType['REMOVE_TOAST']; toastId?: string };
+  | { type: 'ADD_TOAST'; toast: ToasterToast }
+  | { type: 'UPDATE_TOAST'; toast: Partial<ToasterToast> }
+  | { type: 'DISMISS_TOAST'; toastId?: string }
+  | { type: 'REMOVE_TOAST'; toastId?: string };
 
 interface State {
   toasts: ToasterToast[];
@@ -40,7 +30,7 @@ interface State {
 
 const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
-const addToRemoveQueue = (toastId: string, dispatch: (action: Action) => void) => {
+const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) return;
 
   const timeout = setTimeout(() => {
@@ -64,12 +54,6 @@ export const reducer = (state: State, action: Action): State => {
 
     case 'DISMISS_TOAST': {
       const { toastId } = action;
-      if (toastId) {
-        addToRemoveQueue(toastId, dispatch);
-      } else {
-        state.toasts.forEach((toast) => addToRemoveQueue(toast.id, dispatch));
-      }
-
       return {
         ...state,
         toasts: state.toasts.map((t) =>
@@ -105,7 +89,10 @@ function toast(props: ToastInput) {
   const id = genId();
   const update = (updateProps: ToasterToast) =>
     dispatch({ type: 'UPDATE_TOAST', toast: { ...updateProps, id } });
-  const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id });
+  const dismiss = () => {
+    dispatch({ type: 'DISMISS_TOAST', toastId: id });
+    addToRemoveQueue(id);
+  };
 
   dispatch({
     type: 'ADD_TOAST',
@@ -136,7 +123,11 @@ function useToast() {
   return {
     ...state,
     toast,
-    dismiss: (toastId?: string) => dispatch({ type: 'DISMISS_TOAST', toastId }),
+    dismiss: (toastId?: string) => {
+      dispatch({ type: 'DISMISS_TOAST', toastId });
+      if (toastId) addToRemoveQueue(toastId);
+      else memoryState.toasts.forEach((toast) => addToRemoveQueue(toast.id));
+    },
   };
 }
 
