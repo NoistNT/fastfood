@@ -19,7 +19,7 @@ export function UpdateStatusButton({
   isChangingStatus,
   handleUpdateStatus,
 }: Props) {
-  const t = useTranslations('Dashboard.table.row');
+  const t = useTranslations('Features.dashboard.table.row');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   if (!nextStatus) return null;

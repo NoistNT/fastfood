@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
@@ -13,7 +15,7 @@ interface DatePickerProps {
 }
 
 export default function DatePicker({ date, setDate }: DatePickerProps) {
-  const t = useTranslations('Dashboard.date_picker');
+  const t = useTranslations('Features.dashboard.date_picker');
 
   return (
     <Popover>

@@ -1,13 +1,27 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
+import { useDashboard } from '@/store/use-dashboard';
 import DatePicker from '@/modules/dashboard/components/date-picker';
 
-export default function DatePickerClient({ date }: { date: Date }) {
-  const router = useRouter();
+interface Props {
+  initialDate: string;
+}
 
-  const handleDateChange = (date: Date | undefined) => {
-    if (date) router.push(`/dashboard?date=${date.toISOString()}`);
+export default function DatePickerClient({ initialDate }: Props) {
+  const router = useRouter();
+  const { date, setDate } = useDashboard();
+
+  useEffect(() => {
+    setDate(new Date(initialDate));
+  }, [initialDate, setDate]);
+
+  const handleDateChange = (newDate: Date | undefined) => {
+    const formattedDate = newDate ?? new Date();
+    setDate(formattedDate);
+
+    if (date) router.push(`/dashboard?date=${formattedDate.toISOString()}`);
     else router.push('/dashboard');
   };
 

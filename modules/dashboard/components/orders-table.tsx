@@ -1,32 +1,33 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
 
-import { findAll } from '@/modules/orders/actions/actions';
-import { OrdersRow } from '@/modules/orders/components/orders-row';
-import { TableBody, TableCell, TableRow } from '@/modules/core/ui/table';
+import type { OrderWithProductsView } from '@/modules/orders/types';
 
-export default async function OrdersTable({ date }: { date: Date }) {
-  const orders = await findAll(date);
-  const t = await getTranslations('Dashboard');
+import { useTranslations } from 'next-intl';
 
-  return orders.length > 0 ? (
-    <TableBody>
-      {orders.map((dashboardOrderWithItems) => (
-        <OrdersRow
-          key={dashboardOrderWithItems.order.id}
-          orderWithItems={dashboardOrderWithItems}
-        />
-      ))}
-    </TableBody>
-  ) : (
-    <TableBody>
-      <TableRow>
-        <TableCell
-          colSpan={5}
-          className="text-center text-base text-muted-foreground tracking-tighter"
-        >
-          {t('table.empty')}
-        </TableCell>
-      </TableRow>
-    </TableBody>
+import { DataTable } from '@/modules/core/components/data-table';
+import { createColumns } from '@/modules/dashboard/components/columns';
+import { exportToCSV } from '@/lib/utils';
+
+interface Props {
+  orders: OrderWithProductsView[];
+  emptyMessage: string;
+}
+
+export default function OrdersTable({ orders }: Props) {
+  const tTable = useTranslations('Common.table');
+
+  const handleExportCSV = () => {
+    exportToCSV(orders as unknown as Record<string, unknown>[], 'orders.csv');
+  };
+
+  return (
+    <div className="w-full">
+      <DataTable
+        columns={createColumns(tTable)}
+        data={orders}
+        searchColumn="order.status"
+        onExportCSV={handleExportCSV}
+      />
+    </div>
   );
 }

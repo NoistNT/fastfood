@@ -23,7 +23,7 @@ export function StatusUpdateConfirmation({
   onConfirm,
   isLoading,
 }: Props) {
-  const t = useTranslations('Dashboard.details.confirmation');
+  const t = useTranslations('Features.dashboard.details.confirmation');
 
   return (
     <ConfirmationDialog

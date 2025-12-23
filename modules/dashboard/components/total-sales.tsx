@@ -4,7 +4,7 @@ import { getTotalSales } from '@/modules/dashboard/actions/actions';
 
 export default async function TotalSales({ date }: { date: Date }) {
   const { totalSales } = await getTotalSales(date);
-  const t = await getTranslations('Dashboard');
+  const t = await getTranslations('Features.dashboard');
 
   const formattedTotalSales = new Intl.NumberFormat('en-US', {
     style: 'currency',
