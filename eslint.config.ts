@@ -52,6 +52,9 @@ export default [
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/prefer-nullish-coalescing': 'error',
+      '@typescript-eslint/prefer-optional-chain': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/jsx-curly-brace-presence': ['error', { props: 'never', children: 'never' }],
@@ -64,27 +67,31 @@ export default [
         'error',
         {
           'groups': ['type', 'builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-          'pathGroups': [
-            {
-              pattern: '@/*',
-              group: 'internal',
-              position: 'after',
-            },
-          ],
+          'pathGroups': [{ pattern: '@/*', group: 'internal', position: 'after' }],
           'newlines-between': 'always',
         },
       ],
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
     settings: {
       'react': { version: 'detect' },
-      'import/resolver': {
-        typescript: true,
-        node: true,
-      },
+      'import/resolver': { typescript: true, node: true },
     },
   },
   {
-    ignores: ['.next/**', 'node_modules/**'],
+    files: ['modules/core/ui/**/*.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
   },
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-console': 'off',
+      'import/order': 'warn',
+      // Allow @ts-expect-error comments in tests for complex mocking scenarios
+      '@typescript-eslint/ban-ts-comment': 'warn',
+      // Allow non-null assertions in tests where we know the value exists
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+    },
+  },
+  { ignores: ['.next/**', 'node_modules/**'] },
 ] as Linter.Config[];
