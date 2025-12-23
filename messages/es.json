@@ -2,163 +2,543 @@
   "Home": {
     "getStarted": "Empezar"
   },
-
-  "Header": {
-    "title": "QVC",
-    "order": "Pedido",
-    "dashboard": "Panel de Control",
-    "profile": "Perfil",
-    "logout": "Cerrar Sesión"
-  },
-
   "ModeToggle": {
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema"
   },
-
   "CardFooter": {
     "moreInfo": "Más información",
     "addToOrder": "Agregar al Pedido",
     "outOfStock": "Agotado",
     "addedToOrder": "agregado al pedido"
   },
-
-  "Orders": {
-    "emptyOrder": "No tienes productos en tu pedido",
-    "addProducts": "Agregar productos",
-    "table": {
-      "header": "Lista de Pedidos",
-      "columns": {
-        "product": "Producto",
-        "price": "Precio",
-        "quantity": "Cantidad",
-        "subtotal": "Subtotal",
-        "remove": "Eliminar"
+  "Features": {
+    "orders": {
+      "emptyOrder": "No tienes productos en tu pedido",
+      "addProducts": "Agregar productos",
+      "table": {
+        "header": "Lista de Pedidos",
+        "columns": {
+          "product": "Producto",
+          "price": "Precio",
+          "quantity": "Cantidad",
+          "subtotal": "Subtotal",
+          "remove": "Eliminar"
+        },
+        "footer": {
+          "total": "Total"
+        }
       },
-      "footer": {
-        "total": "Total"
+      "submitOrder": {
+        "redirecting": "Redirigiendo...",
+        "checkout": "Pagar",
+        "cancel": "Cancelar pedido",
+        "addMore": "Agregar más productos",
+        "registering": "Registrando...",
+        "confirm": "Confirmar pedido"
+      },
+      "submitToast": {
+        "successTitle": "Listo!",
+        "successDescription": "Tu pedido ha sido registrado exitosamente.",
+        "errorTitle": "Algo salió mal",
+        "errorDescription": "No se pudo registrar tu pedido.",
+        "actionText": "Reintentar"
+      },
+      "handlePayToast": {
+        "errorTitle": "Error de Pago",
+        "errorDescription": "Hubo un error al procesar el pago"
+      },
+      "helpers": {
+        "invalidId": "ID del pedido inválido",
+        "invalidQuantity": "La cantidad debe ser al menos 1",
+        "orderNonEmpty": "El pedido debe tener al menos un artículo",
+        "statusNonEmpty": "El historial de estado no puede estar vacío",
+        "invalidUserId": "ID de usuario inválido",
+        "totalNonEmpty": "El total no puede estar vacío"
+      },
+      "errors": {
+        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+        "noUsers": "No se encontraron usuarios en la base de datos.",
+        "createOrderError": "No se pudo crear el pedido.",
+        "invalidStatus": "Estado inválido",
+        "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
+        "orderNotFound": "Pedido no encontrado",
+        "invalidTransition": "Transición inválida",
+        "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
+      },
+      "submitOrder": {
+        "redirecting": "Redirigiendo...",
+        "checkout": "Pagar",
+        "cancel": "Cancelar pedido",
+        "addMore": "Agregar más productos",
+        "registering": "Registrando...",
+        "confirm": "Confirmar pedido"
+      },
+      "submitToast": {
+        "successTitle": "Listo!",
+        "successDescription": "Tu pedido ha sido registrado exitosamente.",
+        "errorTitle": "Algo salió mal",
+        "errorDescription": "No se pudo registrar tu pedido.",
+        "actionText": "Reintentar"
+      },
+      "handlePayToast": {
+        "errorTitle": "Error de Pago",
+        "errorDescription": "Hubo un error al procesar el pago"
+      },
+      "helpers": {
+        "invalidId": "ID del pedido inválido",
+        "invalidQuantity": "La cantidad debe ser al menos 1",
+        "orderNonEmpty": "El pedido debe tener al menos un artículo",
+        "statusNonEmpty": "El historial de estado no puede estar vacío",
+        "invalidUserId": "ID de usuario inválido",
+        "totalNonEmpty": "El total no puede estar vacío"
+      },
+      "errors": {
+        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+        "noUsers": "No se encontraron usuarios en la base de datos.",
+        "createOrderError": "No se pudo crear el pedido.",
+        "invalidStatus": "Estado inválido",
+        "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
+        "orderNotFound": "Pedido no encontrado",
+        "invalidTransition": "Transición inválida",
+        "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
       }
     },
-    "submitOrder": {
-      "redirecting": "Redirigiendo...",
-      "checkout": "Pagar",
-      "cancel": "Cancelar pedido",
-      "addMore": "Agregar más productos",
-      "registering": "Registrando...",
-      "confirm": "Confirmar pedido"
+    "profile": {
+      "myProfile": "Mi Perfil",
+      "userProfile": "Perfil del Usuario",
+      "myProfileDescription": "Tu información de cuenta y configuraciones",
+      "userProfileDescription": "Información de cuenta del usuario",
+      "personalInformation": "Información Personal",
+      "accountActions": "Acciones de Cuenta",
+      "accountInfo": "Información de Cuenta",
+      "editProfile": "Editar Perfil",
+      "changePassword": "Cambiar Contraseña",
+      "deleteAccount": "Eliminar Cuenta",
+      "memberSince": "Miembro desde",
+      "lastUpdated": "Última actualización",
+      "fullName": "Nombre Completo",
+      "emailAddress": "Dirección de Email"
     },
-    "submitToast": {
-      "successTitle": "Listo!",
-      "successDescription": "Tu pedido ha sido registrado exitosamente.",
-      "errorTitle": "Algo salió mal",
-      "errorDescription": "No se pudo registrar tu pedido.",
-      "actionText": "Reintentar"
+    "dashboard": {
+      "title": "Dashboard de Pedidos",
+      "overview": {
+        "title": "Dashboard",
+        "description": "¡Bienvenido de vuelta! Aquí está lo que está pasando con tu negocio.",
+        "revenueChart": {
+          "title": "Resumen de Ingresos",
+          "description": "Tendencias de ingresos mensuales"
+        },
+        "recentOrders": {
+          "title": "Pedidos Recientes",
+          "description": "Actividad de pedidos más reciente"
+        },
+        "statusChart": {
+          "title": "Pedidos por Estado",
+          "description": "Distribución actual de pedidos"
+        },
+        "quickActions": {
+          "title": "Acciones Rápidas",
+          "description": "Navegar a diferentes secciones",
+          "orders": {
+            "title": "Pedidos",
+            "description": "Administrar pedidos de clientes"
+          },
+          "customers": {
+            "title": "Clientes",
+            "description": "Ver datos de clientes"
+          },
+          "products": {
+            "title": "Productos",
+            "description": "Administrar tus productos"
+          }
+        }
+      },
+      "reports": {
+        "title": "Reportes y Análisis",
+        "description": "Información completa del negocio y métricas de rendimiento",
+        "revenueChart": {
+          "title": "Resumen de Ingresos",
+          "description": "Tendencias de ingresos mensuales"
+        },
+        "statusChart": {
+          "title": "Pedidos por Estado",
+          "description": "Distribución actual de pedidos"
+        }
+      },
+      "totalSales": "Ventas Totales",
+      "table": {
+        "header": {
+          "status": "Estado",
+          "total": "Total",
+          "time": "Hora",
+          "date": "Fecha",
+          "details": "Detalles"
+        },
+        "row": {
+          "viewDetails": "Ver Detalles",
+          "status": {
+            "PENDING": "Pendiente",
+            "PROCESSING": "Procesando",
+            "SHIPPED": "Enviado",
+            "DELIVERED": "Entregado"
+          }
+        },
+        "empty": "No hay ventas registradas para este período."
+      },
+      "date_picker": {
+        "pick_a_date": "Seleccionar fecha"
+      },
+      "details": {
+        "title": "Detalles del pedido",
+        "items": "Productos",
+        "statusHistory": "Historial de estado",
+        "confirmation": {
+          "title": "Confirmar Actualización de Estado",
+          "description": "Estás seguro que querés cambiar el estado de",
+          "to": "a",
+          "cancel": "Cancelar",
+          "updating": "Actualizando...",
+          "confirm": "Confirmar"
+        }
+      },
+      "customers": {
+        "title": "Clientes",
+        "search": {
+          "placeholder": "Buscar clientes..."
+        },
+        "table": {
+          "columns": {
+            "name": "Nombre",
+            "email": "Email",
+            "phone": "Teléfono",
+            "role": "Rol",
+            "actions": "Acciones"
+          }
+        },
+        "confirmDelete": "¿Estás seguro que querés eliminar este usuario?",
+        "toast": {
+          "promoteSuccess": "Usuario promovido exitosamente",
+          "demoteSuccess": "Usuario degradado exitosamente",
+          "deleteSuccess": "Usuario eliminado exitosamente",
+          "updateError": "Error al actualizar el rol",
+          "deleteError": "Error al eliminar el usuario"
+        },
+        "roleNotFound": "Rol no encontrado",
+        "updateFailed": "Error al actualizar el rol del usuario",
+        "deleteFailed": "Error al eliminar el usuario"
+      },
+      "products": {
+        "title": "Productos",
+        "inventoryTitle": "Gestión de Inventario",
+        "addProduct": "Agregar Producto",
+        "editProduct": "Editar Producto",
+        "addProductDescription": "Completa los detalles para agregar un nuevo producto a tu menú.",
+        "editProductDescription": "Actualiza la información del producto.",
+        "archiving": "Archivando...",
+        "createFailed": "Error al crear el producto",
+        "updateFailed": "Error al actualizar el producto",
+        "deleteFailed": "Error al eliminar el producto",
+        "productsTab": "Productos",
+        "inventoryTab": "Inventario"
+      },
+      "inventory": {
+        "title": "Gestión de Inventario",
+        "description": "Rastrea y administra los niveles de stock de tus ingredientes",
+        "stats": {
+          "totalItems": "Total de Artículos",
+          "totalItemsDesc": "Total de ingredientes rastreados",
+          "lowStock": "Artículos con Stock Bajo",
+          "lowStockDesc": "Artículos por debajo del umbral mínimo",
+          "outOfStock": "Sin Stock",
+          "outOfStockDesc": "Artículos completamente agotados",
+          "totalValue": "Valor Total",
+          "totalValueDesc": "Valor estimado del inventario",
+          "lowStockBadge": "Bajo",
+          "outOfStockBadge": "Crítico"
+        },
+        "alerts": {
+          "title": "Alertas de Stock",
+          "description": "Artículos que necesitan atención",
+          "noAlerts": "Todos los artículos están bien abastecidos",
+          "currentStock": "Actual",
+          "minThreshold": "Mínimo",
+          "outOfStock": "Sin Stock",
+          "lowStock": "Stock Bajo",
+          "restock": "Reabastecer"
+        },
+        "inventoryTable": {
+          "title": "Artículos de Inventario",
+          "description": "Administra los niveles de stock de tus ingredientes y umbrales",
+          "search": "Buscar ingredientes...",
+          "addItem": "Agregar Artículo",
+          "columns": {
+            "ingredient": "Ingrediente",
+            "currentStock": "Stock Actual",
+            "minThreshold": "Umbral Mínimo",
+            "unit": "Unidad",
+            "status": "Estado",
+            "lastUpdated": "Última Actualización"
+          },
+          "status": {
+            "inStock": "En Stock",
+            "lowStock": "Stock Bajo",
+            "outOfStock": "Sin Stock"
+          },
+          "actions": {
+            "edit": "Editar",
+            "adjustStock": "Ajustar Stock",
+            "delete": "Eliminar"
+          }
+        }
+      }
     },
-    "handlePayToast": {
-      "errorTitle": "Error de Pago",
-      "errorDescription": "Hubo un error al procesar el pago"
-    },
-    "helpers": {
-      "invalidId": "ID del pedido inválido",
-      "invalidQuantity": "La cantidad debe ser al menos 1",
-      "orderNonEmpty": "El pedido debe tener al menos un artículo",
-      "statusNonEmpty": "El historial de estado no puede estar vacío",
-      "invalidUserId": "ID de usuario inválido",
-      "totalNonEmpty": "El total no puede estar vacío"
-    },
-    "errors": {
-      "createItemError": "Error al crear el artículo para el pedido {orderId}.",
-      "noUsers": "No se encontraron usuarios en la base de datos.",
-      "createOrderError": "No se pudo crear el pedido.",
-      "invalidStatus": "Estado inválido",
-      "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
-      "orderNotFound": "Pedido no encontrado",
-      "invalidTransition": "Transición inválida",
-      "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
+    "auth": {
+      "register": {
+        "title": "Registrarse",
+        "toast": {
+          "success": {
+            "title": "Registro Exitoso",
+            "description": "Te has registrado correctamente."
+          },
+          "error": {
+            "title": "Error en el Registro",
+            "description": "La contraseña no coincide."
+          }
+        }
+      },
+      "login": {
+        "title": "Iniciar Sesión",
+        "passwordPlaceholder": "Ingresa tu contraseña",
+        "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+        "toast": {
+          "success": {
+            "title": "Bienvenido!",
+            "description": "Ahora estás logueado."
+          },
+          "error": {
+            "title": "Error en el Inicio de Sesión",
+            "description": "Hubo un error al intentar iniciar sesión."
+          }
+        }
+      },
+      "forgotPassword": {
+        "title": "¿Olvidaste tu Contraseña?",
+        "description": "Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+        "emailLabel": "Correo Electrónico",
+        "emailPlaceholder": "tu@email.com",
+        "submitButton": "Enviar Enlace de Restablecimiento",
+        "submittingButton": "Enviando...",
+        "backToLogin": "Volver al Inicio de Sesión",
+        "emailSent": {
+          "title": "Revisa tu Correo Electrónico",
+          "description": "Hemos enviado un enlace para restablecer tu contraseña a",
+          "notReceived": "¿No recibiste el correo electrónico?",
+          "tryAgain": "inténtalo de nuevo",
+          "checkSpam": "Revisa tu carpeta de spam"
+        },
+        "toast": {
+          "success": {
+            "title": "Correo de Restablecimiento Enviado",
+            "description": "Si tu correo electrónico está registrado, recibirás un enlace para restablecer tu contraseña."
+          },
+          "error": {
+            "title": "Error",
+            "description": "Ocurrió un error. Por favor, inténtalo de nuevo."
+          }
+        }
+      },
+      "resetPassword": {
+        "title": "Restablece tu Contraseña",
+        "description": "Ingresa tu nueva contraseña a continuación.",
+        "passwordLabel": "Nueva Contraseña",
+        "passwordPlaceholder": "Ingresa tu nueva contraseña",
+        "confirmPasswordLabel": "Confirmar Contraseña",
+        "confirmPasswordPlaceholder": "Confirma tu nueva contraseña",
+        "submitButton": "Restablecer Contraseña",
+        "submittingButton": "Restableciendo Contraseña...",
+        "backToLogin": "Volver al Inicio de Sesión",
+        "showPassword": "Mostrar contraseña",
+        "hidePassword": "Ocultar contraseña",
+        "toast": {
+          "success": {
+            "title": "Contraseña Restablecida Exitosamente",
+            "description": "Tu contraseña ha sido restablecida. Ahora puedes iniciar sesión con tu nueva contraseña."
+          },
+          "error": {
+            "title": "Error en el Restablecimiento",
+            "description": "No se pudo restablecer la contraseña. Por favor, inténtalo de nuevo."
+          },
+          "invalidLink": {
+            "title": "Enlace Inválido",
+            "description": "Este enlace para restablecer la contraseña es inválido o ha expirado."
+          }
+        }
+      },
+      "logout": {
+        "title": "Cerrar Sesión",
+        "confirmation": {
+          "title": "Confirmar Cierre de Sesión",
+          "description": "Estás seguro que querés cerrar sesión?"
+        }
+      },
+      "email": {
+        "label": "Email",
+        "placeholder": "johndoe@example.com"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "*************",
+        "confirm": "Confirmar Contraseña",
+        "change": "Cambiar Contraseña",
+        "forgot": "Olvidé mi Contraseña",
+        "reset": "Reset Contraseña"
+      },
+      "user": {
+        "name": {
+          "label": "Nombre",
+          "placeholder": "John Doe"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "placeholder": "(123) 456-7890"
+        },
+        "address": {
+          "label": "Dirección",
+          "placeholder": "123 Main St"
+        }
+      },
+      "resendVerificationEmail": "Resend Verification Email",
+      "updateProfile": "Update Profile",
+      "deleteAccount": "Delete Account",
+      "navigation": {
+        "register": "Registrarse",
+        "login": "Iniciar Sesión",
+        "logout": "Cerrar Sesión"
+      }
     }
   },
-
-  "Dashboard": {
-    "title": "Dashboard de Pedidos",
-    "totalSales": "Ventas Totales",
+  "Common": {
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "save": "Guardar",
+      "submit": "Enviar",
+      "add": "Agregar",
+      "remove": "Remover",
+      "promote": "Promover",
+      "demote": "Degradar",
+      "archive": "Archivar",
+      "update": "Actualizar"
+    },
+    "ui": {
+      "loading": "Cargando...",
+      "loadingProducts": "Cargando productos...",
+      "search": "Buscar",
+      "filter": "Filtrar"
+    },
+    "status": {
+      "orders": {
+        "PENDING": "Pendiente",
+        "PROCESSING": "Procesando",
+        "SHIPPED": "Enviado",
+        "DELIVERED": "Entregado"
+      },
+      "products": {
+        "available": "Disponible",
+        "unavailable": "No disponible"
+      }
+    },
     "table": {
-      "header": {
+      "columns": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "price": "Precio",
+        "customer": "Cliente",
         "status": "Estado",
         "total": "Total",
         "time": "Hora",
         "date": "Fecha",
-        "details": "Detalles"
-      },
-      "row": {
-        "viewDetails": "Ver Detalles",
-        "status": {
-          "PENDING": "Pendiente",
-          "PROCESSING": "Procesando",
-          "SHIPPED": "Enviado",
-          "DELIVERED": "Entregado"
-        }
-      },
-      "empty": "No hay ventas registradas para este período."
-    },
-    "date_picker": {
-      "pick_a_date": "Seleccionar fecha"
-    },
-    "details": {
-      "title": "Detalles del pedido",
-      "items": "Productos",
-      "statusHistory": "Historial de estado",
-      "confirmation": {
-        "title": "Confirmar Actualización de Estado",
-        "description": "Estás seguro que querés cambiar el estado de",
-        "to": "a",
-        "cancel": "Cancelar",
-        "updating": "Actualizando...",
-        "confirm": "Confirmar"
+        "takenBy": "Tomado Por",
+        "lastLogin": "Último Acceso",
+        "created": "Creado",
+        "email": "Email",
+        "phone": "Teléfono",
+        "role": "Rol",
+        "actions": "Acciones"
       }
+    },
+    "dialog": {
+      "title": "Eliminar Item",
+      "description": "¿Estás seguro que querés eliminar"
     }
   },
-
-  "Error": {
-    "title": "Algo salió mal"
-  },
-
-  "NotFound": {
-    "title": "404 PAGE NOT FOUND",
-    "description": "La página que estás buscando no existe.",
-    "goHome": "Ir a Inicio"
-  },
-
-  "Footer": {
-    "title": "QVC",
-    "description": "Los mejores sandwiches en la ciudad!",
-    "address": {
-      "street": "Valentin Berrondo 123",
-      "city": "Catamarca, Capital"
+  "Components": {
+    "header": {
+      "title": "QVC",
+      "order": "Pedido",
+      "dashboard": "Panel de Control",
+      "profile": "Perfil"
     },
-    "phone": "(383) 412-3456",
-    "navigation": {
-      "home": "Inicio",
-      "menu": "Menú",
-      "about": "Nosotros"
+    "footer": {
+      "title": "QVC",
+      "description": "Los mejores sandwiches en la ciudad!",
+      "address": {
+        "street": "Valentin Berrondo 123",
+        "city": "Catamarca, Capital"
+      },
+      "phone": "(383) 412-3456",
+      "navigation": {
+        "home": "Inicio",
+        "menu": "Menú",
+        "about": "Nosotros"
+      },
+      "menu": {
+        "burgers": "Burgers",
+        "sandwiches": "Sandwiches",
+        "pizzas": "Pizzas"
+      },
+      "about": {
+        "story": "Nuestra Historia",
+        "franchise": "Franquicias",
+        "contact": "Contacto"
+      },
+      "tos": "Términos y Condiciones",
+      "privacyPolicy": "Política de Privacidad"
     },
-    "menu": {
-      "burgers": "Burgers",
-      "sandwiches": "Sandwiches",
-      "pizzas": "Pizzas"
-    },
-    "about": {
-      "story": "Nuestra Historia",
-      "franchise": "Franquicias",
-      "contact": "Contacto"
-    },
-    "tos": "Términos y Condiciones",
-    "privacyPolicy": "Política de Privacidad"
-  },
-  "Common": {
-    "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "description": "¿Estás seguro que querés eliminar",
-    "title": "Eliminar Item"
+    "errors": {
+      "general": {
+        "title": "Algo salió mal",
+        "description": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo o contacta con soporte si el problema persiste."
+      },
+      "notFound": {
+        "title": "404 PÁGINA NO ENCONTRADA",
+        "description": "La página que estás buscando no existe.",
+        "goHome": "Ir a Inicio"
+      },
+      "forbidden": {
+        "title": "ACCESO DENEGADO",
+        "idiom": "La curiosidad mató al gato.",
+        "description": "No tienes los permisos necesarios para acceder a esta página.",
+        "goHome": "Ir a Inicio"
+      },
+      "network": {
+        "title": "Error de Conexión",
+        "description": "No se pudo conectar al servidor. Verifica tu conexión a internet e inténtalo de nuevo.",
+        "retry": "Intentar de Nuevo"
+      },
+      "validation": {
+        "title": "Entrada Inválida",
+        "description": "Por favor, revisa tu entrada e inténtalo de nuevo."
+      },
+      "unauthorized": {
+        "title": "Sesión Expirada",
+        "description": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
+        "signIn": "Iniciar Sesión"
+      }
+    }
   }
 }
