@@ -92,3 +92,6 @@ export const SheetDescription = React.forwardRef<
   />
 ));
 SheetDescription.displayName = 'SheetDescription';
+
+// Re-export from utils-sheet
+export { Sheet, SheetTrigger, SheetClose } from './utils-sheet';

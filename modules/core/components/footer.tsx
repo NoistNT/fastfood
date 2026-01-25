@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 export default function Footer() {
-  const t = useTranslations('Footer');
+  const t = useTranslations('Components.footer');
   const navigationItems = [
     {
       title: t('navigation.home'),
@@ -45,7 +45,11 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="w-full py-10 bg-background/50 dark:bg-background/75 backdrop-blur-sm text-primary">
+    <footer
+      className="w-full py-10 bg-background/50 dark:bg-background/75 backdrop-blur-sm text-primary"
+      role="contentinfo"
+      aria-label="Site footer"
+    >
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
           <div className="flex gap-8 flex-col items-start">
@@ -84,16 +88,15 @@ export default function Footer() {
                   ) : (
                     <p className="text-xl">{item.title}</p>
                   )}
-                  {item.items &&
-                    item.items.map((subItem) => (
-                      <Link
-                        key={subItem.title}
-                        href={subItem.href}
-                        className="flex justify-between items-center"
-                      >
-                        <span className="text-sm text-muted-foreground">{subItem.title}</span>
-                      </Link>
-                    ))}
+                  {item.items?.map((subItem) => (
+                    <Link
+                      key={subItem.title}
+                      href={subItem.href}
+                      className="flex justify-between items-center"
+                    >
+                      <span className="text-sm text-muted-foreground">{subItem.title}</span>
+                    </Link>
+                  ))}
                 </div>
               </div>
             ))}
