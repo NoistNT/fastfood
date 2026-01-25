@@ -19,6 +19,7 @@ export interface OrderProductView {
 // View model for an order
 export interface OrderView extends Order {
   statusHistory: OrderStatusHistory[];
+  userName?: string;
 }
 
 // View model for an order with its items (products)

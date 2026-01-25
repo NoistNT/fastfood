@@ -35,7 +35,7 @@ export function OrdersRow({
     statusHistory?.map(({ status, createdAt }) => ({ status, createdAt: new Date(createdAt) })) ||
       []
   );
-  const t = useTranslations('Dashboard.table.row');
+  const t = useTranslations('Features.dashboard.table.row');
 
   const formattedDate = createdAt
     .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })

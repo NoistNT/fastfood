@@ -10,10 +10,14 @@ import { OrderTable } from '@/modules/orders/components/order-table';
 import { SubmitOrder } from '@/modules/orders/components/submit-order';
 import { calculateTotal, submitOrder } from '@/modules/orders/utils';
 import { useOrderStore } from '@/store/use-order';
+import { useOfflineOrders } from '@/modules/core/hooks/use-offline-orders';
+import { OfflineStatus } from '@/modules/core/components/offline-status';
+import { ErrorBoundary } from '@/modules/core/components/error-boundary';
 
 export default function Page() {
-  const t = useTranslations('Orders');
+  const t = useTranslations('Features.orders');
   const { items, incrementQuantity, decrementQuantity, removeItem, clearOrder } = useOrderStore();
+  const { isOnline, addOfflineOrder } = useOfflineOrders();
 
   const total = useMemo(() => calculateTotal(items), [items]);
 
@@ -22,24 +26,39 @@ export default function Page() {
   const handleSubmit = async () => {
     startTransition(async () => {
       try {
+        // Check if online
+        if (!isOnline) {
+          // Save order offline
+          addOfflineOrder({ items, total });
+          clearOrder();
+          return;
+        }
+
+        // Submit order online
         await submitOrder({ items, total }, clearOrder);
         toast({
           title: t('submitToast.successTitle'),
           description: t('submitToast.successDescription'),
         });
       } catch (_error) {
-        toast({
-          title: t('submitToast.errorTitle'),
-          description: t('submitToast.errorDescription'),
-          action: (
-            <ToastAction
-              altText={t('submitToast.actionText')}
-              onClick={handleSubmit}
-            >
-              {t('submitToast.actionText')}
-            </ToastAction>
-          ),
-        });
+        // If online submission fails, try offline storage
+        if (isOnline) {
+          addOfflineOrder({ items, total });
+          clearOrder();
+        } else {
+          toast({
+            title: t('submitToast.errorTitle'),
+            description: t('submitToast.errorDescription'),
+            action: (
+              <ToastAction
+                altText={t('submitToast.actionText')}
+                onClick={handleSubmit}
+              >
+                {t('submitToast.actionText')}
+              </ToastAction>
+            ),
+          });
+        }
       }
     });
   };
@@ -70,19 +89,22 @@ export default function Page() {
   if (!items.length) return <EmptyOrder />;
 
   return (
-    <div className="mx-auto max-w-5xl h-full flex flex-col justify-center">
-      <OrderTable
-        decrementQuantity={decrementQuantity}
-        incrementQuantity={incrementQuantity}
-        items={items}
-        removeItem={removeItem}
-        total={total}
-      />
-      <SubmitOrder
-        handlePay={handlePay}
-        handleSubmit={handleSubmit}
-        isPending={isPending}
-      />
-    </div>
+    <ErrorBoundary>
+      <div className="mx-auto max-w-5xl h-full flex flex-col justify-center">
+        <OfflineStatus />
+        <OrderTable
+          decrementQuantity={decrementQuantity}
+          incrementQuantity={incrementQuantity}
+          items={items}
+          removeItem={removeItem}
+          total={total}
+        />
+        <SubmitOrder
+          handlePay={handlePay}
+          handleSubmit={handleSubmit}
+          isPending={isPending}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }

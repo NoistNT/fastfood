@@ -38,7 +38,7 @@ export function OrderDetailsDialog({
   onStatusUpdate,
   children,
 }: Props) {
-  const t = useTranslations('Dashboard.details');
+  const t = useTranslations('Features.dashboard.details');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const nextStatus = useMemo(() => {

@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function SubmitOrder({ handlePay, handleSubmit, isPending }: Props) {
-  const t = useTranslations('Orders.submitOrder');
+  const t = useTranslations('Features.orders.submitOrder');
   const { clearOrder } = useOrderStore();
 
   return (

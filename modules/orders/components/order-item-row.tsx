@@ -91,14 +91,14 @@ export function OrderItemRow({
         open={isRemoveConfirmationOpen}
         onOpenChange={setRemoveConfirmationOpen}
         onConfirm={handleRemove}
-        title={t('title')}
+        title={t('dialog.title')}
         description={
           <Fragment>
-            {t('description')} <span className="font-bold text-foreground">{name}?</span>
+            {t('dialog.description')} <span className="font-bold text-foreground">{name}?</span>
           </Fragment>
         }
-        cancelText={t('cancel')}
-        confirmText={t('confirm')}
+        cancelText={t('actions.cancel')}
+        confirmText={t('actions.confirm')}
       />
     </Fragment>
   );

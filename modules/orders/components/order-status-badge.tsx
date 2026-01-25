@@ -4,7 +4,7 @@ import { Badge } from '@/modules/core/ui/badge';
 import { type OrderStatus, ORDER_STATUS } from '@/modules/orders/types';
 
 export function OrderStatusBadge({ status }: { status: OrderStatus }) {
-  const t = useTranslations('Dashboard.table.row');
+  const t = useTranslations('Features.dashboard.table.row');
 
   switch (status) {
     case ORDER_STATUS.PENDING:

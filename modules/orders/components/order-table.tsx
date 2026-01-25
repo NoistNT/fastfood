@@ -29,7 +29,7 @@ export function OrderTable({
   removeItem,
   total,
 }: OrderTableProps) {
-  const t = useTranslations('Orders.table');
+  const t = useTranslations('Features.orders.table');
   return (
     <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
       <Table className="w-full">
