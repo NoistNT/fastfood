@@ -5,7 +5,7 @@ export default async function Home() {
   const products = await findAll();
 
   return (
-    <main className="flex">
+    <section className="flex">
       <ul className="container grid gap-4 xl:grid-cols-2 xl:gap-8 py-8">
         {products.map((product) => (
           <li
@@ -19,6 +19,6 @@ export default async function Home() {
           </li>
         ))}
       </ul>
-    </main>
+    </section>
   );
 }

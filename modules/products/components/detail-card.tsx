@@ -2,24 +2,32 @@ import type { ProductWithIngredients } from '@/modules/products/types';
 
 import Image from 'next/image';
 
-import { cn } from '@/lib/utils';
+import { PlaceholderImage } from '@/modules/core/ui/placeholder-image';
 
 interface Props {
   product: ProductWithIngredients;
 }
 
 export default function DetailCard({
-  product: { name, description, imgAlt, imgSrc, price, ingredients, isVegan, isVegetarian },
+  product: { name, description, imageUrl, price, ingredients },
 }: Props) {
   return (
     <section className="max-w-lg rounded-3xl border-2 border-neutral-200 dark:border-neutral-700">
-      <Image
-        alt={imgAlt}
-        className="rounded-b-sm rounded-t-3xl"
-        height={540}
-        src={imgSrc}
-        width={540}
-      />
+      {imageUrl ? (
+        <Image
+          alt={name}
+          className="rounded-b-sm rounded-t-3xl"
+          height={540}
+          src={imageUrl}
+          width={540}
+        />
+      ) : (
+        <PlaceholderImage
+          className="rounded-b-sm rounded-t-3xl"
+          width={540}
+          height={540}
+        />
+      )}
       <div className="h-1 w-full bg-neutral-300 dark:bg-neutral-800" />
       <div className="p-4">
         <div className="mb-1 flex items-center justify-between">
@@ -43,44 +51,6 @@ export default function DetailCard({
             ))}
           </ul>
         </div>
-        <div className="mb-4 mt-10 h-0.5 w-full bg-neutral-200 dark:bg-neutral-700" />
-        <h3 className="mb-2 ml-2 text-lg font-semibold">Other Info</h3>
-        <ul className="mx-auto flex justify-center py-0.5">
-          <li
-            className={cn(
-              'mx-auto min-w-40 rounded-md border-2 border-neutral-100 px-4 py-0.5 text-center text-sm hover:bg-primary-foreground dark:border-neutral-900',
-              !isVegetarian
-                ? 'hover:bg-green-50 dark:hover:bg-green-950/60'
-                : 'hover:bg-red-50 dark:hover:bg-red-950/60'
-            )}
-          >
-            <p className="flex flex-col text-center">
-              Vegetarian
-              {!isVegetarian ? (
-                <span className="text-green-500">Yes</span>
-              ) : (
-                <span className="text-red-400"> No</span>
-              )}
-            </p>
-          </li>
-          <li
-            className={cn(
-              'mx-auto min-w-40 rounded-md border-2 border-neutral-100 px-4 py-0.5 text-center text-sm hover:bg-primary-foreground dark:border-neutral-900',
-              isVegan
-                ? 'hover:border-green-500 hover:bg-green-950/60'
-                : 'hover:bg-red-50 dark:hover:bg-red-950/60'
-            )}
-          >
-            <p className="flex flex-col text-center">
-              Vegan
-              {isVegan ? (
-                <span className="text-green-500">Yes</span>
-              ) : (
-                <span className="text-red-400"> No</span>
-              )}
-            </p>
-          </li>
-        </ul>
       </div>
     </section>
   );

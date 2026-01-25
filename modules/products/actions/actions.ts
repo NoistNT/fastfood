@@ -1,6 +1,6 @@
 'use server';
 
-import type { ProductGeneralView, ProductWithIngredients } from '@/modules/products/types';
+import type { ProductWithIngredients } from '@/modules/products/types';
 
 import { revalidateTag, unstable_cache as cache } from 'next/cache';
 import { eq } from 'drizzle-orm';
@@ -8,18 +8,8 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { products } from '@/db/schema';
 
-const fetchAllProducts = async (): Promise<ProductGeneralView[]> => {
-  return await db.query.products.findMany({
-    columns: {
-      id: true,
-      name: true,
-      description: true,
-      imgAlt: true,
-      imgSrc: true,
-      price: true,
-      isAvailable: true,
-    },
-  });
+const fetchAllProducts = async () => {
+  return await db.query.products.findMany();
 };
 
 const fetchOneProduct = async (id: number): Promise<ProductWithIngredients | null> => {

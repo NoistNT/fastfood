@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import { findOne } from '@/modules/products/actions/actions';
 
-import { BASE_URL } from '@/constants';
+import { NEXT_PUBLIC_BASE_URL } from '@/constants';
 
 interface Props {
   params: Promise<{ id: number }>;
@@ -16,13 +16,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: 'Fast Food',
       description: 'The product you are looking for does not exist.',
-      metadataBase: new URL(BASE_URL),
+      metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
     };
   }
 
   return {
     title: `FastFood - ${product.name} `,
     description: product.description,
-    metadataBase: new URL(BASE_URL),
+    metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
   };
 }
