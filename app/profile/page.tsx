@@ -1,20 +1,24 @@
-import { findAllUsers } from '@/modules/users/actions';
-import UserProfile from '@/modules/users/components/user-profile';
+import { redirect } from 'next/navigation';
+
+import { getSession } from '@/lib/auth/session';
+import { findUserById } from '@/modules/users/actions';
+import { ProfileDashboard } from '@/modules/users/components/profile-dashboard';
+import { ErrorBoundary } from '@/modules/core/components/error-boundary';
 
 export default async function ProfilePage() {
-  const users = await findAllUsers();
+  const session = await getSession();
+
+  if (!session?.id) redirect('/login');
+
+  const user = await findUserById(session.id);
+  if (!user) redirect('/login');
 
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">User Profiles</h1>
-      <div className="grid gap-4">
-        {users.map((user) => (
-          <UserProfile
-            key={user.id}
-            user={user}
-          />
-        ))}
-      </div>
-    </main>
+    <ErrorBoundary>
+      <ProfileDashboard
+        user={user}
+        isOwnProfile
+      />
+    </ErrorBoundary>
   );
 }
