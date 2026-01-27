@@ -12,35 +12,44 @@ interface InventoryStatsData {
 }
 
 interface InventoryStatsProps {
-  stats: InventoryStatsData;
+  stats?: InventoryStatsData;
 }
 
 export function InventoryStats({ stats }: InventoryStatsProps) {
+  // Default data if not provided
+  const defaultStats: InventoryStatsData = {
+    totalItems: 0,
+    lowStockItems: 0,
+    totalValue: 0,
+    outOfStockItems: 0,
+  };
+
+  const finalStats = stats || defaultStats;
   const t = useTranslations('Features.dashboard.inventory');
   const statItems = [
     {
       title: t('stats.totalItems'),
-      value: stats.totalItems.toString(),
+      value: finalStats.totalItems.toString(),
       icon: Package,
       description: t('stats.totalItemsDesc'),
     },
     {
       title: t('stats.lowStock'),
-      value: stats.lowStockItems.toString(),
+      value: finalStats.lowStockItems.toString(),
       icon: AlertTriangle,
       description: t('stats.lowStockDesc'),
       variant: 'secondary' as const,
     },
     {
       title: t('stats.outOfStock'),
-      value: stats.outOfStockItems.toString(),
+      value: finalStats.outOfStockItems.toString(),
       icon: TrendingUp,
       description: t('stats.outOfStockDesc'),
       variant: 'destructive' as const,
     },
     {
       title: t('stats.totalValue'),
-      value: `$${(stats.totalValue || 0).toFixed(2)}`,
+      value: `$${(finalStats.totalValue || 0).toFixed(2)}`,
       icon: DollarSign,
       description: t('stats.totalValueDesc'),
     },

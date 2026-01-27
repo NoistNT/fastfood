@@ -14,10 +14,10 @@ interface LowStockAlert {
 }
 
 interface LowStockAlertsProps {
-  alerts: LowStockAlert[];
+  alerts?: LowStockAlert[];
 }
 
-export function LowStockAlerts({ alerts }: LowStockAlertsProps) {
+export function LowStockAlerts({ alerts = [] }: LowStockAlertsProps) {
   const t = useTranslations('Features.dashboard.inventory');
   if (alerts.length === 0) {
     return (
