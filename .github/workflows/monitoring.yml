@@ -1,0 +1,43 @@
+name: Health Monitoring
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # Every 30 minutes
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Health Check
+        run: |
+          # Check production health endpoint
+          if curl -f -s "${{ secrets.VERCEL_URL }}/api/health" > /dev/null; then
+            echo "✅ Service is healthy"
+            echo "HEALTH_STATUS=healthy" >> $GITHUB_ENV
+          else
+            echo "❌ Service is unhealthy"
+            echo "HEALTH_STATUS=unhealthy" >> $GITHUB_ENV
+          fi
+
+      - name: Send Health Alert (if unhealthy)
+        if: env.HEALTH_STATUS == 'unhealthy'
+        run: |
+          # Send email alert using Resend
+          curl -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "from": "FastFood Monitoring <noreply@yourdomain.com>",
+              "to": ["${{ secrets.DEPLOYMENT_NOTIFICATION_EMAIL }}"],
+              "subject": "🔴 FastFood Health Check - Service Down",
+              "html": "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\"><h1 style=\"color: #f44336;\">🔴 Service Health Alert</h1><p>The FastFood production service appears to be down or unhealthy.</p><p><strong>URL:</strong> ${{ secrets.VERCEL_URL }}</p><p><strong>Checked at:</strong> '"$(date)"'</p><p>Please investigate immediately.</p></div>"
+            }'
+
+      - name: Log Health Status
+        run: |
+          echo "Health check completed at $(date)"
+          echo "Status: ${{ env.HEALTH_STATUS }}"
+          echo "URL: ${{ secrets.VERCEL_URL }}"

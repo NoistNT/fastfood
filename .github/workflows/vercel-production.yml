@@ -1,0 +1,169 @@
+name: Vercel Production Deployment
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_notes:
+        description: 'Deployment notes (optional)'
+        required: false
+        type: string
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint and Type Check
+        run: pnpm lint
+
+      - name: Unit Tests
+        run: pnpm test:run
+
+      - name: Build Application
+        run: pnpm build
+
+      - name: E2E Tests
+        run: pnpm test:e2e
+        env:
+          CI: true
+
+      - name: Visual Regression Tests
+        run: pnpm test:visual:ci
+
+      - name: Performance Audit
+        run: pnpm test:performance
+        continue-on-error: true
+
+  deploy-production:
+    needs: quality-gates
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build for production
+        run: pnpm build
+
+      - name: Deploy to Vercel Production
+        uses: amondnet/vercel-action@v25
+        id: vercel-deployment
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          vercel-args: '--prod=true'
+
+      - name: Health Check
+        run: |
+          echo "Waiting for deployment to be ready..."
+          sleep 30
+
+          # Health check with retry
+          for i in {1..5}; do
+            if curl -f -s "${{ steps.vercel-deployment.outputs.preview-url }}/api/health" > /dev/null; then
+              echo "✅ Health check passed"
+              break
+            fi
+            echo "Attempt $i failed, retrying in 10 seconds..."
+            sleep 10
+          done
+
+          # Final check
+          if ! curl -f -s "${{ steps.vercel-deployment.outputs.preview-url }}/api/health" > /dev/null; then
+            echo "❌ Health check failed after 5 attempts"
+            exit 1
+          fi
+
+      - name: Send Deployment Notification
+        run: |
+          # Send email notification using Resend
+          curl -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "from": "FastFood CI/CD <noreply@yourdomain.com>",
+              "to": ["${{ secrets.DEPLOYMENT_NOTIFICATION_EMAIL }}"],
+              "subject": "🚀 FastFood Production Deployment Complete",
+              "html": "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\"><h1 style=\"color: #4CAF50;\">🚀 Production Deployment Successful</h1><p><strong>Deployment URL:</strong> ${{ steps.vercel-deployment.outputs.preview-url }}</p><p><strong>Commit:</strong> ${{ github.sha }}</p><p><strong>Deployed by:</strong> ${{ github.actor }}</p><p><strong>Quality Gates:</strong> All passed ✅</p><p>The deployment is now live and serving traffic! 🎉</p></div>"
+            }'
+
+      - name: Update GitHub Status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const deploymentUrl = '${{ steps.vercel-deployment.outputs.preview-url }}';
+
+            // Create a commit status
+            github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state: 'success',
+              context: 'Vercel Production Deployment',
+              description: 'Successfully deployed to production',
+              target_url: deploymentUrl
+            });
+
+            // Create deployment record
+            const deployment = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production',
+              description: '${{ inputs.deploy_notes }}' || 'Production deployment'
+            });
+
+            // Update deployment status
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.data.id,
+              state: 'success',
+              environment_url: deploymentUrl
+            });
+
+            // Create deployment record
+            github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.sha,
+              environment: 'production',
+              description: deployNotes || 'Production deployment'
+            });
+
+            // Update deployment status
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: deployment.id,
+              state: 'success',
+              environment_url: deploymentUrl
+            });
