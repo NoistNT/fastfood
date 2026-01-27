@@ -93,7 +93,7 @@ function DefaultErrorFallback({ error, resetError }: DefaultErrorFallbackProps) 
   const t = useTranslations('Components.errors.general');
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+    <div className="flex flex-col items-center justify-center min-h-100 p-8 text-center">
       <div className="flex flex-col items-center gap-4">
         <AlertTriangle className="h-12 w-12 text-destructive" />
         <div className="space-y-2">
