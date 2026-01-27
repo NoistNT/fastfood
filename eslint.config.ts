@@ -39,7 +39,7 @@ export default [
       ...tsPlugin.configs.recommended.rules,
       ...prettier.rules,
       'prettier/prettier': ['error'],
-      'no-console': ['warn'],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -91,6 +91,24 @@ export default [
       '@typescript-eslint/ban-ts-comment': 'warn',
       // Allow non-null assertions in tests where we know the value exists
       '@typescript-eslint/no-non-null-assertion': 'warn',
+    },
+  },
+  {
+    files: ['app/api/**/*.ts', 'lib/**/*.ts'],
+    rules: {
+      'no-console': 'off', // Allow console logging in API routes and utilities
+    },
+  },
+  {
+    files: ['modules/core/components/performance-monitor.tsx'],
+    rules: {
+      'no-console': 'off', // Performance monitoring needs console statements
+    },
+  },
+  {
+    files: ['modules/core/components/data-table.tsx'],
+    rules: {
+      'react-hooks/incompatible-library': 'off', // TanStack Table API returns functions that can't be safely memoized
     },
   },
   { ignores: ['.next/**', 'node_modules/**'] },

@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
+    env:
+      DB_URL: postgresql://mock:mock@localhost:5432/mockdb
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

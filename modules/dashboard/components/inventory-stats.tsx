@@ -24,7 +24,7 @@ export function InventoryStats({ stats }: InventoryStatsProps) {
     outOfStockItems: 0,
   };
 
-  const finalStats = stats || defaultStats;
+  const finalStats = stats ?? defaultStats;
   const t = useTranslations('Features.dashboard.inventory');
   const statItems = [
     {
