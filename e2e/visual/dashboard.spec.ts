@@ -26,13 +26,13 @@ test.describe('Dashboard Visual Regression', () => {
     await expect(page.locator('main')).toHaveScreenshot('dashboard-charts.png');
   });
 
-  test('dashboard charts match baseline', async ({ page }) => {
+  test('dashboard revenue chart matches baseline', async ({ page }) => {
     // Wait for charts to load
     await page.waitForSelector('[data-testid="revenue-chart"]', { timeout: 10000 });
 
     // Take screenshot of charts section
     await expect(page.locator('[data-testid="dashboard-charts"]')).toHaveScreenshot(
-      'dashboard-charts.png'
+      'dashboard-charts-detailed.png'
     );
   });
 

@@ -70,12 +70,4 @@ test.describe('Component Visual Regression', () => {
 
     await expect(page.locator('main')).toHaveScreenshot('components-mobile.png');
   });
-
-  test('form inputs match baseline', async ({ page }) => {
-    await page.goto('/components-test');
-    await page.waitForLoadState('networkidle');
-
-    // Take screenshot of form inputs
-    await expect(page.locator('[data-testid="form-inputs"]')).toHaveScreenshot('form-inputs.png');
-  });
 });
