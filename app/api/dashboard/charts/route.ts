@@ -6,9 +6,10 @@ import { getSession } from '@/lib/auth/session';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 // Helper to handle database errors gracefully
-const handleDatabaseError = (error: any, defaultMessage: string) => {
+const handleDatabaseError = (error: unknown, defaultMessage: string) => {
   console.error('Database error:', error);
-  if (error.message?.includes('fetch failed') || error.message?.includes('ECONNREFUSED')) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  if (errorMessage.includes('fetch failed') || errorMessage.includes('ECONNREFUSED')) {
     // Return mock data for CI/build environment
     return apiSuccess({
       revenueData: [

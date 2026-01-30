@@ -38,10 +38,10 @@ export async function GET() {
 
       // Check for connection errors in the error message or cause chain
       const isConnectionError =
-        errorMessage?.includes('fetch failed') ||
-        errorMessage?.includes('ECONNREFUSED') ||
-        errorMessage?.includes('Error connecting to database') ||
-        (dbError as { cause?: Error })?.cause?.message?.includes('fetch failed') ||
+        (errorMessage?.includes('fetch failed') ||
+          errorMessage?.includes('ECONNREFUSED') ||
+          errorMessage?.includes('Error connecting to database') ||
+          (dbError as { cause?: Error })?.cause?.message?.includes('fetch failed')) ??
         (dbError as { cause?: Error })?.cause?.message?.includes('Error connecting to database');
 
       // For CI/build environments with no database, return healthy status anyway

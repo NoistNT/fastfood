@@ -44,9 +44,7 @@ export const rateLimiter = (requests = 10, window: Duration) => {
 let authRateLimitInstance: Ratelimit | null = null;
 export const authRateLimit = new Proxy({} as Ratelimit, {
   get(_target, prop) {
-    if (!authRateLimitInstance) {
-      authRateLimitInstance = rateLimiter(5, '10 m');
-    }
+    authRateLimitInstance ??= rateLimiter(5, '10 m');
     return (authRateLimitInstance as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
@@ -54,9 +52,7 @@ export const authRateLimit = new Proxy({} as Ratelimit, {
 let passwordResetRateLimitInstance: Ratelimit | null = null;
 export const passwordResetRateLimit = new Proxy({} as Ratelimit, {
   get(_target, prop) {
-    if (!passwordResetRateLimitInstance) {
-      passwordResetRateLimitInstance = rateLimiter(3, '60 m');
-    }
+    passwordResetRateLimitInstance ??= rateLimiter(3, '60 m');
     return (passwordResetRateLimitInstance as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
@@ -64,9 +60,7 @@ export const passwordResetRateLimit = new Proxy({} as Ratelimit, {
 let apiRateLimitInstance: Ratelimit | null = null;
 export const apiRateLimit = new Proxy({} as Ratelimit, {
   get(_target, prop) {
-    if (!apiRateLimitInstance) {
-      apiRateLimitInstance = rateLimiter(100, '1 m');
-    }
+    apiRateLimitInstance ??= rateLimiter(100, '1 m');
     return (apiRateLimitInstance as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
@@ -74,9 +68,7 @@ export const apiRateLimit = new Proxy({} as Ratelimit, {
 let sensitiveOperationRateLimitInstance: Ratelimit | null = null;
 export const sensitiveOperationRateLimit = new Proxy({} as Ratelimit, {
   get(_target, prop) {
-    if (!sensitiveOperationRateLimitInstance) {
-      sensitiveOperationRateLimitInstance = rateLimiter(10, '1 h');
-    }
+    sensitiveOperationRateLimitInstance ??= rateLimiter(10, '1 h');
     return (sensitiveOperationRateLimitInstance as unknown as Record<string | symbol, unknown>)[
       prop
     ];
