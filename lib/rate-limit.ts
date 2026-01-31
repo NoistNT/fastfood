@@ -3,14 +3,22 @@ import { Redis } from '@upstash/redis';
 
 let redis: Redis | null = null;
 
-function getRedis(): Redis | null {
+// Check if we're in test/CI environment where mock is acceptable
+const isTestEnv = process.env.CI === 'true' || process.env.NODE_ENV === 'test';
+
+function getRedis(): Redis {
   if (!redis) {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!url || !token) {
-      console.warn('Redis not configured - rate limiting disabled');
-      return null;
+      if (isTestEnv) {
+        console.warn('Redis not configured - using mock rate limiter for tests');
+        return null as unknown as Redis;
+      }
+      throw new Error(
+        'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set in production'
+      );
     }
 
     redis = new Redis({
@@ -33,7 +41,7 @@ type Duration =
   | `${number}d`
   | `${number}ms`;
 
-// Mock rate limiter for when Redis is not available
+// Mock rate limiter for when Redis is not available (tests only)
 const mockRatelimit = {
   limit: async () => ({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 }),
   blockUntilReady: async () => ({
@@ -45,17 +53,28 @@ const mockRatelimit = {
 } as unknown as Ratelimit;
 
 export const rateLimiter = (requests = 10, window: Duration) => {
-  const redisInstance = getRedis();
+  try {
+    const redisInstance = getRedis();
 
-  if (!redisInstance) {
-    return mockRatelimit;
+    if (!redisInstance) {
+      // Only use mock in test environments
+      if (isTestEnv) {
+        return mockRatelimit;
+      }
+      throw new Error('Redis is required in production');
+    }
+
+    return new Ratelimit({
+      redis: redisInstance,
+      limiter: Ratelimit.slidingWindow(requests, window),
+      analytics: true,
+    });
+  } catch (error) {
+    if (isTestEnv) {
+      return mockRatelimit;
+    }
+    throw error;
   }
-
-  return new Ratelimit({
-    redis: redisInstance,
-    limiter: Ratelimit.slidingWindow(requests, window),
-    analytics: true,
-  });
 };
 
 // Predefined rate limiters for common scenarios - lazily initialized
