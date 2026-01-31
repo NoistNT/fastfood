@@ -26,14 +26,17 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
+      testIgnore: 'e2e/visual/**/*',
     },
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      testIgnore: 'e2e/visual/**/*',
     },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+      testIgnore: 'e2e/visual/**/*',
     },
     // Visual regression tests only run on chromium for consistency
     {
