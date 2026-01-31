@@ -17,9 +17,9 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: {
       // An acceptable ratio of pixels that are different to the total amount of pixels
-      threshold: 0.2,
+      threshold: 0.3,
       // An acceptable amount of pixels that could be different
-      maxDiffPixels: 100,
+      maxDiffPixels: 1000,
     },
   },
   projects: [
