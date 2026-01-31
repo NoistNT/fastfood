@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Complete User Journey', () => {
+  test.skip(!!process.env.CI, 'Requires database connectivity - skipped in CI');
+
   test('user can register, login, place order, and view dashboard', async ({ page }) => {
     // Generate unique test user data
     const timestamp = Date.now();
