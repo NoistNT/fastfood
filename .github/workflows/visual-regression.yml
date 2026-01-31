@@ -30,6 +30,15 @@ jobs:
       - name: Build application
         run: pnpm build
 
+      - name: Start server for visual tests
+        run: pnpm start &
+        env:
+          DB_URL: postgresql://mock:mock@localhost:5432/mockdb
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
       - name: Run visual regression tests
         run: pnpm test:visual:ci
         env:

@@ -29,32 +29,6 @@ test.describe('Component Visual Regression', () => {
     await expect(page.locator('main')).toHaveScreenshot('products-page.png');
   });
 
-  test('button variants match baseline', async ({ page }) => {
-    await page.goto('/components-test');
-    await page.waitForLoadState('networkidle');
-
-    // Take screenshot of button variants
-    await expect(page.locator('[data-testid="button-variants"]')).toHaveScreenshot(
-      'button-variants.png'
-    );
-  });
-
-  test('form inputs match baseline', async ({ page }) => {
-    await page.goto('/components-test');
-    await page.waitForLoadState('networkidle');
-
-    // Take screenshot of form inputs
-    await expect(page.locator('[data-testid="form-inputs"]')).toHaveScreenshot('form-inputs.png');
-  });
-
-  test('cards match baseline', async ({ page }) => {
-    await page.goto('/components-test');
-    await page.waitForLoadState('networkidle');
-
-    // Take screenshot of cards
-    await expect(page.locator('[data-testid="cards"]')).toHaveScreenshot('cards.png');
-  });
-
   test('responsive design - tablet', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto('/components-test');

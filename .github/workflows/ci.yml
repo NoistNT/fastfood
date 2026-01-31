@@ -36,6 +36,15 @@ jobs:
       - name: Build Application
         run: pnpm build
 
+      - name: Start server for E2E tests
+        run: pnpm start &
+        env:
+          DB_URL: postgresql://mock:mock@localhost:5432/mockdb
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+
+      - name: Wait for server to be ready
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
       - name: Run E2E Tests
         run: pnpm test:e2e
         env:
