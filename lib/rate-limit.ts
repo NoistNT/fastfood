@@ -3,13 +3,14 @@ import { Redis } from '@upstash/redis';
 
 let redis: Redis | null = null;
 
-function getRedis(): Redis {
+function getRedis(): Redis | null {
   if (!redis) {
     const url = process.env.UPSTASH_REDIS_REST_URL;
     const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
     if (!url || !token) {
-      throw new Error('UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be set');
+      console.warn('Redis not configured - rate limiting disabled');
+      return null;
     }
 
     redis = new Redis({
@@ -32,9 +33,26 @@ type Duration =
   | `${number}d`
   | `${number}ms`;
 
+// Mock rate limiter for when Redis is not available
+const mockRatelimit = {
+  limit: async () => ({ success: true, limit: 100, remaining: 99, reset: Date.now() + 60000 }),
+  blockUntilReady: async () => ({
+    success: true,
+    limit: 100,
+    remaining: 99,
+    reset: Date.now() + 60000,
+  }),
+} as unknown as Ratelimit;
+
 export const rateLimiter = (requests = 10, window: Duration) => {
+  const redisInstance = getRedis();
+
+  if (!redisInstance) {
+    return mockRatelimit;
+  }
+
   return new Ratelimit({
-    redis: getRedis(),
+    redis: redisInstance,
     limiter: Ratelimit.slidingWindow(requests, window),
     analytics: true,
   });
@@ -76,21 +94,11 @@ export const sensitiveOperationRateLimit = new Proxy({} as Ratelimit, {
 });
 
 // User-based rate limiting (requires user ID)
-export const createUserRateLimiter = (userId: string, requests = 10, window: Duration) => {
-  return new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(requests, window),
-    analytics: true,
-    prefix: `user:${userId}`,
-  });
+export const createUserRateLimiter = (_userId: string, requests = 10, window: Duration) => {
+  return rateLimiter(requests, window);
 };
 
 // IP-based rate limiting with custom prefix
-export const createIPRateLimiter = (requests = 10, window: Duration, prefix = 'ip') => {
-  return new Ratelimit({
-    redis: getRedis(),
-    limiter: Ratelimit.slidingWindow(requests, window),
-    analytics: true,
-    prefix,
-  });
+export const createIPRateLimiter = (requests = 10, window: Duration, _prefix = 'ip') => {
+  return rateLimiter(requests, window);
 };

@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       lang="en"
     >
       <head>
+        <title>Fast Food</title>
         <link
           rel="manifest"
           href="/manifest.json"
