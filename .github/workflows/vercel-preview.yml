@@ -30,7 +30,7 @@ jobs:
         run: pnpm build
 
       - name: Deploy to Vercel Preview
-        uses: amondnet/vercel-action@v25
+        uses: vercel/vercel-action@v5
         id: vercel-deployment
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
