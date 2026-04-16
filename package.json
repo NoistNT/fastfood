@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint '**/*.{ts,tsx}' && tsc --noEmit --fix",
+    "lint": "eslint '**/*.{ts,tsx}' && tsc --noEmit",
     "type-check": "tsc --noEmit",
     "format": "eslint '**/*.{ts,tsx}' --fix && prettier --write .",
     "db:studio": "drizzle-kit studio",

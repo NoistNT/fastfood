@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -40,8 +40,8 @@ jobs:
           vercel-args: '--prod=false'
 
       - name: Comment deployment URL on PR
-        uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
           script: |
             const deploymentUrl = process.env.VERCEL_URL || '${{ steps.vercel-deployment.outputs.preview-url }}';
