@@ -84,7 +84,7 @@ jobs:
         run: pnpm build
 
       - name: Deploy to Vercel Production
-        uses: amondnet/vercel-action@v42
+        uses: amondnet/vercel-action@v42.2.0
         id: vercel-deployment
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
