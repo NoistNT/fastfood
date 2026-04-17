@@ -10,6 +10,7 @@ export const config = {
 };
 
 const publicRoutes = [
+  '/',
   '/login',
   '/register',
   '/password-reset',
@@ -17,10 +18,10 @@ const publicRoutes = [
   '/password-reset/request',
   '/api/auth',
   '/api/payment',
+  '/api/health',
 ];
 
 const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
-  { path: '/', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
   { path: '/dashboard', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
   { path: '/order', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
   { path: '/products', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
