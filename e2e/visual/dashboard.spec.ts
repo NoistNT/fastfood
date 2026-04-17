@@ -7,7 +7,7 @@ test.describe('Dashboard Visual Regression', () => {
 
     // Navigate to dashboard (assuming user is already logged in)
     await page.goto('/dashboard');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('dashboard overview matches baseline', async ({ page }) => {
