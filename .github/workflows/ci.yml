@@ -46,6 +46,6 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: Run E2E Tests
-        run: pnpm test:e2e -- --project=chromium --project=firefox --project=webkit
+        run: pnpm exec playwright test --project=chromium --project=firefox --project=webkit
         env:
           CI: true
