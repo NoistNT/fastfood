@@ -50,7 +50,7 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: E2E Tests
-        run: pnpm test:e2e
+        run: pnpm test:e2e -- --project=chromium --project=firefox --project=webkit
         env:
           CI: true
 
