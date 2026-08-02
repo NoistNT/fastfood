@@ -32,9 +32,9 @@ yarn-error.log*
 logs/
 error-logs/
 
-# local env files
+# env files - example files are tracked
 .env*
-.env*.local
+!.env*.example
 
 # vercel
 .vercel
