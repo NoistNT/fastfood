@@ -88,8 +88,7 @@ export async function GET() {
 
     return apiSuccess(alerts);
   } catch (error) {
-    const { logError } = await import('@/lib/logger');
-    logError(error as Error, { context: 'GET /api/inventory/alerts' });
+    console.error('Failed to retrieve alerts:', error);
     return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to retrieve alerts', { status: 500 });
   }
 }
@@ -123,8 +122,7 @@ export async function POST(request: NextRequest) {
 
     return apiSuccess({ alertId, resolved: true });
   } catch (error) {
-    const { logError } = await import('@/lib/logger');
-    logError(error as Error, { context: 'POST /api/inventory/alerts', body: request.body });
+    console.error('Failed to resolve alert:', error);
     return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to resolve alert', { status: 500 });
   }
 }

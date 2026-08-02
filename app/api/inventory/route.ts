@@ -96,8 +96,7 @@ export async function GET() {
 
     return apiSuccess(inventoryItems);
   } catch (error) {
-    const { logError } = await import('@/lib/logger');
-    logError(error as Error, { context: 'GET /api/inventory' });
+    console.error('Failed to retrieve inventory:', error);
     return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to retrieve inventory', { status: 500 });
   }
 }
@@ -160,8 +159,7 @@ export async function POST(request: NextRequest) {
       adjustment: quantity,
     });
   } catch (error) {
-    const { logError } = await import('@/lib/logger');
-    logError(error as Error, { context: 'POST /api/inventory', body: request.body });
+    console.error('Failed to adjust inventory:', error);
     return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to adjust inventory', { status: 500 });
   }
 }

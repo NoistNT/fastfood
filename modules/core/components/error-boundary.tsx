@@ -40,7 +40,6 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
       errorInfo,
     });
 
-    // Note: Winston logging is server-side only, so we skip it here
     // Error logging for client-side errors should be handled by error reporting services
 
     // Call custom error handler if provided
