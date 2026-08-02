@@ -6,8 +6,14 @@ type Duration =
 
 const redis = Redis.fromEnv();
 
+const env = process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? 'development';
+
 function createLimiter(requests: number, window: Duration, prefix: string) {
-  return new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(requests, window), prefix });
+  return new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(requests, window),
+    prefix: `${env}:${prefix}`,
+  });
 }
 
 export const authRateLimit = createLimiter(5, '10 m', 'ratelimit:auth');

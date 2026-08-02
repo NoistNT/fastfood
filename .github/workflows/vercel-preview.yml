@@ -1,8 +1,10 @@
 name: Vercel Preview Deployment
 
 on:
+  push:
+    branches: [dev]
   pull_request:
-    branches: [main, develop]
+    branches: [main, dev]
     types: [opened, synchronize, reopened]
 
 jobs:
