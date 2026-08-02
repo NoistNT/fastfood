@@ -1,5 +1,5 @@
 name: 'Setup Node.js and pnpm'
-description: 'Setup Node.js 24, pnpm 9, and cache dependencies'
+description: 'Setup Node.js 24, pnpm 11, and cache dependencies'
 
 inputs:
   frozen-lockfile:
@@ -18,21 +18,9 @@ runs:
     - name: Setup pnpm
       uses: pnpm/action-setup@v5
       with:
-        version: 9
+        version: 11
         run_install: false
-
-    - name: Get pnpm store directory
-      shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-    - name: Setup pnpm cache
-      uses: actions/cache@v5
-      with:
-        path: ${{ env.STORE_PATH }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
+        cache: true
 
     - name: Install dependencies
       shell: bash
