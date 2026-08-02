@@ -4,63 +4,6 @@ import type { UserWithRoles } from '@/types/auth';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
 
-/**
- * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Authenticate user and create session
- *     tags: [Authentication]
- *     security:
- *       - CSRFToken: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: User's email address
- *               password:
- *                 type: string
- *                 minLength: 1
- *                 description: User's password
- *     responses:
- *       200:
- *         description: Login successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data:
- *                 user:
- *                   id: "user-123"
- *                   email: "user@example.com"
- *                   name: "John Doe"
- *                   roles: [{ id: "role-1", name: "customer" }]
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       401:
- *         description: Invalid credentials
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       429:
- *         description: Too many login attempts
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 import { authRateLimit, createUserRateLimiter } from '@/lib/rate-limit';
 import { login } from '@/lib/auth/session';
 import { verifyPassword } from '@/lib/auth/password';

@@ -29,52 +29,6 @@ const handleDatabaseError = (error: unknown, defaultMessage: string) => {
   return apiError(ERROR_CODES.INTERNAL_ERROR, defaultMessage);
 };
 
-/**
- * @swagger
- * /api/dashboard/charts:
- *   get:
- *     summary: Get dashboard chart data
- *     tags: [Dashboard]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: query
- *         name: period
- *         schema:
- *           type: string
- *           enum: [1w, 2w, 30d, 6m, 1y, all]
- *           default: 30d
- *         description: Time period for chart data
- *     responses:
- *       200:
- *         description: Chart data retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data:
- *                 revenueData:
- *                   - date: "2024-01-01"
- *                     revenue: 125.50
- *                     orders: 3
- *                 statusData:
- *                   - status: "completed"
- *                     count: 25
- *                   - status: "pending"
- *                     count: 5
- *                 period: "30d"
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function GET(request: Request) {
   try {
     // Check authentication

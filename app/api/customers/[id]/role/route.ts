@@ -8,61 +8,6 @@ import { userRoles, roles } from '@/db/schema';
 import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/customers/{id}/role:
- *   post:
- *     summary: Update customer role
- *     tags: [Customers]
- *     security:
- *       - BearerAuth: []
- *       - CSRFToken: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Customer ID to update
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - roleName
- *             properties:
- *               roleName:
- *                 type: string
- *                 enum: [admin, customer]
- *                 description: New role for the customer
- *     responses:
- *       200:
- *         description: Customer role updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data: {}
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       400:
- *         description: Invalid role name
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const t = await getTranslations('Dashboard.customers');

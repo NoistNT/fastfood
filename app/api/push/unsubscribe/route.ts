@@ -3,41 +3,6 @@ import type { NextRequest } from 'next/server';
 import { getSession } from '@/lib/auth/session';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/push/unsubscribe:
- *   post:
- *     summary: Unsubscribe from push notifications
- *     tags: [Push Notifications]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - endpoint
- *             properties:
- *               endpoint:
- *                 type: string
- *                 description: Push subscription endpoint to remove
- *     responses:
- *       200:
- *         description: Unsubscription successful
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       401:
- *         description: Not authenticated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function POST(request: NextRequest) {
   try {
     // Check authentication

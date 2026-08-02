@@ -8,42 +8,6 @@ import { products } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/products/{id}/delete:
- *   delete:
- *     summary: Soft delete a product (mark as unavailable)
- *     tags: [Products]
- *     security:
- *       - BearerAuth: []
- *       - CSRFToken: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: Product ID to delete
- *     responses:
- *       200:
- *         description: Product deleted successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data: {}
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

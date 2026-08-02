@@ -26,60 +26,6 @@ const resetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
-/**
- * @swagger
- * /api/auth/password-reset/reset:
- *   post:
- *     summary: Reset password using token
- *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - token
- *               - password
- *               - confirmPassword
- *             properties:
- *               token:
- *                 type: string
- *                 description: Password reset token
- *               password:
- *                 type: string
- *                 minLength: 8
- *                 description: New password
- *               confirmPassword:
- *                 type: string
- *                 description: Password confirmation
- *     responses:
- *       200:
- *         description: Password reset successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data:
- *                 message: "Password has been reset successfully."
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       400:
- *         description: Invalid token or validation error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

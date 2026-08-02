@@ -5,43 +5,6 @@ import { orders, users, products } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/dashboard/summary:
- *   get:
- *     summary: Get dashboard summary statistics
- *     tags: [Dashboard]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: Dashboard summary retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *             example:
- *               success: true
- *               data:
- *                 totalRevenue: 1250.50
- *                 totalOrders: 45
- *                 totalCustomers: 23
- *                 totalProducts: 12
- *                 recentOrders:
- *                   - id: "order-1"
- *                     total: 25.99
- *                     status: "completed"
- *                     createdAt: "2024-01-01T10:00:00.000Z"
- *               meta:
- *                 timestamp: "2024-01-01T00:00:00.000Z"
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function GET() {
   try {
     // Check authentication

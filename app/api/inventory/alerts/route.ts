@@ -7,59 +7,6 @@ import { inventoryAlerts, inventory, ingredients } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/inventory/alerts:
- *   get:
- *     summary: Get active inventory alerts
- *     tags: [Inventory]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: Alerts retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *   post:
- *     summary: Resolve an inventory alert
- *     tags: [Inventory]
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - alertId
- *             properties:
- *               alertId:
- *                 type: string
- *                 description: Alert ID to resolve
- *     responses:
- *       200:
- *         description: Alert resolved successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       404:
- *         description: Alert not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 export async function GET() {
   try {
     // Check authentication

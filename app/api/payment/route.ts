@@ -6,63 +6,6 @@ import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
 import { paymentCircuitBreaker } from '@/lib/circuit-breaker';
 import { apiError, ERROR_CODES } from '@/lib/api-response';
 
-/**
- * @swagger
- * /api/payment:
- *   post:
- *     summary: Create payment preference for MercadoPago
- *     tags: [Payments]
- *     security:
- *       - BearerAuth: []
- *       - CSRFToken: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - title
- *               - price
- *               - quantity
- *             properties:
- *               title:
- *                 type: string
- *                 description: Payment title/description
- *               price:
- *                 type: number
- *                 description: Unit price
- *               quantity:
- *                 type: integer
- *                 description: Quantity of items
- *     responses:
- *       200:
- *         description: Payment preference created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   description: MercadoPago preference ID
- *                 init_point:
- *                   type: string
- *                   description: Payment URL to redirect user to
- *       403:
- *         description: Invalid CSRF token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- *       429:
- *         description: Too many payment requests
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ApiResponse'
- */
-
 interface Body {
   title: string;
   price: number;
