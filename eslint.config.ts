@@ -31,7 +31,6 @@ export default [
       },
     },
     plugins: {
-      '@typescript-eslint': tsPlugin,
       'react-refresh': reactRefreshPlugin,
       'prettier': prettierPlugin,
     },

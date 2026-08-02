@@ -108,7 +108,11 @@ export function RevenueChart() {
           />
           <YAxis tickFormatter={(value) => `$${value.toFixed(0)}`} />
           <Tooltip
-            labelFormatter={(value) => new Date(value).toLocaleDateString()}
+            labelFormatter={(value) =>
+              typeof value === 'string' || typeof value === 'number'
+                ? new Date(value).toLocaleDateString()
+                : ''
+            }
             formatter={(value) =>
               value ? [`$${Number(value).toFixed(2)}`, 'Revenue'] : ['N/A', 'Revenue']
             }
