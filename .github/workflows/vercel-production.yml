@@ -122,7 +122,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "from": "FastFood CI/CD <noreply@yourdomain.com>",
+              "from": "FastFood CI/CD <onboarding@resend.dev>",
               "to": ["${{ secrets.DEPLOYMENT_NOTIFICATION_EMAIL }}"],
               "subject": "🚀 FastFood Production Deployment Complete",
               "html": "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\"><h1 style=\"color: #4CAF50;\">🚀 Production Deployment Successful</h1><p><strong>Deployment URL:</strong> ${{ steps.vercel-deployment.outputs.preview-url }}</p><p><strong>Commit:</strong> ${{ github.sha }}</p><p><strong>Deployed by:</strong> ${{ github.actor }}</p><p><strong>Quality Gates:</strong> All passed ✅</p><p>The deployment is now live and serving traffic! 🎉</p></div>"
@@ -146,13 +146,15 @@ jobs:
               target_url: deploymentUrl
             });
 
-            // Create deployment record
+            // Create deployment record (empty required_contexts bypasses the
+            // self-referential check on the in-progress deploy job)
             const deployment = await github.rest.repos.createDeployment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
               environment: 'production',
-              description: deployNotes
+              description: deployNotes,
+              required_contexts: []
             });
 
             // Update deployment status
