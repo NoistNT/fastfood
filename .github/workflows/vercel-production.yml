@@ -64,6 +64,10 @@ jobs:
     environment: production
     timeout-minutes: 15
 
+    permissions:
+      deployments: write
+      statuses: write
+
     env:
       DB_URL: postgresql://mock:mock@localhost:5432/mockdb
       NEXT_PUBLIC_BASE_URL: http://localhost:3000
