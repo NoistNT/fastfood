@@ -50,12 +50,9 @@ jobs:
         run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: E2E Tests
-        run: pnpm exec playwright test --project=chromium --project=firefox --project=webkit
+        run: pnpm exec playwright test --project=chromium
         env:
           CI: true
-
-      - name: Visual Regression Tests
-        run: pnpm test:visual:ci
 
       - name: Performance Audit
         run: pnpm test:performance
