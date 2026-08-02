@@ -110,5 +110,5 @@ export default [
       'react-hooks/incompatible-library': 'off', // TanStack Table API returns functions that can't be safely memoized
     },
   },
-  { ignores: ['.next/**', 'node_modules/**'] },
+  { ignores: ['.next/**', 'node_modules/**', '.opencode/**'] },
 ] as Linter.Config[];
