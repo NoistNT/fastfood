@@ -1,5 +1,7 @@
 'use client';
 
+import type { ProductWithIngredients } from '@/modules/products/types';
+
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Package } from 'lucide-react';
@@ -11,19 +13,11 @@ import { createColumns } from '@/modules/dashboard/components/products-columns';
 import { InventoryTable } from '@/modules/dashboard/components/inventory-table';
 import { InventoryStats } from '@/modules/dashboard/components/inventory-stats';
 import { LowStockAlerts } from '@/modules/dashboard/components/low-stock-alerts';
+import { useIngredients } from '@/modules/core/hooks/use-api-cache';
 import { exportToCSV } from '@/lib/utils';
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
 
-export type ProductWithIngredients = {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  imageUrl: string;
-  available: boolean;
-  ingredients: string[];
-  ingredientIds: number[];
-};
+export type { ProductWithIngredients };
 
 interface InventoryStatsData {
   totalItems: number;
@@ -58,6 +52,13 @@ export function ProductsDashboard({
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductWithIngredients | undefined>();
   const [activeTab, setActiveTab] = useState<'products' | 'inventory'>('products');
+
+  const { data: ingredientsData } = useIngredients();
+  const ingredientOptions = (ingredientsData?.data ?? []) as {
+    id: number;
+    name: string;
+    unit: string;
+  }[];
 
   const fetchProducts = async () => {
     try {
@@ -154,17 +155,21 @@ export function ProductsDashboard({
       )}
 
       <ProductFormDialog
+        key={`create-${isCreateDialogOpen}`}
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
+        ingredients={ingredientOptions}
         onSuccess={handleCreateSuccess}
       />
 
       <ProductFormDialog
+        key={`edit-${editingProduct?.id ?? 'none'}`}
         open={!!editingProduct}
         onOpenChange={(open) => {
           if (!open) setEditingProduct(undefined);
         }}
         product={editingProduct}
+        ingredients={ingredientOptions}
         onSuccess={handleEditSuccess}
       />
     </div>

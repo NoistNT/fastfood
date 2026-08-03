@@ -11,6 +11,7 @@ export const queryKeys = {
   products: ['products'] as const,
   customers: ['customers'] as const,
   inventory: ['inventory'] as const,
+  ingredients: ['ingredients'] as const,
   orders: ['orders'] as const,
 } as const;
 
@@ -85,6 +86,22 @@ export function useInventory() {
   });
 }
 
+export type IngredientOption = { id: number; name: string; unit: string };
+
+export function useIngredients() {
+  return useQuery({
+    queryKey: queryKeys.ingredients,
+    queryFn: async () => {
+      const response = await fetch('/api/ingredients');
+      if (!response.ok) {
+        throw new Error('Failed to fetch ingredients');
+      }
+      return response.json();
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 // Mutations for data updates
 export function useCreateProduct() {
   const queryClient = useQueryClient();
@@ -113,7 +130,7 @@ export function useUpdateProduct() {
   return useMutation({
     mutationFn: async ({ id, productData }: { id: number; productData: Partial<Product> }) => {
       const response = await fetch(`/api/products/${id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productData),
       });
@@ -134,7 +151,7 @@ export function useDeleteProduct() {
   return useMutation({
     mutationFn: async (id: number) => {
       const response = await fetch(`/api/products/${id}/delete`, {
-        method: 'POST',
+        method: 'DELETE',
       });
       if (!response.ok) {
         throw new Error('Failed to delete product');

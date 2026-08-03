@@ -1,23 +1,13 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { ProductWithIngredients } from '@/modules/products/types';
 
 import Link from 'next/link';
 
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { ProductActionsCell } from '@/modules/dashboard/components/product-actions-cell';
 import { ProductAvailabilityBadge } from '@/modules/dashboard/components/product-availability-badge';
-
-type ProductWithIngredients = {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  available: boolean;
-  imageUrl: string;
-  ingredients: string[];
-  ingredientIds: number[];
-};
 
 export const createColumns = (
   onEdit: (product: ProductWithIngredients) => void,

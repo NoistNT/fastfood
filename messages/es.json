@@ -240,8 +240,39 @@
         "createFailed": "Error al crear el producto",
         "updateFailed": "Error al actualizar el producto",
         "deleteFailed": "Error al eliminar el producto",
+        "invalidIngredients": "Uno o más ingredientes son inválidos",
         "productsTab": "Productos",
-        "inventoryTab": "Inventario"
+        "inventoryTab": "Inventario",
+        "form": {
+          "addProductTitle": "Agregar Producto",
+          "editProductTitle": "Editar Producto",
+          "name": "Nombre",
+          "namePlaceholder": "Hamburguesa con queso",
+          "nameRequired": "El nombre es obligatorio",
+          "price": "Precio",
+          "pricePlaceholder": "9.99",
+          "priceInvalid": "El precio debe ser un número positivo válido",
+          "description": "Descripción",
+          "descriptionPlaceholder": "Una breve descripción del producto",
+          "imageUrl": "URL de la imagen",
+          "imageUrlPlaceholder": "https://ejemplo.com/foto.jpg",
+          "imageUrlInvalid": "Por favor ingresa una URL válida",
+          "available": "Disponible",
+          "ingredients": "Ingredientes",
+          "ingredientsHint": "Selecciona los ingredientes que componen este producto",
+          "ingredientsEmpty": "No hay ingredientes disponibles",
+          "cancel": "Cancelar",
+          "save": "Guardar producto",
+          "saving": "Guardando..."
+        },
+        "archive": {
+          "title": "¿Archivar producto?",
+          "description": "Archivar un producto lo elimina del menú. Puedes restaurarlo más tarde al volverlo disponible.",
+          "confirm": "Archivar",
+          "cancel": "Cancelar",
+          "success": "Producto archivado correctamente",
+          "failed": "Error al archivar el producto"
+        }
       },
       "inventory": {
         "title": "Gestión de Inventario",
