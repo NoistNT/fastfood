@@ -9,21 +9,21 @@ Vitest + jsdom · Playwright (E2E + visual) · Upstash Redis · MercadoPago · R
 
 ## Commands
 
-| Command | What it does |
-|---|---|
-| `pnpm dev` | Next.js dev server |
-| `pnpm build` | Production build |
-| `pnpm lint` | ESLint **+ `tsc --noEmit`** (must pass both) |
-| `pnpm test` | `dotenv -e .env.test -- vitest` (watcher) |
-| `pnpm test:run` | `vitest run` |
-| `pnpm test:e2e` | Playwright (needs `pnpm start` running) |
-| `pnpm test:visual` | Update Playwright visual snapshots |
-| `pnpm test:visual:ci` | Run visual tests without updating |
-| `pnpm db:push` | Push Drizzle schema to DB |
-| `pnpm db:seed` | `tsx ./scripts/seed.ts` |
-| `pnpm db:studio` | Drizzle Kit Studio |
-| `pnpm db:generate` | Generate Drizzle migrations |
-| `pnpm format` | ESLint --fix + Prettier --write |
+| Command               | What it does                                 |
+| --------------------- | -------------------------------------------- |
+| `pnpm dev`            | Next.js dev server                           |
+| `pnpm build`          | Production build                             |
+| `pnpm lint`           | ESLint **+ `tsc --noEmit`** (must pass both) |
+| `pnpm test`           | `dotenv -e .env.test -- vitest` (watcher)    |
+| `pnpm test:run`       | `vitest run`                                 |
+| `pnpm test:e2e`       | Playwright (needs `pnpm start` running)      |
+| `pnpm test:visual`    | Update Playwright visual snapshots           |
+| `pnpm test:visual:ci` | Run visual tests without updating            |
+| `pnpm db:push`        | Push Drizzle schema to DB                    |
+| `pnpm db:seed`        | `tsx ./scripts/seed.ts`                      |
+| `pnpm db:studio`      | Drizzle Kit Studio                           |
+| `pnpm db:generate`    | Generate Drizzle migrations                  |
+| `pnpm format`         | ESLint --fix + Prettier --write              |
 
 ## CI pipeline order (must match)
 
@@ -35,7 +35,7 @@ Visual regression is **manual only** (`workflow_dispatch`); `pnpm audit` runs we
 
 - **`app/`** — Next.js App Router pages + API routes
 - **`modules/`** — Domain logic split by feature: `auth/`, `core/`, `dashboard/`, `orders/`, `products/`, `users/`
-- **`modules/core/ui/`** — shadcn/ui components (29 files). Re-export from barrel if adding new ones
+- **`modules/core/ui/`** — shadcn/ui components. Import via deep paths (`@/modules/core/ui/button`)
 - **`db/schema.ts`** — Drizzle schema (single file), **`db/drizzle.ts`** — client (Neon serverless)
 - **`test/`** — Vitest tests mirrored by type (`api/`, `components/`, `hooks/`, `lib/`, `integration/`)
 - **`e2e/`** — Playwright E2E specs + `e2e/visual/` for visual regression
