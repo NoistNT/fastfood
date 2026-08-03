@@ -46,7 +46,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm start',
+    // Prefer the dev branch DB (seeded) for local E2E runs; fall back to `next start`
+    // (mock DB_URL from CI) when no local env file is present.
+    command: '[ -f .env.development ] && dotenv -e .env.development -- next start || next start',
     port: 3000,
     reuseExistingServer: true,
   },
