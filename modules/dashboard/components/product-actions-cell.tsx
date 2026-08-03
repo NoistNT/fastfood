@@ -9,6 +9,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/modules/core/ui/button';
 import { ConfirmationDialog } from '@/modules/core/ui/confirmation-dialog';
 import { useToast } from '@/modules/core/hooks/use-toast';
+import { useCSRFToken } from '@/modules/core/hooks/use-csrf-token';
 
 interface ProductActionsCellProps {
   product: ProductWithIngredients;
@@ -20,14 +21,19 @@ export function ProductActionsCell({ product, onEdit }: ProductActionsCellProps)
   const { toast } = useToast();
   const common = useTranslations('Common');
   const t = useTranslations('Features.dashboard.products');
+  const { getToken } = useCSRFToken();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleArchive = async () => {
     setIsDeleting(true);
     try {
+      const csrfToken = await getToken();
       const response = await fetch(`/api/products/${product.id}/delete`, {
         method: 'DELETE',
+        headers: {
+          ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+        },
       });
 
       if (!response.ok) {

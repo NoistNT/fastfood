@@ -75,7 +75,7 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
     // Admin-only mutation

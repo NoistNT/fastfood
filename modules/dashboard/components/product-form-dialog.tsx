@@ -50,6 +50,7 @@ export function ProductFormDialog({
   onSuccess,
 }: ProductFormDialogProps) {
   const t = useTranslations('Features.dashboard.products.form');
+  const tProducts = useTranslations('Features.dashboard.products');
   const { getToken } = useCSRFToken();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -142,7 +143,7 @@ export function ProductFormDialog({
         <DialogHeader>
           <DialogTitle>{product ? t('editProductTitle') : t('addProductTitle')}</DialogTitle>
           <DialogDescription>
-            {product ? t('editProductDescription') : t('addProductDescription')}
+            {product ? tProducts('editProductDescription') : tProducts('addProductDescription')}
           </DialogDescription>
         </DialogHeader>
 

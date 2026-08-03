@@ -14,7 +14,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
     // Admin-only mutation + CSRF

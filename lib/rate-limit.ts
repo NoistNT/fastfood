@@ -90,7 +90,15 @@ class RateLimiter {
       (timestamp) => now - timestamp < this.windowMs
     );
 
-    if (this.memoryHits.size > 10_000) this.memoryHits.clear();
+    // Trim expired entries instead of clearing everything, so one noisy prefix
+    // doesn't reset the counters of every other caller.
+    if (this.memoryHits.size > 10_000) {
+      for (const [mapKey, hits] of this.memoryHits) {
+        if (hits.every((timestamp) => now - timestamp >= this.windowMs)) {
+          this.memoryHits.delete(mapKey);
+        }
+      }
+    }
 
     const success = recentHits.length < this.requests;
     if (success) {

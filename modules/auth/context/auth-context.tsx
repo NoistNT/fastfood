@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useRouter } from 'next/navigation';
 
 import { type UserWithRoles } from '@/types/auth';
+import { clearCSRFTokenCache } from '@/modules/core/hooks/use-csrf-token';
 
 interface AuthContextType {
   user: UserWithRoles | null;
@@ -76,10 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Always clear user on logout attempt, regardless of response
       setUser(null);
+      clearCSRFTokenCache();
       router.push('/login');
     } catch (_error) {
       // Still clear user even if request fails
       setUser(null);
+      clearCSRFTokenCache();
       router.push('/login');
     } finally {
       setLoading(false);

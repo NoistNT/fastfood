@@ -1,7 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Complete User Journey', () => {
-  test.skip(!!process.env.CI, 'Requires database connectivity - skipped in CI');
+  // Requires a real (seeded) database. Skipped by default in CI; set
+  // E2E_DB_URL to run it against a seeded database (e.g. the dedicated CI job).
+  test.skip(
+    (!!process.env.CI || !!process.env.PLAYWRIGHT_CI) && !process.env.E2E_DB_URL,
+    'Requires database connectivity - skipped in CI'
+  );
 
   test('user can register, login, place an order, and log out', async ({ page }) => {
     const timestamp = Date.now();

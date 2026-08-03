@@ -2,6 +2,8 @@ import type { NewProduct, Product } from '@/types/db';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
+import { useCSRFToken } from '@/modules/core/hooks/use-csrf-token';
+
 // Query keys for consistent caching
 export const queryKeys = {
   dashboard: {
@@ -105,12 +107,17 @@ export function useIngredients() {
 // Mutations for data updates
 export function useCreateProduct() {
   const queryClient = useQueryClient();
+  const { getToken } = useCSRFToken();
 
   return useMutation({
     mutationFn: async (productData: NewProduct) => {
+      const csrfToken = await getToken();
       const response = await fetch('/api/products', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+        },
         body: JSON.stringify(productData),
       });
       if (!response.ok) {
@@ -126,12 +133,17 @@ export function useCreateProduct() {
 
 export function useUpdateProduct() {
   const queryClient = useQueryClient();
+  const { getToken } = useCSRFToken();
 
   return useMutation({
     mutationFn: async ({ id, productData }: { id: number; productData: Partial<Product> }) => {
+      const csrfToken = await getToken();
       const response = await fetch(`/api/products/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+        },
         body: JSON.stringify(productData),
       });
       if (!response.ok) {
@@ -147,11 +159,16 @@ export function useUpdateProduct() {
 
 export function useDeleteProduct() {
   const queryClient = useQueryClient();
+  const { getToken } = useCSRFToken();
 
   return useMutation({
     mutationFn: async (id: number) => {
+      const csrfToken = await getToken();
       const response = await fetch(`/api/products/${id}/delete`, {
         method: 'DELETE',
+        headers: {
+          ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+        },
       });
       if (!response.ok) {
         throw new Error('Failed to delete product');

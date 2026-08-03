@@ -11,6 +11,7 @@ import { SubmitOrder } from '@/modules/orders/components/submit-order';
 import { calculateTotal, submitOrder } from '@/modules/orders/utils';
 import { useOrderStore } from '@/store/use-order';
 import { useOfflineOrders } from '@/modules/core/hooks/use-offline-orders';
+import { useCSRFToken } from '@/modules/core/hooks/use-csrf-token';
 import { OfflineStatus } from '@/modules/core/components/offline-status';
 import { ErrorBoundary } from '@/modules/core/components/error-boundary';
 
@@ -18,6 +19,7 @@ export default function Page() {
   const t = useTranslations('Features.orders');
   const { items, incrementQuantity, decrementQuantity, removeItem, clearOrder } = useOrderStore();
   const { isOnline, addOfflineOrder } = useOfflineOrders();
+  const { getToken } = useCSRFToken();
 
   const total = useMemo(() => calculateTotal(items), [items]);
 
@@ -66,9 +68,13 @@ export default function Page() {
   const handlePay = async () => {
     startTransition(async () => {
       try {
+        const csrfToken = await getToken();
         const response = await fetch('/api/payment', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
+          },
           body: JSON.stringify({
             title: 'Order Payment',
             quantity: items.length,

@@ -47,8 +47,8 @@ export default async function proxy(request: NextRequest) {
   const sortedAuthorizedRoutes = [...authorizedRoutes].sort(
     (a, b) => b.path.length - a.path.length
   );
-  const requiredRoles = sortedAuthorizedRoutes.find((route) =>
-    pathname.startsWith(route.path)
+  const requiredRoles = sortedAuthorizedRoutes.find(
+    (route) => pathname === route.path || pathname.startsWith(`${route.path}/`)
   )?.roles;
 
   if (requiredRoles && !requiredRoles.some((role) => userRoles.includes(role))) {
