@@ -4,9 +4,12 @@ import { z } from 'zod';
 import { getTranslations } from 'next-intl/server';
 import { eq } from 'drizzle-orm';
 
+import { validateIngredientIds } from '@/app/api/products/_lib/validate';
 import { db } from '@/db/drizzle';
 import { products, productIngredients, ingredients } from '@/db/schema';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/guards';
+import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
+import { sanitizeText, sanitizeUrl } from '@/lib/sanitize';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 const createProductSchema = z.object({
@@ -17,7 +20,7 @@ const createProductSchema = z.object({
   }),
   imageUrl: z.string().optional(),
   available: z.boolean().optional().default(true),
-  ingredientIds: z.array(z.number()).optional(),
+  ingredientIds: z.array(z.number().int().positive()).optional(),
 });
 
 export async function GET() {
@@ -75,28 +78,45 @@ export async function POST(request: NextRequest) {
   const t = await getTranslations('Dashboard.products');
 
   try {
-    // Check authentication
-    const user = await getSession();
-    if (!user) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    // Admin-only mutation
+    const guard = await requireAdmin();
+    if (!guard.ok) {
+      return apiError(
+        guard.reason === 'forbidden' ? ERROR_CODES.FORBIDDEN : ERROR_CODES.UNAUTHORIZED,
+        guard.reason === 'forbidden' ? 'Forbidden' : 'Authentication required',
+        { status: guard.reason === 'forbidden' ? 403 : 401 }
+      );
+    }
+
+    // CSRF verification for non-GET requests
+    const csrfToken = await getCSRFTokenFromRequest(request);
+    if (!csrfToken || !(await verifyCSRFToken(csrfToken))) {
+      return apiError(ERROR_CODES.CSRF_INVALID, 'Invalid CSRF token', { status: 403 });
     }
 
     const body = await request.json();
-    const { name, description, price, imageUrl, available, ingredientIds } =
-      createProductSchema.parse(body);
+    const parsed = createProductSchema.parse(body);
+
+    const ingredientIds =
+      parsed.ingredientIds && parsed.ingredientIds.length > 0
+        ? await validateIngredientIds(db, parsed.ingredientIds)
+        : [];
+    if (ingredientIds === null) {
+      return apiError(ERROR_CODES.VALIDATION_ERROR, t('invalidIngredients'), { status: 400 });
+    }
 
     const [product] = await db
       .insert(products)
       .values({
-        name,
-        description,
-        price,
-        imageUrl,
-        available,
+        name: sanitizeText(parsed.name),
+        description: parsed.description ? sanitizeText(parsed.description) : null,
+        price: parsed.price,
+        imageUrl: parsed.imageUrl ? sanitizeUrl(parsed.imageUrl) : null,
+        available: parsed.available,
       })
       .returning({ id: products.id });
 
-    if (ingredientIds && ingredientIds.length > 0) {
+    if (ingredientIds.length > 0) {
       await db.insert(productIngredients).values(
         ingredientIds.map((ingredientId: number) => ({
           productId: product.id,
