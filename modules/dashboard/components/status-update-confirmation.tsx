@@ -40,6 +40,7 @@ export function StatusUpdateConfirmation({
       }
       cancelText={t('cancel')}
       confirmText={t('confirm')}
+      confirmVariant="default"
     />
   );
 }

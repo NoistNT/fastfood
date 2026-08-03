@@ -5,21 +5,31 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { products } from '@/db/schema';
-import { getSession } from '@/lib/auth/session';
+import { requireAdmin } from '@/lib/auth/guards';
+import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
-    // Check authentication
-    const user = await getSession();
-    if (!user) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    // Admin-only mutation + CSRF
+    const guard = await requireAdmin();
+    if (!guard.ok) {
+      return apiError(
+        guard.reason === 'forbidden' ? ERROR_CODES.FORBIDDEN : ERROR_CODES.UNAUTHORIZED,
+        guard.reason === 'forbidden' ? 'Forbidden' : 'Authentication required',
+        { status: guard.reason === 'forbidden' ? 403 : 401 }
+      );
+    }
+
+    const csrfToken = await getCSRFTokenFromRequest(request);
+    if (!csrfToken || !(await verifyCSRFToken(csrfToken))) {
+      return apiError(ERROR_CODES.CSRF_INVALID, 'Invalid CSRF token', { status: 403 });
     }
 
     // Soft delete by setting unavailable

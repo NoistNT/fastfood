@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react';
+import type { ButtonProps } from '@/modules/core/ui/utils-button';
+
 import { Loader2 } from 'lucide-react';
-import { type ReactNode } from 'react';
 
 import { Button } from '@/modules/core/ui/button';
 import {
@@ -20,6 +22,7 @@ interface ConfirmationDialogProps {
   isLoading?: boolean;
   cancelText: string;
   confirmText: string;
+  confirmVariant?: ButtonProps['variant'];
 }
 
 export function ConfirmationDialog({
@@ -31,6 +34,7 @@ export function ConfirmationDialog({
   isLoading = false,
   cancelText,
   confirmText,
+  confirmVariant = 'destructive',
 }: ConfirmationDialogProps) {
   return (
     <Dialog
@@ -45,7 +49,7 @@ export function ConfirmationDialog({
         <DialogFooter>
           <Button
             className="w-full"
-            variant="destructive"
+            variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
             size="sm"
@@ -53,10 +57,10 @@ export function ConfirmationDialog({
             {cancelText}
           </Button>
           <Button
-            className="w-full bg-violet-500 hover:bg-violet-400 dark:bg-violet-900 dark:hover:bg-violet-800 dark:text-foreground"
+            className="w-full"
+            variant={confirmVariant}
             onClick={onConfirm}
             disabled={isLoading}
-            variant="default"
             size="sm"
           >
             {isLoading ? (

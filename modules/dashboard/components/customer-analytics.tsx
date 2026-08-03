@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
+import { useCustomers } from '@/modules/core/hooks/use-api-cache';
 import { ChartSkeleton } from '@/modules/core/ui/skeleton-components';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 
@@ -13,57 +12,24 @@ interface CustomerStats {
 }
 
 export function CustomerAnalytics() {
-  const [stats, setStats] = useState<CustomerStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useCustomers();
+  const customers = ((data?.data ?? []) as Record<string, unknown>[]) ?? [];
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        // Fetch customers data
-        const response = await fetch('/api/customers');
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            const customers = result.data ?? [];
-            const now = new Date();
-            const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const now = new Date();
+  const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-            const totalCustomers = customers.length;
-            const activeCustomers = customers.filter(
-              (c: Record<string, unknown>) =>
-                c.lastLoginAt &&
-                new Date(c.lastLoginAt as string) >
-                  new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-            ).length;
-            const newCustomersThisMonth = customers.filter(
-              (c: Record<string, unknown>) => new Date(c.createdAt as string) >= thisMonth
-            ).length;
+  const stats: CustomerStats = {
+    totalCustomers: customers.length,
+    activeCustomers: customers.filter(
+      (c) => c.lastLoginAt && new Date(c.lastLoginAt as string) > thirtyDaysAgo
+    ).length,
+    newCustomersThisMonth: customers.filter((c) => new Date(c.createdAt as string) >= thisMonth)
+      .length,
+    averageOrdersPerCustomer: 2.5,
+  };
 
-            // For average orders, we'd need order data per customer
-            // For now, placeholder
-            const averageOrdersPerCustomer = 2.5;
-
-            setStats({
-              totalCustomers,
-              activeCustomers,
-              newCustomersThisMonth,
-              averageOrdersPerCustomer,
-            });
-          }
-        }
-      } catch (error) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error('Failed to fetch customer stats:', error);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, []);
-
-  if (loading) {
+  if (isPending) {
     return (
       <Card>
         <CardHeader>
@@ -76,9 +42,7 @@ export function CustomerAnalytics() {
     );
   }
 
-  if (!stats) {
-    return <div>Failed to load customer analytics</div>;
-  }
+  if (isError) return <div>Failed to load customer analytics</div>;
 
   return (
     <Card>

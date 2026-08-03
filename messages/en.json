@@ -203,8 +203,39 @@
         "createFailed": "Failed to create product",
         "updateFailed": "Failed to update product",
         "deleteFailed": "Failed to delete product",
+        "invalidIngredients": "One or more ingredients are invalid",
         "productsTab": "Products",
-        "inventoryTab": "Inventory"
+        "inventoryTab": "Inventory",
+        "form": {
+          "addProductTitle": "Add Product",
+          "editProductTitle": "Edit Product",
+          "name": "Name",
+          "namePlaceholder": "Cheeseburger",
+          "nameRequired": "Name is required",
+          "price": "Price",
+          "pricePlaceholder": "9.99",
+          "priceInvalid": "Price must be a valid positive number",
+          "description": "Description",
+          "descriptionPlaceholder": "A short description of the product",
+          "imageUrl": "Image URL",
+          "imageUrlPlaceholder": "https://example.com/photo.jpg",
+          "imageUrlInvalid": "Please enter a valid URL",
+          "available": "Available",
+          "ingredients": "Ingredients",
+          "ingredientsHint": "Select the ingredients that make up this product",
+          "ingredientsEmpty": "No ingredients available",
+          "cancel": "Cancel",
+          "save": "Save product",
+          "saving": "Saving..."
+        },
+        "archive": {
+          "title": "Archive product?",
+          "description": "Archiving a product removes it from the menu. You can restore it later by making it available again.",
+          "confirm": "Archive",
+          "cancel": "Cancel",
+          "success": "Product archived successfully",
+          "failed": "Failed to archive product"
+        }
       },
       "inventory": {
         "title": "Inventory Management",
