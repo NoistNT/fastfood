@@ -51,12 +51,31 @@ jobs:
           CI: true
 
   # Runs the database-backed user journey against a dedicated (seeded) database.
-  # Requires both CI_E2E_DB_URL and CI_E2E_SESSION_SECRET secrets; skipped until
-  # both are configured.
+  # Requires both CI_E2E_DB_URL and CI_E2E_SESSION_SECRET secrets. Secrets are
+  # not readable in job-level `if`, so a tiny gate job exposes a flag instead;
+  # the journey job is skipped until both secrets are configured.
+  e2e-journey-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          CHECK_DB_URL: ${{ secrets.CI_E2E_DB_URL }}
+          CHECK_SESSION_SECRET: ${{ secrets.CI_E2E_SESSION_SECRET }}
+        run: |
+          if [ -n "$CHECK_DB_URL" ] && [ -n "$CHECK_SESSION_SECRET" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
   e2e-journey:
+    needs: e2e-journey-gate
+    if: needs.e2e-journey-gate.outputs.configured == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ secrets.CI_E2E_DB_URL != '' && secrets.CI_E2E_SESSION_SECRET != '' }}
 
     env:
       DB_URL: ${{ secrets.CI_E2E_DB_URL }}
