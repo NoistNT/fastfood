@@ -31,7 +31,9 @@ const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
 export default async function proxy(request: NextRequest) {
   const session = await getSession();
   const { pathname } = request.nextUrl;
-  const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
+  const isPublicRoute = publicRoutes.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
 
   if (isPublicRoute) return await updateSession(request);
 
