@@ -129,7 +129,7 @@ jobs:
             }'
 
       - name: Update GitHub Status
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const deploymentUrl = '${{ steps.vercel-deployment.outputs.preview-url }}';
