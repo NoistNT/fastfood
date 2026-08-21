@@ -1,11 +1,14 @@
 import type { DashboardOrderView, OrderStatus } from '@/modules/orders/types';
 import type { ColumnDef } from '@tanstack/react-table';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 import { OrderDetailsCell } from '@/modules/dashboard/components/order-details-cell';
 
-export const createColumns = (t: (key: string) => string): ColumnDef<DashboardOrderView>[] => [
+export const createColumns = (
+  t: (key: string) => string
+): ColumnDef<DataTableFeatures, DashboardOrderView>[] => [
   {
     accessorKey: 'order.userName',
     id: 'order.userName',

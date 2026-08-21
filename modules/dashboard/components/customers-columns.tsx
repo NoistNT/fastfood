@@ -1,6 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import Link from 'next/link';
 
@@ -22,7 +23,7 @@ type CustomerWithRoles = {
 export const createColumns = (
   t: (key: string) => string,
   tTable?: (key: string) => string
-): ColumnDef<CustomerWithRoles>[] => [
+): ColumnDef<DataTableFeatures, CustomerWithRoles>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => (
