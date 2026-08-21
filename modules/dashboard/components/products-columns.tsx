@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ProductWithIngredients } from '@/modules/products/types';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import Link from 'next/link';
 
@@ -12,7 +13,7 @@ import { ProductAvailabilityBadge } from '@/modules/dashboard/components/product
 export const createColumns = (
   onEdit: (product: ProductWithIngredients) => void,
   tTable?: (key: string) => string
-): ColumnDef<ProductWithIngredients>[] => [
+): ColumnDef<DataTableFeatures, ProductWithIngredients>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => (
