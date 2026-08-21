@@ -10,18 +10,18 @@ reviews:
     drafts: false
     base_branches:
       - dev
-path_filters:
-  - '!pnpm-lock.yaml'
-  - '!e2e/**'
-  - '!messages/**'
-  - '!docs/**'
-  - '!.opencode/**'
-path_instructions:
-  - path: app/api/**
-    instructions: >-
-      Verify every route enforces auth via getSession() and role checks before data access,
-      validates input with zod, and never logs request bodies, tokens, or PII.
-  - path: lib/auth/**
-    instructions: >-
-      Focus on JWT/session handling correctness (HS256, expiry), secret hygiene, and that no
-      token material is ever logged or exposed in responses.
+  path_filters:
+    - '!pnpm-lock.yaml'
+    - '!e2e/**'
+    - '!messages/**'
+    - '!docs/**'
+    - '!.opencode/**'
+  path_instructions:
+    - path: app/api/**
+      instructions: >-
+        Verify every route enforces auth via getSession() and role checks before data access,
+        validates input with zod, and never logs request bodies, tokens, or PII.
+    - path: lib/auth/**
+      instructions: >-
+        Focus on JWT/session handling correctness (HS256, expiry), secret hygiene, and that no
+        token material is ever logged or exposed in responses.
