@@ -1,0 +1,27 @@
+language: en-US
+early_access: false
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - dev
+  path_filters:
+    - '!pnpm-lock.yaml'
+    - '!e2e/**'
+    - '!messages/**'
+    - '!docs/**'
+    - '!.opencode/**'
+  path_instructions:
+    - path: app/api/**
+      instructions: >-
+        Verify every route enforces auth via getSession() and role checks before data access,
+        validates input with zod, and never logs request bodies, tokens, or PII.
+    - path: lib/auth/**
+      instructions: >-
+        Focus on JWT/session handling correctness (HS256, expiry), secret hygiene, and that no
+        token material is ever logged or exposed in responses.
