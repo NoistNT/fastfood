@@ -214,7 +214,7 @@ export function useOfflineOrders() {
     };
 
     // Set initial status
-    setIsOnline(navigator.onLine);
+    queueMicrotask(() => setIsOnline(navigator.onLine));
 
     // Listen for online/offline events
     window.addEventListener('online', handleOnline);
@@ -228,7 +228,7 @@ export function useOfflineOrders() {
 
   // Load orders on mount
   useEffect(() => {
-    loadOfflineOrders();
+    queueMicrotask(loadOfflineOrders);
   }, [loadOfflineOrders]);
 
   return {

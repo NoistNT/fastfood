@@ -5,11 +5,10 @@ vi.mock('@/lib/api-response');
 vi.mock('@/db/drizzle');
 
 import type { UserWithRoles } from '@/types/auth';
+import type { NextRequest } from 'next/server';
 
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { NextResponse } from 'next/server';
-
-import type { NextRequest } from 'next/server';
 
 import { GET as getIngredients } from '@/app/api/ingredients/route';
 import { requireAdmin } from '@/lib/auth/guards';

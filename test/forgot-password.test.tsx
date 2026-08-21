@@ -55,7 +55,7 @@ describe('ForgotPasswordPage', () => {
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ success: true, data: { message: 'Email sent' } }),
-    } as Response);
+    });
   });
 
   it('renders the forgot password form', () => {
@@ -110,7 +110,7 @@ describe('ForgotPasswordPage', () => {
     mockFetch.mockResolvedValue({
       ok: false,
       json: () => Promise.resolve({ error: { message: 'API Error' } }),
-    } as Response);
+    });
 
     render(<ForgotPasswordPage />);
 
