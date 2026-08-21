@@ -17,7 +17,7 @@ export default function OrdersTable({ orders }: Props) {
   const tTable = useTranslations('Common.table');
 
   const handleExportCSV = () => {
-    exportToCSV(orders as unknown as Record<string, unknown>[], 'orders.csv');
+    exportToCSV(orders, 'orders.csv');
   };
 
   return (

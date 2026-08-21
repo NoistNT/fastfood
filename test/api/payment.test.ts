@@ -16,17 +16,17 @@ vi.mock('mercadopago', () => {
   return { MercadoPagoConfig, Preference };
 });
 
+import type { Mock } from 'vitest';
+
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { NextResponse } from 'next/server';
-
-import type { Mock } from 'vitest';
+import { Preference } from 'mercadopago';
 
 import { POST as createPayment } from '@/app/api/payment/route';
 import { getCSRFTokenFromRequest, verifyCSRFToken } from '@/lib/csrf';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
 import { paymentCircuitBreaker } from '@/lib/circuit-breaker';
 import { apiError, ERROR_CODES } from '@/lib/api-response';
-import { Preference } from 'mercadopago';
 
 const mockGetCSRFTokenFromRequest = vi.mocked(getCSRFTokenFromRequest);
 const mockVerifyCSRFToken = vi.mocked(verifyCSRFToken);

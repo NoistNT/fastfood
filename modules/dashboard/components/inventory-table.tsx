@@ -49,7 +49,7 @@ export function InventoryTable() {
   });
 
   const handleExportCSV = () => {
-    exportToCSV(items as unknown as Record<string, unknown>[], 'inventory.csv');
+    exportToCSV(items, 'inventory.csv');
   };
 
   if (isPending) {

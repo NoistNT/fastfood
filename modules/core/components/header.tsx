@@ -28,28 +28,36 @@ export default function Header() {
   const [localUser, setLocalUser] = useState<UserWithRoles | null>(null);
   const [localLoading, setLocalLoading] = useState(true);
 
-  const fetchSession = async () => {
-    try {
-      const response = await fetch('/api/auth/session');
-      if (response.ok) {
-        const data = await response.json();
-        setLocalUser(data.data.user);
-      } else {
-        setLocalUser(null);
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSession = async () => {
+      try {
+        const response = await fetch('/api/auth/session');
+        if (response.ok) {
+          const data = await response.json();
+          if (!cancelled) {
+            setLocalUser(data.data.user);
+          }
+        } else if (!cancelled) {
+          setLocalUser(null);
+        }
+      } catch {
+        if (!cancelled) {
+          setLocalUser(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLocalLoading(false);
+        }
       }
-    } catch {
-      setLocalUser(null);
-    } finally {
-      setLocalLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    fetchSession();
-  }, []);
+    loadSession();
 
-  useEffect(() => {
-    fetchSession();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   // Helper function to check if user has admin privileges
