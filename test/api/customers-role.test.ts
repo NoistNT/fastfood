@@ -62,7 +62,7 @@ describe('/api/customers/[id]/role', () => {
     mockDb.select.mockReturnValue({
       from: vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockResolvedValue([{ id: 2, name: 'customer' }]),
+          limit: vi.fn().mockResolvedValue([{ id: 2, name: 'admin' }]),
         }),
       }),
     } as any);
@@ -77,11 +77,11 @@ describe('/api/customers/[id]/role', () => {
   });
 
   describe('POST /api/customers/[id]/role', () => {
-    it('should update customer role successfully', async () => {
+    it('should update role successfully', async () => {
       const params = Promise.resolve({ id: 'user-123' });
       const request = new NextRequest('http://localhost:3000/api/customers/user-123/role', {
         method: 'POST',
-        body: JSON.stringify({ roleName: 'customer' }),
+        body: JSON.stringify({ roleName: 'admin' }),
       });
 
       const response = await updateCustomerRole(request, { params });
@@ -99,7 +99,7 @@ describe('/api/customers/[id]/role', () => {
       const params = Promise.resolve({ id: 'user-123' });
       const request = new NextRequest('http://localhost:3000/api/customers/user-123/role', {
         method: 'POST',
-        body: JSON.stringify({ roleName: 'customer' }),
+        body: JSON.stringify({ roleName: 'admin' }),
       });
 
       const response = await updateCustomerRole(request, { params });
@@ -133,19 +133,19 @@ describe('/api/customers/[id]/role', () => {
       expect(result.error.code).toBe('INVALID_INPUT');
     });
 
-    it('should validate required fields', async () => {
+    it('should clear all roles when roleName is absent', async () => {
       const params = Promise.resolve({ id: 'user-123' });
       const request = new NextRequest('http://localhost:3000/api/customers/user-123/role', {
         method: 'POST',
-        body: JSON.stringify({}), // Missing roleName
+        body: JSON.stringify({}), // No roleName — revoke to civilian
       });
 
       const response = await updateCustomerRole(request, { params });
       const result = await response.json();
 
-      expect(response.status).toBe(400);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('INVALID_INPUT');
+      expect(response.status).toBe(200);
+      expect(result.success).toBe(true);
+      expect(mockDb.delete).toHaveBeenCalled();
     });
   });
 });

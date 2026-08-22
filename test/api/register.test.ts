@@ -38,7 +38,7 @@ const mockUser: UserWithRoles = {
   deletedAt: null,
   createdAt: new Date(),
   updatedAt: new Date(),
-  roles: [{ id: 2, name: 'customer', description: 'Customer' }],
+  roles: [],
 };
 
 describe('/api/auth/register', () => {
@@ -94,7 +94,7 @@ describe('/api/auth/register', () => {
           limit: vi.fn().mockResolvedValue([]), // No existing user by default
         }),
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue([{ roles: mockUser.roles[0] }]),
+          where: vi.fn().mockResolvedValue([]),
         }),
       }),
     } as any);
@@ -109,31 +109,14 @@ describe('/api/auth/register', () => {
   describe('POST /api/auth/register', () => {
     it('should register user successfully', async () => {
       // Mock database calls in order
-      mockDb.select
-        .mockReturnValueOnce({
-          // Check existing user
-          from: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockResolvedValue([]), // No existing user
-            }),
+      mockDb.select.mockReturnValueOnce({
+        // Check existing user
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]), // No existing user
           }),
-        } as any)
-        .mockReturnValueOnce({
-          // Get customer role
-          from: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockResolvedValue([{ id: 2, name: 'customer' }]),
-            }),
-          }),
-        } as any)
-        .mockReturnValueOnce({
-          // Get user roles for response
-          from: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue([{ roles: mockUser.roles[0] }]),
-            }),
-          }),
-        } as any);
+        }),
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/auth/register', {
         method: 'POST',

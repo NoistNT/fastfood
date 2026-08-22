@@ -37,7 +37,7 @@ export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
       const response = await fetch(`/api/customers/${user.id}/role`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roleName: isAdmin ? USER_ROLES.CUSTOMER : USER_ROLES.ADMIN }),
+        body: JSON.stringify(isAdmin ? {} : { roleName: USER_ROLES.ADMIN }),
       });
 
       if (!response.ok) {

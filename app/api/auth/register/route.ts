@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { authRateLimit } from '@/lib/rate-limit';
 import { hashPassword } from '@/lib/auth/password';
 import { db } from '@/db/drizzle';
-import { users, userRoles, roles } from '@/db/schema';
+import { users } from '@/db/schema';
 import { sanitizeInput } from '@/lib/sanitize';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -86,25 +86,9 @@ export async function POST(request: NextRequest) {
 
     const createdUser = newUser[0];
 
-    // Assign default 'customer' role
-    const customerRole = await db.select().from(roles).where(eq(roles.name, 'customer')).limit(1);
-    if (customerRole.length > 0) {
-      await db.insert(userRoles).values({
-        userId: createdUser.id,
-        roleId: customerRole[0].id,
-      });
-    }
-
-    // Get user with roles for response
-    const userRoleResults = await db
-      .select()
-      .from(userRoles)
-      .innerJoin(roles, eq(userRoles.roleId, roles.id))
-      .where(eq(userRoles.userId, createdUser.id));
-
-    const rolesData = userRoleResults.map((r) => r.roles);
-
-    const userWithRoles: UserWithRoles = { ...createdUser, roles: rolesData };
+    // Registration grants zero roles — roles encode powers only. A later
+    // phone+name match may claim an existing record-only person instead.
+    const userWithRoles: UserWithRoles = { ...createdUser, roles: [] };
 
     return apiSuccess({ user: userWithRoles }, { status: 201 });
   } catch (error) {

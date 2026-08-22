@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   index,
@@ -9,10 +9,11 @@ import {
   serial,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
 
-import { ORDER_STATUS } from '@/modules/orders/types';
+import { ORDER_STATUS, ORDER_TYPE, PAYMENT_METHOD } from '@/modules/orders/types';
 
 export const orderStatusEnum = pgEnum('order_status', [
   ORDER_STATUS.PENDING,
@@ -21,25 +22,41 @@ export const orderStatusEnum = pgEnum('order_status', [
   ORDER_STATUS.DELIVERED,
 ]);
 
+export const orderTypeEnum = pgEnum('order_type', [ORDER_TYPE.PICKUP, ORDER_TYPE.DELIVERY]);
+
+export const paymentMethodEnum = pgEnum('payment_method', [
+  PAYMENT_METHOD.ONLINE,
+  PAYMENT_METHOD.CASH,
+  PAYMENT_METHOD.CARD,
+]);
+
 export const users = pgTable(
   'users',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
-    email: text('email').notNull().unique(),
-    passwordHash: text('password_hash').notNull(),
+    email: text('email').unique(),
+    // Nullable: record-only people (directory entries / guest buyers) have no
+    // credentials until they register and claim their record.
+    passwordHash: text('password_hash'),
     phoneNumber: text('phone_number'),
     lastLoginAt: timestamp('last_login_at'),
     deletedAt: timestamp('deleted_at'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },
-  (table) => [index('email_idx').on(table.email)]
+  (table) => [
+    index('email_idx').on(table.email),
+    uniqueIndex('phone_number_unique_idx')
+      .on(table.phoneNumber)
+      .where(sql`${table.phoneNumber} is not null`),
+  ]
 );
 
 export const usersRelations = relations(users, ({ many }) => ({
   orders: many(orders),
   userRoles: many(userRoles),
+  addresses: many(addresses),
 }));
 
 export const roles = pgTable('roles', {
@@ -68,6 +85,28 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   }),
   user: one(users, {
     fields: [userRoles.userId],
+    references: [users.id],
+  }),
+}));
+
+export const addresses = pgTable(
+  'addresses',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    address: text('address').notNull(),
+    notes: text('notes'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  (table) => [index('addresses_user_id_idx').on(table.userId)]
+);
+
+export const addressesRelations = relations(addresses, ({ one }) => ({
+  user: one(users, {
+    fields: [addresses.userId],
     references: [users.id],
   }),
 }));
@@ -145,6 +184,15 @@ export const orders = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
     total: numeric('total', { precision: 10, scale: 2 }).notNull(),
     status: orderStatusEnum('status').notNull().default(ORDER_STATUS.PENDING),
+    orderType: orderTypeEnum('order_type').notNull().default(ORDER_TYPE.PICKUP),
+    paymentMethod: paymentMethodEnum('payment_method').notNull().default(PAYMENT_METHOD.ONLINE),
+    // Immutable contact snapshot — the person's details may change later,
+    // but an order must preserve who it belonged to when placed.
+    contactName: text('contact_name').notNull().default(''),
+    contactPhone: text('contact_phone').notNull().default(''),
+    deliveryAddress: text('delivery_address').notNull().default(''),
+    deliveryNotes: text('delivery_notes').notNull().default(''),
+    trackingCode: text('tracking_code').unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
   },

@@ -19,10 +19,10 @@ describe('UserRoleBadge', () => {
     );
   });
 
-  it('renders customer badge with correct styling', () => {
-    render(<UserRoleBadge role={USER_ROLES.CUSTOMER} />);
+  it('renders staff badge with correct styling', () => {
+    render(<UserRoleBadge role={USER_ROLES.STAFF} />);
 
-    const badge = screen.getByText('Customer');
+    const badge = screen.getByText('Staff');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass(
       'border-info/40',

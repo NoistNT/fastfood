@@ -20,10 +20,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const body = await request.json();
-    const { roleName } = body;
+    const { roleName } = body ?? {};
 
+    // Absent roleName = revoke all roles (person becomes a civilian).
     if (!roleName) {
-      return apiError(ERROR_CODES.INVALID_INPUT, 'Role name is required', { status: 400 });
+      await db.delete(userRoles).where(eq(userRoles.userId, id));
+      return apiSuccess({});
     }
 
     // Find role
