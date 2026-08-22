@@ -3,6 +3,8 @@
     "getStarted": "Get Started"
   },
   "ModeToggle": {
+    "theme": "Theme",
+    "toggleTheme": "Toggle theme",
     "light": "Light",
     "dark": "Dark",
     "system": "System"
@@ -488,15 +490,32 @@
     }
   },
   "Components": {
+    "skipToContent": "Skip to main content",
+    "main": {
+      "landmark": "Main content"
+    },
     "header": {
       "title": "FastFood",
+      "menu": "Menu",
+      "cart": "Cart",
       "order": "Order",
       "dashboard": "Dashboard",
-      "profile": "Profile"
+      "profile": "Profile",
+      "siteHeader": "Site header",
+      "homeLink": "FastFood home",
+      "mainNavigation": "Main navigation",
+      "userNavigation": "User account navigation",
+      "viewCart": "View your order",
+      "userMenu": "User menu",
+      "openMenu": "Open navigation menu",
+      "avatarAlt": "User avatar"
     },
     "footer": {
       "title": "FastFood",
       "description": "Serving the best fast food in town!",
+      "exploreHeading": "Explore",
+      "visitUsHeading": "Visit Us",
+      "legalHeading": "Legal",
       "address": {
         "street": "123 Fast Food Lane",
         "city": "Food City, FC 12345"

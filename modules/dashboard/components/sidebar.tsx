@@ -11,12 +11,11 @@ import {
   Package,
   Sandwich,
   Users,
-  X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/modules/core/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/modules/core/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const navigation = [
@@ -93,16 +92,8 @@ export default function DashboardSidebar() {
           side="left"
           className="w-64"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold">{tNav('dashboard')}</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setOpen(false)}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
+          {/* The FastFood wordmark below is the visible title; this satisfies Radix a11y */}
+          <SheetTitle className="sr-only">{tNav('dashboard')}</SheetTitle>
           <SidebarContent onNavigate={() => setOpen(false)} />
         </SheetContent>
       </Sheet>

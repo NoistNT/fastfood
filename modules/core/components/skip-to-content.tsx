@@ -1,6 +1,10 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 export function SkipToContent() {
+  const t = useTranslations('Components');
+
   return (
     <a
       href="#main-content"
@@ -12,7 +16,7 @@ export function SkipToContent() {
         }
       }}
     >
-      Skip to main content
+      {t('skipToContent')}
     </a>
   );
 }

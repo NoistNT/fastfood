@@ -3,27 +3,27 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, ShoppingCart, UtensilsCrossed } from 'lucide-react';
 
 import { useAuth } from '@/modules/auth/context/auth-context';
 import { USER_ROLES, type UserWithRoles } from '@/types/auth';
 import { MobileHeader } from '@/modules/core/components/mobile-header';
-import { Avatar, AvatarFallback } from '@/modules/core/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/modules/core/ui/dropdown-menu';
+import { UserMenu } from '@/modules/core/components/user-menu';
+import { cn } from '@/lib/utils';
 import { Button } from '@/modules/core/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/modules/core/ui/tooltip';
 
 export default function Header() {
   const t = useTranslations('Components.header');
   const tAuth = useTranslations('Features.auth.navigation');
-  const { user, logout } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
+  const pathname = usePathname();
 
   const [localUser, setLocalUser] = useState<UserWithRoles | null>(null);
   const [localLoading, setLocalLoading] = useState(true);
@@ -32,6 +32,10 @@ export default function Header() {
     let cancelled = false;
 
     const loadSession = async () => {
+      // Drop the previous identity immediately so account controls never
+      // outlive their session during a refresh (logout / account switch).
+      setLocalLoading(true);
+      setLocalUser(null);
       try {
         const response = await fetch('/api/auth/session');
         if (response.ok) {
@@ -39,8 +43,6 @@ export default function Header() {
           if (!cancelled) {
             setLocalUser(data.data.user);
           }
-        } else if (!cancelled) {
-          setLocalUser(null);
         }
       } catch {
         if (!cancelled) {
@@ -62,117 +64,124 @@ export default function Header() {
 
   // Helper function to check if user has admin privileges
   const hasAdminAccess = localUser?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
+  const isOnMenu = pathname === '/products';
+  const isOnCart = pathname === '/order';
+
   return (
     <header
-      className="sticky top-0 z-50 flex items-center justify-between bg-background/80 dark:bg-background/75 backdrop-blur-sm px-4 py-3.5 text-primary border-b transition-colors ease-in-out"
+      className="sticky top-0 z-50 bg-background border-b transition-colors ease-in-out"
       role="banner"
-      aria-label="Site header"
+      aria-label={t('siteHeader')}
     >
-      <Link
-        href="/"
-        aria-label="FastFood home"
-      >
-        <h1 className="text-2xl text-primary font-semibold tracking-tighter hover:text-primary/75 transition-colors duration-200">
-          {t('title')}
-        </h1>
-      </Link>
-
-      {/* Desktop Navigation */}
-      <nav
-        className="hidden md:flex items-center gap-x-4"
-        role="navigation"
-        aria-label="Main navigation"
-      >
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
-          href="/order"
-          aria-label="Order food"
+          href="/"
+          aria-label={t('homeLink')}
         >
-          <Button variant="ghost">{t('order')}</Button>
+          <h1 className="text-2xl text-primary font-semibold tracking-tighter hover:text-primary/75 transition-colors duration-200">
+            {t('title')}
+          </h1>
         </Link>
-        {hasAdminAccess && (
-          <Link
-            href="/dashboard"
-            aria-label="Go to dashboard"
-          >
-            <Button variant="ghost">{t('dashboard')}</Button>
-          </Link>
-        )}
-        {!!localUser && (
-          <Link
-            href={`/profile/${localUser?.id}`}
-            aria-label="View profile"
-          >
-            <Button variant="ghost">{t('profile')}</Button>
-          </Link>
-        )}
-      </nav>
 
-      {/* Mobile Navigation */}
-      <MobileHeader
-        user={localUser}
-        isAuthenticated={!!localUser}
-      />
-
-      <nav
-        className="flex items-center gap-x-2"
-        role="navigation"
-        aria-label="User account navigation"
-      >
-        {!localUser && !localLoading && (
-          <>
-            <Link
-              href="/login"
-              aria-label="Sign in to your account"
-            >
-              <Button variant="ghost">{tAuth('login')}</Button>
-            </Link>
-            <Link
-              href="/register"
-              aria-label="Create new account"
-            >
-              <Button variant="ghost">{tAuth('register')}</Button>
-            </Link>
-          </>
-        )}
-        {!!localUser && (
-          <div suppressHydrationWarning>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+        {/* Right toolbar cluster (desktop) + mobile hamburger */}
+        <div className="flex items-center gap-x-2">
+          <nav
+            className="hidden md:flex items-center gap-x-2"
+            role="navigation"
+            aria-label={t('userNavigation')}
+          >
+            {!localLoading && !localUser && (
+              <>
                 <Button
+                  asChild
                   variant="ghost"
-                  className="relative h-9 w-9 rounded-full"
-                  aria-label="User menu"
+                  size="default"
                 >
-                  <Avatar className="h-9 w-9">
-                    <AvatarFallback>
-                      {localUser.name ? localUser.name.charAt(0) : localUser.email.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Link href="/login">{tAuth('login')}</Link>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-56"
-                align="end"
-                forceMount
-              >
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {localUser.name || localUser.email}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">{localUser.email}</p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push(`/profile/${localUser.id}`)}>
-                  {t('profile')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={logout}>{tAuth('logout')}</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
-      </nav>
+                <Button
+                  asChild
+                  variant="default"
+                  size="default"
+                >
+                  <Link href="/register">{tAuth('register')}</Link>
+                </Button>
+              </>
+            )}
+            {!!localUser && (
+              <>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        suppressHydrationWarning
+                      >
+                        <Link
+                          href="/products"
+                          aria-label={t('menu')}
+                          aria-current={isOnMenu ? 'page' : undefined}
+                          className={cn(isOnMenu && 'bg-accent text-primary hover:bg-accent')}
+                        >
+                          <UtensilsCrossed />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{t('menu')}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                {hasAdminAccess && localUser && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          suppressHydrationWarning
+                        >
+                          <Link
+                            href="/dashboard"
+                            aria-label={t('dashboard')}
+                          >
+                            <LayoutDashboard />
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('dashboard')}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  suppressHydrationWarning
+                >
+                  <Link
+                    href="/order"
+                    aria-label={t('viewCart')}
+                    aria-current={isOnCart ? 'page' : undefined}
+                    className={cn(isOnCart && 'bg-accent text-primary hover:bg-accent')}
+                  >
+                    <ShoppingCart />
+                  </Link>
+                </Button>
+                <UserMenu user={localUser} />
+              </>
+            )}
+          </nav>
+
+          {/* Below md this is the only control in the bar; everything else lives in the sheet */}
+          <MobileHeader
+            user={localUser}
+            isAuthenticated={!!localUser}
+            loading={localLoading}
+          />
+        </div>
+      </div>
     </header>
   );
 }

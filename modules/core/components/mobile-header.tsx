@@ -1,22 +1,35 @@
-import { Menu } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import {
+  LayoutDashboard,
+  LogIn,
+  Menu,
+  ShoppingCart,
+  User,
+  UserPlus,
+  UtensilsCrossed,
+} from 'lucide-react';
 
 import { useAuth } from '@/modules/auth/context/auth-context';
 import { USER_ROLES, type UserWithRoles } from '@/types/auth';
 import { Button } from '@/modules/core/ui/button';
+import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/modules/core/ui/sheet';
-import { Sheet, SheetTrigger } from '@/modules/core/ui/utils-sheet';
+import { Sheet, SheetClose, SheetTrigger } from '@/modules/core/ui/utils-sheet';
 import { SheetItem } from '@/modules/core/ui/sheet-item';
 
 interface MobileHeaderProps {
   user: UserWithRoles | null;
   isAuthenticated: boolean;
+  /** True while the session request resolves; suppresses the guest branch to avoid a flash */
+  loading?: boolean;
 }
 
-export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
+export function MobileHeader({ user, isAuthenticated, loading = false }: MobileHeaderProps) {
   const t = useTranslations('Components.header');
   const tAuth = useTranslations('Features.auth.navigation');
   const { logout } = useAuth();
+  const pathname = usePathname();
 
   // Helper function to check if user has admin privileges
   const hasAdminAccess = user?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
@@ -29,46 +42,88 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
             variant="ghost"
             size="icon"
             className="md:hidden"
+            aria-label={t('openMenu')}
           >
-            <Menu className="text-primary " />
+            <Menu />
           </Button>
         </SheetTrigger>
 
         <SheetContent
           side="right"
-          className="bg-popover backdrop-blur-sm border-l"
+          className="bg-background"
         >
           <SheetHeader>
             <SheetTitle>{t('title')}</SheetTitle>
           </SheetHeader>
-          <nav className="flex flex-col gap-y-2 mt-6">
-            <SheetItem
-              title={t('order')}
-              href="/order"
-            />
+          <nav
+            className="flex flex-col gap-y-2 mt-6"
+            aria-label={t('mainNavigation')}
+          >
+            {isAuthenticated && user && (
+              <SheetItem
+                title={t('menu')}
+                href="/products"
+                icon={UtensilsCrossed}
+                active={pathname === '/products'}
+              />
+            )}
+            {isAuthenticated && user && (
+              <SheetItem
+                title={t('cart')}
+                href="/order"
+                icon={ShoppingCart}
+                active={pathname === '/order'}
+              />
+            )}
             {hasAdminAccess && (
               <SheetItem
                 title={t('dashboard')}
                 href="/dashboard"
+                icon={LayoutDashboard}
               />
             )}
             {isAuthenticated && user && (
               <SheetItem
                 title={t('profile')}
                 href={`/profile/${user.id}`}
+                icon={User}
+                active={pathname === `/profile/${user.id}`}
               />
             )}
           </nav>
-          {isAuthenticated && (
-            <SheetFooter className="absolute bottom-4 right-4">
-              <Button
-                variant="ghost"
-                onClick={logout}
-              >
-                {tAuth('logout')}
-              </Button>
-            </SheetFooter>
+          {!loading && !isAuthenticated && (
+            <nav
+              className="flex flex-col gap-y-2 mt-6"
+              aria-label={t('userNavigation')}
+            >
+              <SheetItem
+                title={tAuth('login')}
+                href="/login"
+                icon={LogIn}
+                active={pathname === '/login'}
+              />
+              <SheetItem
+                title={tAuth('register')}
+                href="/register"
+                icon={UserPlus}
+                active={pathname === '/register'}
+              />
+            </nav>
           )}
+          <SheetFooter className="absolute inset-x-6 bottom-6 flex-row items-center justify-between">
+            <ModeToggle />
+            {isAuthenticated && (
+              <SheetClose asChild>
+                <Button
+                  variant="ghost"
+                  size="default"
+                  onClick={logout}
+                >
+                  {tAuth('logout')}
+                </Button>
+              </SheetClose>
+            )}
+          </SheetFooter>
         </SheetContent>
       </Sheet>
     </div>

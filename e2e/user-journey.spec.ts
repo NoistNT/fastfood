@@ -61,8 +61,8 @@ test.describe('Complete User Journey', () => {
     });
 
     await test.step('Review the order and adjust quantities', async () => {
-      // Navigate via the header link (client-side navigation keeps the cart)
-      await page.getByRole('link', { name: 'Order food' }).click();
+      // Navigate via the header cart link (client-side navigation keeps the cart)
+      await page.getByRole('link', { name: 'View your order' }).click();
       await page.waitForURL('**/order');
 
       const rows = page.locator('tbody tr');
@@ -139,7 +139,7 @@ test.describe('Complete User Journey', () => {
     });
 
     await test.step('Modify quantities in the order', async () => {
-      await page.getByRole('link', { name: 'Order food' }).click();
+      await page.getByRole('link', { name: 'View your order' }).click();
       await page.waitForURL('**/order');
 
       const row = page.locator('tbody tr').first();
