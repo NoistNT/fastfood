@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LayoutDashboard, ShoppingCart, UtensilsCrossed } from 'lucide-react';
 
 import { useAuth } from '@/modules/auth/context/auth-context';
@@ -23,7 +23,6 @@ export default function Header() {
   const t = useTranslations('Components.header');
   const tAuth = useTranslations('Features.auth.navigation');
   const { user } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
 
   const [localUser, setLocalUser] = useState<UserWithRoles | null>(null);
@@ -33,6 +32,10 @@ export default function Header() {
     let cancelled = false;
 
     const loadSession = async () => {
+      // Drop the previous identity immediately so account controls never
+      // outlive their session during a refresh (logout / account switch).
+      setLocalLoading(true);
+      setLocalUser(null);
       try {
         const response = await fetch('/api/auth/session');
         if (response.ok) {
@@ -40,8 +43,6 @@ export default function Header() {
           if (!cancelled) {
             setLocalUser(data.data.user);
           }
-        } else if (!cancelled) {
-          setLocalUser(null);
         }
       } catch {
         if (!cancelled) {
@@ -64,49 +65,6 @@ export default function Header() {
   // Helper function to check if user has admin privileges
   const hasAdminAccess = localUser?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
   const isOnMenu = pathname === '/products';
-
-  const menuButton = (
-    <Link
-      href="/products"
-      aria-label={t('goToMenu')}
-      aria-current={isOnMenu ? 'page' : undefined}
-    >
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t('menu')}
-        suppressHydrationWarning
-        className={cn(isOnMenu && 'bg-accent text-primary hover:bg-accent')}
-      >
-        <UtensilsCrossed />
-      </Button>
-    </Link>
-  );
-
-  const dashboardButton =
-    hasAdminAccess && localUser ? (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              href="/dashboard"
-              aria-label={t('dashboard')}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label={t('dashboard')}
-                suppressHydrationWarning
-                onClick={() => router.push('/dashboard')}
-              >
-                <LayoutDashboard />
-              </Button>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent>{t('dashboard')}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ) : null;
 
   return (
     <header
@@ -133,51 +91,81 @@ export default function Header() {
           >
             {!localLoading && !localUser && (
               <>
-                <Link
-                  href="/login"
-                  aria-label={tAuth('login')}
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="default"
                 >
-                  <Button
-                    variant="ghost"
-                    size="default"
-                  >
-                    {tAuth('login')}
-                  </Button>
-                </Link>
-                <Link
-                  href="/register"
-                  aria-label={tAuth('register')}
+                  <Link href="/login">{tAuth('login')}</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="default"
+                  size="default"
                 >
-                  <Button
-                    variant="default"
-                    size="default"
-                  >
-                    {tAuth('register')}
-                  </Button>
-                </Link>
+                  <Link href="/register">{tAuth('register')}</Link>
+                </Button>
               </>
             )}
             {!!localUser && (
               <>
                 <TooltipProvider>
                   <Tooltip>
-                    <TooltipTrigger asChild>{menuButton}</TooltipTrigger>
+                    <TooltipTrigger asChild>
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        suppressHydrationWarning
+                      >
+                        <Link
+                          href="/products"
+                          aria-label={t('menu')}
+                          aria-current={isOnMenu ? 'page' : undefined}
+                          className={cn(isOnMenu && 'bg-accent text-primary hover:bg-accent')}
+                        >
+                          <UtensilsCrossed />
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
                     <TooltipContent>{t('menu')}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {dashboardButton}
-                <Link
-                  href="/order"
-                  aria-label={t('viewCart')}
+                {hasAdminAccess && localUser && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon"
+                          suppressHydrationWarning
+                        >
+                          <Link
+                            href="/dashboard"
+                            aria-label={t('dashboard')}
+                          >
+                            <LayoutDashboard />
+                          </Link>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('dashboard')}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  suppressHydrationWarning
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    suppressHydrationWarning
+                  <Link
+                    href="/order"
+                    aria-label={t('viewCart')}
                   >
                     <ShoppingCart />
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
                 <UserMenu user={localUser} />
               </>
             )}

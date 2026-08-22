@@ -72,10 +72,10 @@ describe('Header — Information Architecture rules', () => {
 
     expect(await screen.findByRole('link', { name: 'login' })).toBeInTheDocument();
     const signUpLink = await screen.findByRole('link', { name: 'register' });
-    expect(signUpLink.querySelector('.bg-primary')).not.toBeNull();
+    expect(signUpLink).toHaveClass('bg-primary');
 
     // Every destination is auth-gated: no Menu icon, no theme toggle, no cart, no account
-    expect(screen.queryByRole('link', { name: 'goToMenu' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'menu' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'toggleTheme' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'viewCart' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'userMenu' })).not.toBeInTheDocument();
