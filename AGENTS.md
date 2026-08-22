@@ -96,7 +96,7 @@ gate those on `quality-check`.
   `warning` · `info` · `card` · `popover` · `border` · `input` · `ring`
 - Status mapping: green→`success`, amber/orange→`warning`, blue→`info`,
   red/rose→`destructive`. **Every** badge — including `default` and
-  `secondary` — is a neon chip: `border-<token>/40 bg-<token]/10 text-<token>`
+  `secondary` — is a neon chip: `border-<token>/40 bg-<token>/10 text-<token>`
   at `rounded-md` with mono text. Chips are bordered+tinted; buttons are solid
   fills — they must never be confusable. Use built-in variants
   (`<Badge variant="success">`), never inline classes
@@ -135,7 +135,8 @@ gate those on `quality-check`.
 ### States & feedback
 
 - Every async route gets a `loading.tsx`. Reuse skeletons from
-  `modules/core/ui/skeleton-components.tsx`; mark them `aria-busy="true"`
+  `modules/core/ui/skeleton-components.tsx`; mark them `role="status"` +
+  `aria-busy="true"` so screen readers announce the loading state
 - Empty states need a message + a CTA button (see `empty-order.tsx`)
 - Errors: `ErrorBoundary` for client islands, `toast({ variant: 'destructive' })`
   for action failures — follow existing patterns in `app/order/page.tsx`

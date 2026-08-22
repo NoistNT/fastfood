@@ -43,13 +43,13 @@ customers `jane.smith@example.com`, `alice.johnson@example.com`,
 | ----------------------- | ------------------------------------------------------ |
 | `pnpm dev`              | Next.js dev server                                     |
 | `pnpm build`            | Production build                                       |
-| `pnpm start`            | Start production build (for E2E too)                   |
+| `pnpm start`            | Start production build                                 |
 | `pnpm lint`             | ESLint + `tsc --noEmit` (both must pass)               |
 | `pnpm type-check`       | `tsc --noEmit`                                         |
 | `pnpm format`           | ESLint --fix + Prettier --write                        |
 | `pnpm test`             | Vitest watcher (uses `.env.test` if present)           |
 | `pnpm test:run`         | Vitest, single run                                     |
-| `pnpm test:e2e`         | Playwright E2E (needs `pnpm start` first)              |
+| `pnpm test:e2e`         | Playwright E2E (server auto-boots via config)          |
 | `pnpm test:visual`      | Update Playwright visual snapshots                     |
 | `pnpm test:visual:ci`   | Run visual tests without updating                      |
 | `pnpm db:push`          | Push Drizzle schema to DB                              |
@@ -82,7 +82,7 @@ Where each lives (local `.env`, Vercel dashboard, GitHub Actions secrets) is in
 
 ## Project structure
 
-```
+```text
 .
 ├── app/                          # App Router: pages + API routes
 │   ├── api/                      #   Route handlers (auth, products, orders, payment, …)
