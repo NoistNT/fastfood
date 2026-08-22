@@ -14,14 +14,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!product) {
     return {
-      title: 'Fast Food',
+      title: 'Not found',
       description: 'The product you are looking for does not exist.',
       metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
     };
   }
 
   return {
-    title: `FastFood - ${product.name} `,
+    title: product.name,
     description: product.description,
     metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
   };
