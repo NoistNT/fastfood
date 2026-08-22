@@ -133,11 +133,11 @@
     --muted-foreground: 28 8% 42%;
     --accent: 36 30% 92%;
     --accent-foreground: 24 12% 16%;
-    --destructive: 0 84.2% 55%;
+    --destructive: 0 74% 44%;
     --destructive-foreground: 0 0% 98%;
     --success: 142 72% 38%;
     --success-foreground: 0 0% 98%;
-    --warning: 27 91% 42%;
+    --warning: 27 91% 35%;
     --warning-foreground: 26 83% 12%;
     --info: 210 88% 42%;
     --info-foreground: 0 0% 98%;
