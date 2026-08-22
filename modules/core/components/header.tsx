@@ -65,6 +65,7 @@ export default function Header() {
   // Helper function to check if user has admin privileges
   const hasAdminAccess = localUser?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
   const isOnMenu = pathname === '/products';
+  const isOnCart = pathname === '/order';
 
   return (
     <header
@@ -162,6 +163,8 @@ export default function Header() {
                   <Link
                     href="/order"
                     aria-label={t('viewCart')}
+                    aria-current={isOnCart ? 'page' : undefined}
+                    className={cn(isOnCart && 'bg-accent text-primary hover:bg-accent')}
                   >
                     <ShoppingCart />
                   </Link>

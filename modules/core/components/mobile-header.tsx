@@ -80,7 +80,6 @@ export function MobileHeader({ user, isAuthenticated, loading = false }: MobileH
                 title={t('dashboard')}
                 href="/dashboard"
                 icon={LayoutDashboard}
-                active={pathname.startsWith('/dashboard')}
               />
             )}
             {isAuthenticated && user && (

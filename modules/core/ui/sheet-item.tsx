@@ -19,12 +19,13 @@ export function SheetItem({ title, href, icon: Icon, active = false }: Props) {
       <Button
         asChild
         variant="ghost"
-        className="w-full justify-start"
+        size="default"
       >
         <Link
           href={href}
           aria-current={active ? 'page' : undefined}
           className={cn(
+            'w-full justify-start',
             active &&
               'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
           )}
