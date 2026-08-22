@@ -124,6 +124,33 @@ gate those on `quality-check`.
 - Spacing rhythm: page sections `py-8`+; grids `gap-4`–`gap-8`; card padding
   `p-3`–`p-6`. Prefer whitespace over dividers when separating groups
 
+### Navigation & chrome
+
+- One entry point per destination. Account destinations (Profile, Dashboard)
+  live only in the account menu (`UserMenu`, shared by both headers) — never
+  as top-level nav buttons
+- Header bar is a right-anchored toolbar on solid `bg-background` with a
+  hairline `border-b` at `h-16`: authed = Menu icon · Dashboard icon (admin) ·
+  cart · avatar; guests = Login (ghost) + Sign Up (**the one filled-primary
+  CTA**) only — no navigation or preference controls for logged-out visitors,
+  since every destination is auth-gated and would be a login wall in disguise.
+  **Menu** (`/products`) is icon-only (`UtensilsCrossed`) with a tooltip,
+  `aria-label`, and an accent tint via `aria-current` while on the page;
+  **Dashboard** gets the same treatment (`LayoutDashboard`, admin-only); the
+  cart appears only when authenticated and links to `/order`
+- Below `md` the bar collapses to logo + hamburger: every control (Menu, Cart,
+  Dashboard, Profile, Login, Sign Up, Theme, Logout) lives in the
+  right-sliding sheet whose icon rows highlight the current route. No dead
+  ends — nothing visible links to a login wall
+- Theme placement follows auth state: inside the account menu (Theme submenu)
+  for signed-in users everywhere — including `/dashboard/*`, whose own chrome
+  replaces the site header; the sheet's footer toggle covers mobile (guests
+  included)
+- Avatars are always `<UserAvatar>`: two-letter initials from
+  `getUserInitials` on a filled-primary chip — identical across headers
+- Footer uses labeled columns (Explore / Visit Us / Legal); the Explore column
+  is the interim home of `/order` until the cart drawer ships
+
 ### i18n — every visible string
 
 - All user-facing text goes through next-intl — this includes `aria-label`,

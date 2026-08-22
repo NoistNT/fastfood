@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { JetBrains_Mono as FontMono } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
@@ -18,7 +18,6 @@ import {
 import { PushNotificationManager } from '@/modules/core/components/push-notification-manager';
 import { ServiceWorkerRegistration } from '@/modules/core/components/service-worker-registration';
 import { ThemeProvider } from '@/modules/core/theme-provider';
-import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { Toaster } from '@/modules/core/ui/toaster';
 import { AuthProvider } from '@/modules/auth/context/auth-context';
 import '@/app/globals.css';
@@ -51,6 +50,7 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const messages = await getMessages();
+  const t = await getTranslations('Components');
 
   return (
     <html
@@ -74,15 +74,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <ResourcePreloader />
                 <PushNotificationManager />
                 <Toaster />
-                <div className="fixed right-4 bottom-4 z-10">
-                  <ModeToggle />
-                </div>
                 <ConditionalHeader />
                 <main
                   id="main-content"
                   className="grow"
                   role="main"
-                  aria-label="Main content"
+                  aria-label={t('main.landmark')}
                 >
                   <PageTransition>{children}</PageTransition>
                 </main>

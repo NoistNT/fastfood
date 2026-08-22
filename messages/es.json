@@ -3,6 +3,8 @@
     "getStarted": "Empezar"
   },
   "ModeToggle": {
+    "theme": "Tema",
+    "toggleTheme": "Cambiar tema",
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema"
@@ -474,15 +476,32 @@
     }
   },
   "Components": {
+    "skipToContent": "Saltar al contenido principal",
+    "main": {
+      "landmark": "Contenido principal"
+    },
     "header": {
       "title": "QVC",
+      "menu": "Menú",
+      "cart": "Carrito",
       "order": "Pedido",
       "dashboard": "Panel de Control",
-      "profile": "Perfil"
+      "profile": "Perfil",
+      "siteHeader": "Encabezado del sitio",
+      "homeLink": "Inicio de FastFood",
+      "mainNavigation": "Navegación principal",
+      "userNavigation": "Navegación de cuenta de usuario",
+      "goToMenu": "Ver el menú",
+      "viewCart": "Ver tu pedido",
+      "userMenu": "Menú de usuario",
+      "openMenu": "Abrir menú de navegación"
     },
     "footer": {
       "title": "FastFood",
       "description": "¡Sirviendo la mejor comida rápida de la ciudad!",
+      "exploreHeading": "Explorar",
+      "visitUsHeading": "Visítanos",
+      "legalHeading": "Legal",
       "address": {
         "street": "Calle Comida Rápida 123",
         "city": "Ciudad Food, FC 12345"
