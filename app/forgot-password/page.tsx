@@ -102,10 +102,10 @@ export default function ForgotPasswordPage() {
   if (isEmailSent) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg text-center">
+        <div className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 text-center">
           <div className="flex justify-center">
-            <div className="rounded-full bg-green-100 p-3">
-              <Mail className="h-8 w-8 text-green-600" />
+            <div className="rounded-full bg-success/15 p-3">
+              <Mail className="h-8 w-8 text-success" />
             </div>
           </div>
           <header>
@@ -141,7 +141,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div
-        className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg"
+        className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8"
         role="main"
         aria-labelledby="forgot-password-heading"
       >

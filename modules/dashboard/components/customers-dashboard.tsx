@@ -48,7 +48,7 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
       </form>
 
       <div
-        className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground px-2 py-0"
+        className="overflow-hidden rounded-lg border border-border bg-card px-2 py-0"
         suppressHydrationWarning
       >
         <DataTable

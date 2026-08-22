@@ -38,7 +38,7 @@ export function CardFooter({ productId, available, name, price }: Props) {
         aria-label={`View details for ${name}`}
       >
         <Button
-          className="w-full transition-colors tracking-tighter dark:hover:border-neutral-700 sm:w-32"
+          className="w-full sm:w-32"
           type="button"
           variant="outline"
           aria-describedby={`product-${productId}-price`}
@@ -47,13 +47,9 @@ export function CardFooter({ productId, available, name, price }: Props) {
         </Button>
       </Link>
       <Button
-        className={
-          available
-            ? 'w-full tracking-tighter transition-colors dark:bg-neutral-50 sm:w-32'
-            : 'w-full tracking-tighter cursor-not-allowed bg-rose-100 font-semibold text-red-500 hover:bg-rose-100 hover:text-red-500 dark:border-neutral-700 dark:bg-rose-900 dark:text-red-200 dark:hover:bg-rose-900 sm:w-32'
-        }
+        className={available ? 'w-full sm:w-32' : 'w-full cursor-not-allowed sm:w-32'}
         type="button"
-        variant={available ? 'default' : 'outline'}
+        variant={available ? 'default' : 'destructive-soft'}
         onClick={() => handleAddItem()}
         disabled={!available}
         aria-label={available ? `Add ${name} to order for $${price}` : `${name} is out of stock`}

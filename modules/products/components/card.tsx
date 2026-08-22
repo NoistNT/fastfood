@@ -16,7 +16,7 @@ export default function Card({
 }: Props) {
   return (
     <article
-      className="flex h-full bg-card w-96 flex-col rounded-xl p-3 shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-1 sm:h-40 sm:w-full sm:max-w-xl sm:flex-row ring-1 ring-border"
+      className="flex h-full w-full max-w-96 flex-col rounded-xl bg-card p-3 transition-all duration-300 hover:ring-primary/40 hover:-translate-y-0.5 sm:h-40 sm:w-full sm:max-w-xl sm:flex-row ring-1 ring-border"
       aria-labelledby={`product-${id}-name`}
       data-testid="product-card"
     >

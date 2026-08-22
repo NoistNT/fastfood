@@ -42,3 +42,7 @@ error-logs/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# opencode session artifacts
+.openchamber/
+.opencode/plans/

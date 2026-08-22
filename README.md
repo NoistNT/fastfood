@@ -1,160 +1,191 @@
-# FastFood - Restaurant Management System
+# FastFood — Restaurant Management System
 
-A comprehensive Next.js application for restaurant management with dashboard, orders, products, and customer management.
+A Next.js 16 (App Router) restaurant management app: admin dashboard, ordering,
+products/inventory, customers, and role-based auth.
 
-## Quick Start
+**Stack:** Next.js 16 · TypeScript (strict) · pnpm 11 · Node 24 · PostgreSQL +
+Drizzle ORM (Neon serverless) · Tailwind CSS v4 · shadcn/ui · next-intl ·
+Zustand · TanStack React Query + Table · Vitest + jsdom · Playwright · Upstash
+Redis · MercadoPago · Resend
+
+---
+
+## Quick start
 
 ```bash
-# Install dependencies
 pnpm install
 
-# Setup environment
-cp .env.local.example .env.local
-# Edit .env.local with your configuration
+# Environment — copy the example and fill in real values
+cp .env.development.example .env.development
 
-# Database setup
+# Database — push schema, then seed
 pnpm db:push
 pnpm db:seed
 
-# Start development
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000
 
-## Environment Setup
+Seeded logins (all password `P4$$W0rD`): admin `john.doe@example.com`,
+customers `jane.smith@example.com`, `alice.johnson@example.com`,
+`bob.brown@example.com`.
 
-### Required Files
+> **External configuration** (Neon branches, Vercel dashboard vars, GitHub
+> Actions secrets, secret rotation, bootstrap-from-scratch) is documented in
+> **[`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md)**.
 
-- `.env.local` - Your development environment (not committed)
-- `.env.development.local` - Development overrides
-- `.env.production.local` - Production overrides
-
-### Required Variables
-
-| Variable               | Description           | Example                                          |
-| ---------------------- | --------------------- | ------------------------------------------------ |
-| `DB_URL`               | PostgreSQL connection | `postgresql://user:pass@localhost:5432/fastfood` |
-| `NEXT_PUBLIC_BASE_URL` | App base URL          | `http://localhost:3000`                          |
-| `SESSION_SECRET`       | JWT encryption key    | `your-32-char-secret-here`                       |
-| `MP_ACCESS_TOKEN`      | MercadoPago token     | `TEST-123456789...`                              |
-| `RESEND_API_KEY`       | Email service API     | `re_123456789...`                                |
-
-### Optional Variables
-
-| Variable                   | Description             | Default |
-| -------------------------- | ----------------------- | ------- |
-| `UPSTASH_REDIS_REST_URL`   | Redis for rate limiting | -       |
-| `UPSTASH_REDIS_REST_TOKEN` | Redis auth              | -       |
-| `SENTRY_DSN`               | Error tracking          | -       |
-| `LOG_LEVEL`                | Logging verbosity       | `info`  |
-
-## Project Structure
-
-```
-app/
-├── api/           # API routes
-├── dashboard/     # Admin dashboard
-├── login/         # Authentication pages
-├── products/      # Product catalog
-├── order/         # Order management
-└── profile/       # User profiles
-
-modules/
-├── auth/          # Authentication system
-├── core/          # Shared components
-├── dashboard/     # Dashboard components
-├── orders/        # Order management
-├── products/      # Product management
-└── users/         # User management
-
-lib/               # Utilities and helpers
-db/                # Database schema and migrations
-```
-
-## Features
-
-- **Dashboard**: Analytics, orders, customers, inventory management
-- **Orders**: Complete order lifecycle with status tracking
-- **Products**: Product catalog with availability management
-- **Authentication**: Secure login/register with password reset
-- **Payments**: MercadoPago integration
-- **Notifications**: Email notifications via Resend
-- **Internationalization**: English/Spanish support
-- **Testing**: Unit tests, E2E tests, visual regression testing
-
-## CI/CD Pipeline
-
-### Workflows
-
-- `ci.yml` - Main pipeline with linting, testing, build
-- `security.yml` - Weekly security audits
-- `visual-regression.yml` - UI consistency testing
-- `vercel-preview.yml` - PR preview deployments
-- `vercel-production.yml` - Production deployments
-- `monitoring.yml` - Health monitoring
-
-### Quality Gates
-
-- Code linting and TypeScript checking
-- Unit test suite
-- E2E test suite
-- Visual regression testing
-- Performance audits (Lighthouse 90+)
-- Security vulnerability scanning
+---
 
 ## Commands
 
-```bash
-# Development
-pnpm dev              # Start dev server
-pnpm build            # Build for production
-pnpm start            # Start production server
+| Command                 | What it does                                           |
+| ----------------------- | ------------------------------------------------------ |
+| `pnpm dev`              | Next.js dev server                                     |
+| `pnpm build`            | Production build                                       |
+| `pnpm start`            | Start production build                                 |
+| `pnpm lint`             | ESLint + `tsc --noEmit` (both must pass)               |
+| `pnpm type-check`       | `tsc --noEmit`                                         |
+| `pnpm format`           | ESLint --fix + Prettier --write                        |
+| `pnpm test`             | Vitest watcher (uses `.env.test` if present)           |
+| `pnpm test:run`         | Vitest, single run                                     |
+| `pnpm test:e2e`         | Playwright E2E (server auto-boots via config)          |
+| `pnpm test:visual`      | Update Playwright visual snapshots                     |
+| `pnpm test:visual:ci`   | Run visual tests without updating                      |
+| `pnpm db:push`          | Push Drizzle schema to DB                              |
+| `pnpm db:seed`          | Seed the database (**destructive** — clears + reseeds) |
+| `pnpm db:studio`        | Drizzle Kit Studio                                     |
+| `pnpm db:generate`      | Generate Drizzle migrations                            |
+| `pnpm i18n:check`       | Verify en/es locale keys are in sync                   |
+| `pnpm test:performance` | Lighthouse CI audit                                    |
 
-# Database
-pnpm db:push          # Push schema changes
-pnpm db:seed          # Seed database
-pnpm db:studio        # Open Drizzle Studio
+---
 
-# Testing
-pnpm test:run         # Run all tests
-pnpm test:e2e         # E2E tests
-pnpm test:visual      # Visual regression tests
-pnpm test:performance # Performance audit
+## Environment variables
 
-# Code Quality
-pnpm lint             # ESLint
-pnpm type-check       # TypeScript checking
-pnpm audit            # Security audit
+Required in production:
+
+- `DB_URL` — PostgreSQL/Neon connection string
+- `NEXT_PUBLIC_BASE_URL` — app base URL (with scheme)
+- `SESSION_SECRET` — JWT session signing key (`openssl rand -base64 32`)
+- `MP_ACCESS_TOKEN` — MercadoPago token (`TEST-` dev, `APP_USR-` prod)
+
+Optional:
+
+- `RESEND_API_KEY` — transactional/notification email
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` — Redis rate limiting
+
+Where each lives (local `.env`, Vercel dashboard, GitHub Actions secrets) is in
+**[`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md)**.
+
+---
+
+## Project structure
+
+```text
+.
+├── app/                          # App Router: pages + API routes
+│   ├── api/                      #   Route handlers (auth, products, orders, payment, …)
+│   ├── dashboard/                #   Admin dashboard (customers, inventory, orders, reports)
+│   ├── order/ products/          #   Customer-facing ordering + catalog pages
+│   ├── login/ register/          #   Auth pages (+ forgot/reset password)
+│   ├── profile/ forbidden/       #   Account + access-denied pages
+│   └── components-test/          #   Living style fixture (visual regression)
+│
+├── modules/                      # Domain logic, grouped by feature
+│   ├── core/                     #   Shared UI (shadcn/ui), hooks, components
+│   ├── auth/ orders/ products/   #   Feature modules (actions + components per feature)
+│   ├── dashboard/ users/         #   Dashboard + user management
+│   └── <feature>/actions/        #   Server actions colocated per feature
+│
+├── db/                           # Drizzle schema (single file) + client (Neon)
+├── lib/                          # Utilities: auth session (jose JWT), CSRF, rate limit
+├── store/                        # Zustand stores (cart, dashboard state)
+├── types/                        # Shared TS types (auth, db)
+├── messages/                     # next-intl translations (en.json, es.json)
+├── i18n/                         # Locale detection / request config
+├── scripts/                      # Seed scripts + data
+├── test/                         # Vitest, mirrored by type (api/, components/, …)
+├── e2e/                          # Playwright specs + visual baselines (e2e/visual/)
+├── public/                       # Static assets (icons, manifest, service worker)
+├── docs/                         # Runbooks (see docs/ENVIRONMENTS.md)
+│
+├── proxy.ts                      # Middleware: auth + role-based route protection
+├── drizzle.config.ts             # Drizzle Kit config
+├── next.config.ts                # Next.js config
+└── vercel.json                   # Vercel function config (30s API max)
 ```
 
-## Deployment
+---
 
-### Vercel (Recommended)
+## Design system
 
-1. Connect your repository to Vercel
-2. Add environment variables in Vercel dashboard
-3. Deploy automatically on push to main
+The UI follows a token-based design language defined in `app/globals.css`:
+paper-warm light / charcoal dark surfaces, ink primary CTAs, JetBrains Mono as
+the sole typeface, and neon status badges (tinted outline chips). The full
+rules live in **[`AGENTS.md`](AGENTS.md)** → _Design system & UX rules_;
+`app/components-test` renders every primitive and doubles as the Playwright
+visual-regression fixture.
 
-### Manual Deployment
+---
 
-```bash
-# Build
-pnpm build
+## Auth & security
 
-# Start
-pnpm start
-```
+- JWT session cookie (`jose`, HS256, 1-day expiry) via `lib/auth/session.ts`
+- `proxy.ts` middleware guards routes by role (`/dashboard` → admin+customer,
+  `/order`, `/products`, `/profile`)
+- CSRF token for state-changing API calls (`x-csrf-token` header)
+- Input sanitization (`lib/sanitize.ts`), rate limiting (Upstash Redis with
+  in-memory fallback)
+- No logger/Sentry by design — `console.error` only, no PII
 
-## Monitoring & Logging
+---
 
-- **Winston**: Structured logging with file rotation
-- **Sentry**: Error tracking in production
-- **Health Checks**: Automated monitoring
-- **Performance**: Lighthouse CI integration
+## CI/CD
+
+### Quality pipeline (on push/PR to `main`/`dev`)
+
+`pnpm lint` → `pnpm test:run` → `pnpm build` → start server → Playwright
+chromium E2E. A separate `e2e-journey` job runs the database-backed user journey
+against the `ci-e2e` Neon branch (skipped until `CI_E2E_DB_URL` +
+`CI_E2E_SESSION_SECRET` secrets are configured).
+
+### Workflows
+
+| Workflow                | Purpose                                        |
+| ----------------------- | ---------------------------------------------- |
+| `ci.yml`                | Lint, unit tests, build, E2E                   |
+| `vercel-preview.yml`    | Deploy previews on PR / push-to-`dev`          |
+| `vercel-production.yml` | Quality gates + deploy to production on `main` |
+| `monitoring.yml`        | Health check every 30 min + email alert        |
+| `security.yml`          | `pnpm audit` weekly                            |
+| `visual-regression.yml` | Manual visual regression (`workflow_dispatch`) |
+
+### Deployment (Vercel)
+
+- Build `pnpm build`, install `pnpm install --frozen-lockfile`
+- API routes capped at 30s max duration
+- Preview on PR; production on push to `main` (after quality gates)
+- Deploy env vars come from the Vercel dashboard, not the workflows
+
+See **[`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md)** for the full deployment
+and environment configuration reference.
+
+---
+
+## Monitoring & logging
+
+- Health check endpoint `/api/health` (checks DB connectivity)
+- GitHub Actions `monitoring.yml` pings production health every 30 minutes and
+  emails on failure
+- **No Sentry/structured logging** — the repo deliberately avoids error
+  tracking for privacy
+
+---
 
 ## Support
 
-- [Next.js Documentation](https://nextjs.org/docs)
+- [Next.js docs](https://nextjs.org/docs)
 - [Drizzle ORM](https://orm.drizzle.team)
-- [MercadoPago Docs](https://www.mercadopago.com/developers)
+- [MercadoPago developers](https://www.mercadopago.com/developers)
+- [Neon docs](https://neon.tech/docs)

@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import Link from 'next/link';
+import { ClipboardList, Package, Users } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
@@ -115,7 +116,7 @@ export default async function DashboardOverview() {
                   {t('quickActions.orders.description')}
                 </p>
               </div>
-              <span className="text-2xl">📦</span>
+              <ClipboardList className="h-6 w-6 text-primary" />
             </Link>
             <Link
               href="/dashboard/customers"
@@ -127,7 +128,7 @@ export default async function DashboardOverview() {
                   {t('quickActions.customers.description')}
                 </p>
               </div>
-              <span className="text-2xl">👥</span>
+              <Users className="h-6 w-6 text-primary" />
             </Link>
             <Link
               href="/dashboard/products"
@@ -139,7 +140,7 @@ export default async function DashboardOverview() {
                   {t('quickActions.products.description')}
                 </p>
               </div>
-              <span className="text-2xl">🍔</span>
+              <Package className="h-6 w-6 text-primary" />
             </Link>
           </CardContent>
         </Card>

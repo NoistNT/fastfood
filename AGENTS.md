@@ -23,6 +23,7 @@ Vitest + jsdom · Playwright (E2E + visual) · Upstash Redis · MercadoPago · R
 | `pnpm db:seed`        | `tsx ./scripts/seed.ts`                   |
 | `pnpm db:studio`      | Drizzle Kit Studio                        |
 | `pnpm db:generate`    | Generate Drizzle migrations               |
+| `pnpm i18n:check`     | Verify en/es locale keys are in sync      |
 | `pnpm format`         | ESLint --fix + Prettier --write           |
 
 Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
@@ -38,6 +39,8 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   production Vercel deploy — treat it as a release action
 - Scan diffs for credential patterns before committing anything; never commit
   `.env*` files, tokens, or connection strings with real credentials
+- PRs that change user-facing behavior, commands, or conventions update
+  `README.md` and `AGENTS.md` in the same PR
 
 ## Dependencies
 
@@ -82,6 +85,77 @@ gate those on `quality-check`.
 - **`store/`** — Zustand stores
 - **`types/`** — Shared TS types (`auth.ts`, `db.ts`)
 - **`messages/`** — `en.json`, `es.json`
+
+## Design system & UX rules
+
+### Color — tokens only
+
+- Never use raw palette utilities (`bg-red-500`, `text-neutral-600`) or hardcoded
+  hex values in components/gradients. Use semantic tokens exclusively:
+  `primary` · `secondary` · `muted` · `accent` · `destructive` · `success` ·
+  `warning` · `info` · `card` · `popover` · `border` · `input` · `ring`
+- Status mapping: green→`success`, amber/orange→`warning`, blue→`info`,
+  red/rose→`destructive`. **Every** badge — including `default` and
+  `secondary` — is a neon chip: `border-<token>/40 bg-<token>/10 text-<token>`
+  at `rounded-md` with mono text. Chips are bordered+tinted; buttons are solid
+  fills — they must never be confusable. Use built-in variants
+  (`<Badge variant="success">`), never inline classes
+- All values live in `app/globals.css` (`:root` + `.dark` HSL channels), mapped
+  in `@theme`. Brand language: terracotta primary over paper-warm neutrals
+  (light = ivory/paper, dark = warm charcoal); keep both modes in sync when
+  changing any channel
+
+### Typography & icons
+
+- **JetBrains Mono via `next/font/google` is the sole typeface** (`--font-sans`).
+  Hierarchy comes from size, weight, and color — never from introducing a
+  second font. Badge text inherits mono naturally; don't add element-level
+  `font-family` overrides anywhere
+- Icons: lucide-react components only. **Never emoji** in UI chrome
+  (sidebar, quick actions, trend indicators)
+
+### Visual language
+
+- Elevation is border-first: hairline `border`/`ring-border` for surfaces,
+  tinted hover (`hover:ring-primary/40`). Reserve shadows for floating
+  overlays only (dialog, sheet, popover, dropdown)
+- Accent restraint: `primary` is for CTAs, active states, and key highlights —
+  never as large background fills or body text color
+- Spacing rhythm: page sections `py-8`+; grids `gap-4`–`gap-8`; card padding
+  `p-3`–`p-6`. Prefer whitespace over dividers when separating groups
+
+### i18n — every visible string
+
+- All user-facing text goes through next-intl — this includes `aria-label`,
+  `title`, toast text, sr-only text. No string literals in JSX
+- Keys must exist in BOTH `messages/en.json` and `messages/es.json`; keep them
+  key-synced. Verify with `pnpm i18n:check` before committing locale changes
+- Locale is auto-detected server-side (`i18n/request.ts`); don't hardcode `lang`
+
+### States & feedback
+
+- Every async route gets a `loading.tsx`. Reuse skeletons from
+  `modules/core/ui/skeleton-components.tsx`; mark them `role="status"` +
+  `aria-busy="true"` so screen readers announce the loading state
+- Empty states need a message + a CTA button (see `empty-order.tsx`)
+- Errors: `ErrorBoundary` for client islands, `toast({ variant: 'destructive' })`
+  for action failures — follow existing patterns in `app/order/page.tsx`
+
+### Component conventions
+
+- Import primitives via deep paths (`@/modules/core/ui/button`)
+- **Buttons: choose a `variant` + `size` — never pass `tracking-*`, font
+  weights, or geometry overrides via `className`. One filled-primary CTA per
+  view.** Use `destructive-soft` for tinted cancel/delete actions,
+  `icon-sm` for compact table buttons; positioning classes (e.g., inside
+  inputs) are the only allowed exception
+- Status badges have dedicated components (`order-status-badge.tsx`,
+  `product-availability-badge.tsx`, `user-role-badge.tsx`) — extend those, don't
+  inline new color combos
+- `app/components-test/page.tsx` is the living style fixture used by visual
+  regression — render real components there when adding UI primitives
+- Brand assets: `app/icon.svg` (favicon), `app/apple-icon.png`, `public/logo.svg`.
+  Metadata lives in `app/layout.tsx` exports, never manual `<head>` tags
 
 ## Logging / error handling
 

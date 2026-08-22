@@ -41,9 +41,9 @@ export function ConfirmationDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="tracking-tight">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="tracking-tighter mb-2">{title}</DialogTitle>
+          <DialogTitle className="mb-2">{title}</DialogTitle>
           <DialogDescription className="my-2">{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -27,12 +27,12 @@ export function PlaceholderImage({
         >
           <stop
             offset="0%"
-            className="text-gray-100 dark:text-gray-800"
+            className="text-muted"
             style={{ stopColor: 'currentColor', stopOpacity: 0.1 }}
           />
           <stop
             offset="100%"
-            className="text-gray-200 dark:text-gray-700"
+            className="text-muted-foreground/40"
             style={{ stopColor: 'currentColor', stopOpacity: 0.2 }}
           />
         </linearGradient>

@@ -64,7 +64,7 @@ export default function Header() {
   const hasAdminAccess = localUser?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
   return (
     <header
-      className="sticky top-0 z-50 flex items-center justify-between bg-background/50 dark:bg-background/75 backdrop-blur-sm px-4 py-3.5 text-primary shadow-lg dark:shadow-neutral-900/50 transition-colors ease-in-out"
+      className="sticky top-0 z-50 flex items-center justify-between bg-background/80 dark:bg-background/75 backdrop-blur-sm px-4 py-3.5 text-primary border-b transition-colors ease-in-out"
       role="banner"
       aria-label="Site header"
     >
@@ -72,7 +72,7 @@ export default function Header() {
         href="/"
         aria-label="FastFood home"
       >
-        <h1 className="text-2xl text-primary font-semibold tracking-tighter hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors duration-200">
+        <h1 className="text-2xl text-primary font-semibold tracking-tighter hover:text-primary/75 transition-colors duration-200">
           {t('title')}
         </h1>
       </Link>
@@ -87,24 +87,14 @@ export default function Header() {
           href="/order"
           aria-label="Order food"
         >
-          <Button
-            variant="ghost"
-            className="tracking-tight"
-          >
-            {t('order')}
-          </Button>
+          <Button variant="ghost">{t('order')}</Button>
         </Link>
         {hasAdminAccess && (
           <Link
             href="/dashboard"
             aria-label="Go to dashboard"
           >
-            <Button
-              variant="ghost"
-              className="tracking-tight"
-            >
-              {t('dashboard')}
-            </Button>
+            <Button variant="ghost">{t('dashboard')}</Button>
           </Link>
         )}
         {!!localUser && (
@@ -112,12 +102,7 @@ export default function Header() {
             href={`/profile/${localUser?.id}`}
             aria-label="View profile"
           >
-            <Button
-              variant="ghost"
-              className="tracking-tight"
-            >
-              {t('profile')}
-            </Button>
+            <Button variant="ghost">{t('profile')}</Button>
           </Link>
         )}
       </nav>

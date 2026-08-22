@@ -203,11 +203,11 @@ export default function RegisterPage() {
                       className="flex items-center space-x-2 text-xs"
                     >
                       {req.met ? (
-                        <CheckCircle className="h-3 w-3 text-green-500" />
+                        <CheckCircle className="h-3 w-3 text-success" />
                       ) : (
-                        <XCircle className="h-3 w-3 text-red-500" />
+                        <XCircle className="h-3 w-3 text-destructive" />
                       )}
-                      <span className={req.met ? 'text-green-700' : 'text-red-700'}>
+                      <span className={req.met ? 'text-success' : 'text-destructive'}>
                         {req.text}
                       </span>
                     </div>
