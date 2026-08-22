@@ -39,6 +39,8 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   production Vercel deploy — treat it as a release action
 - Scan diffs for credential patterns before committing anything; never commit
   `.env*` files, tokens, or connection strings with real credentials
+- PRs that change user-facing behavior, commands, or conventions update
+  `README.md` and `AGENTS.md` in the same PR
 
 ## Dependencies
 
