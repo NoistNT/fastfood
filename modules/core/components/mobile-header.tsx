@@ -15,15 +15,17 @@ import { USER_ROLES, type UserWithRoles } from '@/types/auth';
 import { Button } from '@/modules/core/ui/button';
 import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/modules/core/ui/sheet';
-import { Sheet, SheetTrigger } from '@/modules/core/ui/utils-sheet';
+import { Sheet, SheetClose, SheetTrigger } from '@/modules/core/ui/utils-sheet';
 import { SheetItem } from '@/modules/core/ui/sheet-item';
 
 interface MobileHeaderProps {
   user: UserWithRoles | null;
   isAuthenticated: boolean;
+  /** True while the session request resolves; suppresses the guest branch to avoid a flash */
+  loading?: boolean;
 }
 
-export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
+export function MobileHeader({ user, isAuthenticated, loading = false }: MobileHeaderProps) {
   const t = useTranslations('Components.header');
   const tAuth = useTranslations('Features.auth.navigation');
   const { logout } = useAuth();
@@ -57,12 +59,14 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
             className="flex flex-col gap-y-2 mt-6"
             aria-label={t('mainNavigation')}
           >
-            <SheetItem
-              title={t('menu')}
-              href="/products"
-              icon={UtensilsCrossed}
-              active={pathname === '/products'}
-            />
+            {isAuthenticated && user && (
+              <SheetItem
+                title={t('menu')}
+                href="/products"
+                icon={UtensilsCrossed}
+                active={pathname === '/products'}
+              />
+            )}
             {isAuthenticated && user && (
               <SheetItem
                 title={t('cart')}
@@ -88,7 +92,7 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
               />
             )}
           </nav>
-          {!isAuthenticated && (
+          {!loading && !isAuthenticated && (
             <nav
               className="flex flex-col gap-y-2 mt-6"
               aria-label={t('userNavigation')}
@@ -110,13 +114,15 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
           <SheetFooter className="absolute inset-x-6 bottom-6 flex-row items-center justify-between">
             <ModeToggle />
             {isAuthenticated && (
-              <Button
-                variant="ghost"
-                size="default"
-                onClick={logout}
-              >
-                {tAuth('logout')}
-              </Button>
+              <SheetClose asChild>
+                <Button
+                  variant="ghost"
+                  size="default"
+                  onClick={logout}
+                >
+                  {tAuth('logout')}
+                </Button>
+              </SheetClose>
             )}
           </SheetFooter>
         </SheetContent>

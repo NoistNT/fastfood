@@ -29,7 +29,7 @@ export function UserAvatar({ name, email, imageUrl, className }: UserAvatarProps
       {imageUrl ? (
         <AvatarImage
           src={imageUrl}
-          alt={name ?? email ?? t('avatarAlt')}
+          alt={[name, email].map((v) => v?.trim()).find(Boolean) ?? t('avatarAlt')}
         />
       ) : null}
       <AvatarFallback className="bg-primary text-primary-foreground">

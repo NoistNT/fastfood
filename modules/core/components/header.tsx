@@ -187,6 +187,7 @@ export default function Header() {
           <MobileHeader
             user={localUser}
             isAuthenticated={!!localUser}
+            loading={localLoading}
           />
         </div>
       </div>
