@@ -494,7 +494,8 @@
       "goToMenu": "Ver el menú",
       "viewCart": "Ver tu pedido",
       "userMenu": "Menú de usuario",
-      "openMenu": "Abrir menú de navegación"
+      "openMenu": "Abrir menú de navegación",
+      "avatarAlt": "Avatar del usuario"
     },
     "footer": {
       "title": "FastFood",

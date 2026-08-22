@@ -508,7 +508,8 @@
       "goToMenu": "Browse the menu",
       "viewCart": "View your order",
       "userMenu": "User menu",
-      "openMenu": "Open navigation menu"
+      "openMenu": "Open navigation menu",
+      "avatarAlt": "User avatar"
     },
     "footer": {
       "title": "FastFood",

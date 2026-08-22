@@ -1,15 +1,11 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/modules/core/ui/avatar';
 
 export function getUserInitials(name?: string | null, email?: string | null): string {
-  const fromName = name
-    ?.trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-
+  const fromName = name?.trim().charAt(0).toUpperCase();
   if (fromName) return fromName;
 
   const fromEmail = email?.trim().charAt(0).toUpperCase();
@@ -26,12 +22,14 @@ interface UserAvatarProps {
 }
 
 export function UserAvatar({ name, email, imageUrl, className }: UserAvatarProps) {
+  const t = useTranslations('Components.header');
+
   return (
     <Avatar className={className}>
       {imageUrl ? (
         <AvatarImage
           src={imageUrl}
-          alt={name ?? email ?? 'User'}
+          alt={name ?? email ?? t('avatarAlt')}
         />
       ) : null}
       <AvatarFallback className="bg-primary text-primary-foreground">

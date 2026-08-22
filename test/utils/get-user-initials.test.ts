@@ -3,17 +3,13 @@ import { describe, expect, it } from 'vitest';
 import { getUserInitials } from '@/modules/core/components/user-avatar';
 
 describe('getUserInitials', () => {
-  it('joins word initials, uppercased, capped at two characters', () => {
-    expect(getUserInitials('Jane Smith')).toBe('JS');
-    expect(getUserInitials('jean pierre dupont')).toBe('JP');
-  });
-
-  it('uses a single initial for single-word names', () => {
-    expect(getUserInitials('Jane')).toBe('J');
+  it('uses the first letter of the name, uppercased', () => {
+    expect(getUserInitials('Jane Smith')).toBe('J');
+    expect(getUserInitials('jane')).toBe('J');
   });
 
   it('trims extra whitespace', () => {
-    expect(getUserInitials('  Jane   Smith  ')).toBe('JS');
+    expect(getUserInitials('  Jane   Smith  ')).toBe('J');
   });
 
   it('falls back to the first email character, uppercased, without a name', () => {

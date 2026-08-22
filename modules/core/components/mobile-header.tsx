@@ -84,6 +84,7 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
                 title={t('profile')}
                 href={`/profile/${user.id}`}
                 icon={User}
+                active={pathname === `/profile/${user.id}`}
               />
             )}
           </nav>
@@ -96,11 +97,13 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
                 title={tAuth('login')}
                 href="/login"
                 icon={LogIn}
+                active={pathname === '/login'}
               />
               <SheetItem
                 title={tAuth('register')}
                 href="/register"
                 icon={UserPlus}
+                active={pathname === '/register'}
               />
             </nav>
           )}
@@ -109,6 +112,7 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
             {isAuthenticated && (
               <Button
                 variant="ghost"
+                size="default"
                 onClick={logout}
               >
                 {tAuth('logout')}

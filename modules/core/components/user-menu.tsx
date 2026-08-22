@@ -39,9 +39,8 @@ export function UserMenu({ user, extraItems }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="avatar"
           size="icon-sm"
-          className="rounded-full"
           aria-label={t('userMenu')}
           suppressHydrationWarning
         >

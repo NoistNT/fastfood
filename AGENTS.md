@@ -126,9 +126,10 @@ gate those on `quality-check`.
 
 ### Navigation & chrome
 
-- One entry point per destination. Account destinations (Profile, Dashboard)
-  live only in the account menu (`UserMenu`, shared by both headers) — never
-  as top-level nav buttons
+- One entry point per destination. Profile lives only in the account menu
+  (`UserMenu`, shared by both headers); **Dashboard** is the one deliberate
+  exception — an admin-only toolbar icon on desktop and a sheet row on mobile,
+  never duplicated across surfaces
 - Header bar is a right-anchored toolbar on solid `bg-background` with a
   hairline `border-b` at `h-16`: authed = Menu icon · Dashboard icon (admin) ·
   cart · avatar; guests = Login (ghost) + Sign Up (**the one filled-primary
@@ -146,8 +147,8 @@ gate those on `quality-check`.
   for signed-in users everywhere — including `/dashboard/*`, whose own chrome
   replaces the site header; the sheet's footer toggle covers mobile (guests
   included)
-- Avatars are always `<UserAvatar>`: two-letter initials from
-  `getUserInitials` on a filled-primary chip — identical across headers
+- Avatars are always `<UserAvatar>`: a single initial from `getUserInitials`
+  on a filled-primary chip — identical across headers
 - Footer uses labeled columns (Explore / Visit Us / Legal); the Explore column
   is the interim home of `/order` until the cart drawer ships
 

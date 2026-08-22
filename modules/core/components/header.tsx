@@ -137,13 +137,23 @@ export default function Header() {
                   href="/login"
                   aria-label={tAuth('login')}
                 >
-                  <Button variant="ghost">{tAuth('login')}</Button>
+                  <Button
+                    variant="ghost"
+                    size="default"
+                  >
+                    {tAuth('login')}
+                  </Button>
                 </Link>
                 <Link
                   href="/register"
                   aria-label={tAuth('register')}
                 >
-                  <Button variant="default">{tAuth('register')}</Button>
+                  <Button
+                    variant="default"
+                    size="default"
+                  >
+                    {tAuth('register')}
+                  </Button>
                 </Link>
               </>
             )}
