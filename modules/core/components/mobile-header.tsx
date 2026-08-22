@@ -1,6 +1,8 @@
 import { Menu } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 
+import { useAuth } from '@/modules/auth/context/auth-context';
 import { USER_ROLES, type UserWithRoles } from '@/types/auth';
 import { Button } from '@/modules/core/ui/button';
 import { SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/modules/core/ui/sheet';
@@ -15,9 +17,17 @@ interface MobileHeaderProps {
 export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
   const t = useTranslations('Components.header');
   const tAuth = useTranslations('Features.auth.navigation');
+  const { logout } = useAuth();
+  const router = useRouter();
 
   // Helper function to check if user has admin privileges
   const hasAdminAccess = user?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
+
   return (
     <div suppressHydrationWarning>
       <Sheet>
@@ -57,7 +67,12 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
             )}
           </nav>
           <SheetFooter className="absolute bottom-4 right-4">
-            <Button variant="ghost">{tAuth('logout')}</Button>
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+            >
+              {tAuth('logout')}
+            </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>

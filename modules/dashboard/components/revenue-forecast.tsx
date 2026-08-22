@@ -1,5 +1,7 @@
 'use client';
 
+import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react';
+
 import { ChartSkeleton } from '@/modules/core/ui/skeleton-components';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
@@ -59,10 +61,10 @@ export function RevenueForecast() {
               <p
                 className={`text-2xl font-bold ${
                   forecast.trend === 'up'
-                    ? 'text-green-600'
+                    ? 'text-success'
                     : forecast.trend === 'down'
-                      ? 'text-red-600'
-                      : 'text-gray-600'
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
                 }`}
               >
                 {(forecast.growthRate * 100).toFixed(1)}%
@@ -70,13 +72,24 @@ export function RevenueForecast() {
               <p className="text-xs text-muted-foreground">Growth Rate</p>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Trend:{' '}
-            {forecast.trend === 'up'
-              ? '📈 Growing'
-              : forecast.trend === 'down'
-                ? '📉 Declining'
-                : '➡️ Stable'}
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            Trend:
+            {forecast.trend === 'up' ? (
+              <span className="inline-flex items-center gap-0.5 font-medium text-success">
+                <ArrowUpRight className="h-4 w-4" />
+                Growing
+              </span>
+            ) : forecast.trend === 'down' ? (
+              <span className="inline-flex items-center gap-0.5 font-medium text-destructive">
+                <ArrowDownRight className="h-4 w-4" />
+                Declining
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-0.5 font-medium">
+                <ArrowRight className="h-4 w-4" />
+                Stable
+              </span>
+            )}
           </div>
         </div>
       </CardContent>

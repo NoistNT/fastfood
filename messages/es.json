@@ -66,43 +66,6 @@
         "orderNotFound": "Pedido no encontrado",
         "invalidTransition": "Transición inválida",
         "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
-      },
-      "submitOrder": {
-        "redirecting": "Redirigiendo...",
-        "checkout": "Pagar",
-        "cancel": "Cancelar pedido",
-        "addMore": "Agregar más productos",
-        "registering": "Registrando...",
-        "confirm": "Confirmar pedido"
-      },
-      "submitToast": {
-        "successTitle": "Listo!",
-        "successDescription": "Tu pedido ha sido registrado exitosamente.",
-        "errorTitle": "Algo salió mal",
-        "errorDescription": "No se pudo registrar tu pedido.",
-        "actionText": "Reintentar"
-      },
-      "handlePayToast": {
-        "errorTitle": "Error de Pago",
-        "errorDescription": "Hubo un error al procesar el pago"
-      },
-      "helpers": {
-        "invalidId": "ID del pedido inválido",
-        "invalidQuantity": "La cantidad debe ser al menos 1",
-        "orderNonEmpty": "El pedido debe tener al menos un artículo",
-        "statusNonEmpty": "El historial de estado no puede estar vacío",
-        "invalidUserId": "ID de usuario inválido",
-        "totalNonEmpty": "El total no puede estar vacío"
-      },
-      "errors": {
-        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
-        "noUsers": "No se encontraron usuarios en la base de datos.",
-        "createOrderError": "No se pudo crear el pedido.",
-        "invalidStatus": "Estado inválido",
-        "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
-        "orderNotFound": "Pedido no encontrado",
-        "invalidTransition": "Transición inválida",
-        "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
       }
     },
     "profile": {
@@ -335,7 +298,8 @@
           },
           "error": {
             "title": "Error en el Registro",
-            "description": "La contraseña no coincide."
+            "description": "La contraseña no coincide.",
+            "passwordConfirm": "Las contraseñas no coinciden."
           }
         }
       },
@@ -504,7 +468,9 @@
     },
     "dialog": {
       "title": "Eliminar Item",
-      "description": "¿Estás seguro que querés eliminar"
+      "description": "¿Estás seguro que querés eliminar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
     }
   },
   "Components": {
@@ -515,29 +481,21 @@
       "profile": "Perfil"
     },
     "footer": {
-      "title": "QVC",
-      "description": "Los mejores sandwiches en la ciudad!",
+      "title": "FastFood",
+      "description": "¡Sirviendo la mejor comida rápida de la ciudad!",
       "address": {
-        "street": "Valentin Berrondo 123",
-        "city": "Catamarca, Capital"
+        "street": "Calle Comida Rápida 123",
+        "city": "Ciudad Food, FC 12345"
       },
-      "phone": "(383) 412-3456",
+      "phone": "(123) 456-7890",
+      "landmark": "Pie de página",
       "navigation": {
         "home": "Inicio",
         "menu": "Menú",
-        "about": "Nosotros"
+        "order": "Tu pedido",
+        "landmark": "Navegación del pie de página"
       },
-      "menu": {
-        "burgers": "Burgers",
-        "sandwiches": "Sandwiches",
-        "pizzas": "Pizzas"
-      },
-      "about": {
-        "story": "Nuestra Historia",
-        "franchise": "Franquicias",
-        "contact": "Contacto"
-      },
-      "tos": "Términos y Condiciones",
+      "tos": "Términos del Servicio",
       "privacyPolicy": "Política de Privacidad"
     },
     "errors": {
@@ -548,7 +506,8 @@
       "notFound": {
         "title": "404 PÁGINA NO ENCONTRADA",
         "description": "La página que estás buscando no existe.",
-        "goHome": "Ir a Inicio"
+        "goHome": "Ir a Inicio",
+        "goBack": "Volver atrás"
       },
       "forbidden": {
         "title": "ACCESO DENEGADO",
@@ -570,6 +529,29 @@
         "description": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
         "signIn": "Iniciar Sesión"
       }
+    },
+    "sidebar": {
+      "dashboard": "Panel",
+      "orders": "Pedidos",
+      "customers": "Clientes",
+      "products": "Productos",
+      "inventory": "Inventario",
+      "reports": "Reportes",
+      "toggle": "Alternar navegación"
+    }
+  },
+  "Orders": {
+    "helpers": {
+      "invalidId": "ID de pedido inválido",
+      "invalidQuantity": "La cantidad debe ser al menos 1",
+      "invalidUserId": "ID de usuario inválido",
+      "orderNonEmpty": "El pedido debe tener al menos un artículo",
+      "totalNonEmpty": "El total no puede estar vacío"
+    },
+    "errors": {
+      "createItemError": "Error al crear el artículo del pedido {orderId}.",
+      "noUsers": "No se encontraron usuarios en la base de datos.",
+      "createOrderError": "No se pudo crear el pedido."
     }
   }
 }

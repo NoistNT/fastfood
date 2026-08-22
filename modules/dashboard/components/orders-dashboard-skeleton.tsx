@@ -13,7 +13,7 @@ export default function OrdersDashboardSkeleton() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <Table className="w-full">
           <TableHeader className="sticky top-0 bg-white dark:bg-black tracking-tight">
             <TableRow>

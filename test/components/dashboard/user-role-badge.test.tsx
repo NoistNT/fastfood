@@ -11,13 +11,11 @@ describe('UserRoleBadge', () => {
     const badge = screen.getByText('Admin');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass(
-      'bg-red-500/15',
-      'text-red-700',
-      'hover:bg-red-500/25',
-      'dark:bg-red-500/10',
-      'dark:text-red-400',
-      'dark:hover:bg-red-500/20',
-      'border-0'
+      'border-destructive/40',
+      'bg-destructive/10',
+      'text-destructive',
+      'dark:border-destructive/30',
+      'dark:bg-destructive/[8%]'
     );
   });
 
@@ -27,13 +25,11 @@ describe('UserRoleBadge', () => {
     const badge = screen.getByText('Customer');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass(
-      'bg-blue-500/15',
-      'text-blue-700',
-      'hover:bg-blue-500/25',
-      'dark:bg-blue-500/10',
-      'dark:text-blue-400',
-      'dark:hover:bg-blue-500/20',
-      'border-0'
+      'border-info/40',
+      'bg-info/10',
+      'text-info',
+      'dark:border-info/30',
+      'dark:bg-info/[8%]'
     );
   });
 });

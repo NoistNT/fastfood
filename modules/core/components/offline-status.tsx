@@ -20,12 +20,12 @@ export function OfflineStatus() {
   }
 
   return (
-    <Card className={`mb-6 border-2 ${!isOnline ? 'border-destructive' : 'border-orange-500'}`}>
+    <Card className={`mb-6 border-2 ${!isOnline ? 'border-destructive' : 'border-success'}`}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {isOnline ? (
-              <Wifi className="h-5 w-5 text-green-500" />
+              <Wifi className="h-5 w-5 text-success" />
             ) : (
               <WifiOff className="h-5 w-5 text-destructive" />
             )}
@@ -57,7 +57,7 @@ export function OfflineStatus() {
                 className="flex items-center justify-between p-3 bg-muted rounded-lg"
               >
                 <div className="flex items-center space-x-3">
-                  <Clock className="h-4 w-4 text-orange-500" />
+                  <Clock className="h-4 w-4 text-warning" />
                   <div>
                     <p className="font-medium">Order #{order.id.split('_')[1]}</p>
                     <p className="text-sm text-muted-foreground">

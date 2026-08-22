@@ -33,10 +33,10 @@ export function UpdateStatusButton({
     <>
       <div className="mt-4 flex justify-center">
         <Button
-          className="w-full md:w-1/2 bg-rose-100 dark:bg-violet-900 hover:bg-rose-200 dark:hover:bg-violet-800 border border-gray-300 dark:border-gray-600"
+          className="w-full md:w-1/2"
           disabled={isChangingStatus}
           type="button"
-          variant="outline"
+          variant="destructive-soft"
           size="sm"
           onClick={() => setIsDialogOpen(true)}
         >

@@ -114,7 +114,7 @@ export function ProductsDashboard({
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg">
         <Button
           variant={activeTab === 'products' ? 'default' : 'ghost'}
           size="sm"
@@ -137,7 +137,7 @@ export function ProductsDashboard({
 
       {/* Tab Content */}
       {activeTab === 'products' ? (
-        <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground px-2 py-0">
+        <div className="overflow-hidden rounded-lg border border-border bg-card px-2 py-0">
           <DataTable
             columns={createColumns(setEditingProduct, tTable)}
             data={products}
@@ -148,7 +148,7 @@ export function ProductsDashboard({
         <div className="space-y-6">
           <InventoryStats stats={inventoryStats} />
           <LowStockAlerts alerts={lowStockAlerts} />
-          <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
             <InventoryTable />
           </div>
         </div>

@@ -3,7 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MenuIcon, X } from 'lucide-react';
+import {
+  BarChart3,
+  ClipboardList,
+  LayoutDashboard,
+  Menu as MenuIcon,
+  Package,
+  Sandwich,
+  Users,
+  X,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
@@ -11,17 +20,18 @@ import { Sheet, SheetContent, SheetTrigger } from '@/modules/core/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: '📊' },
-  { name: 'Orders', href: '/dashboard/orders', icon: '📦' },
-  { name: 'Customers', href: '/dashboard/customers', icon: '👥' },
-  { name: 'Products', href: '/dashboard/products', icon: '🍔' },
-  { name: 'Inventory', href: '/dashboard/inventory', icon: '📦' },
-  { name: 'Reports', href: '/dashboard/reports', icon: '📈' },
-];
+  { labelKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { labelKey: 'orders', href: '/dashboard/orders', icon: ClipboardList },
+  { labelKey: 'customers', href: '/dashboard/customers', icon: Users },
+  { labelKey: 'products', href: '/dashboard/products', icon: Sandwich },
+  { labelKey: 'inventory', href: '/dashboard/inventory', icon: Package },
+  { labelKey: 'reports', href: '/dashboard/reports', icon: BarChart3 },
+] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const t = useTranslations('Components.header');
+  const tNav = useTranslations('Components.sidebar');
 
   return (
     <>
@@ -33,10 +43,13 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           {t('title')}
         </h1>
       </Link>
-      <nav className="flex flex-col space-y-2">
+      <nav
+        className="flex flex-col space-y-2"
+        aria-label={t('dashboard')}
+      >
         {navigation.map((item) => (
           <Link
-            key={item.name}
+            key={item.href}
             href={item.href}
             onClick={onNavigate}
             className={cn(
@@ -46,8 +59,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
             )}
           >
-            <span className="text-lg">{item.icon}</span>
-            <span>{item.name}</span>
+            <item.icon className="h-4 w-4 shrink-0" />
+            <span>{tNav(item.labelKey)}</span>
           </Link>
         ))}
       </nav>
@@ -57,6 +70,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export default function DashboardSidebar() {
   const [open, setOpen] = useState(false);
+  const tNav = useTranslations('Components.sidebar');
 
   return (
     <>
@@ -72,7 +86,7 @@ export default function DashboardSidebar() {
             className="md:hidden"
           >
             <MenuIcon className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation</span>
+            <span className="sr-only">{tNav('toggle')}</span>
           </Button>
         </SheetTrigger>
         <SheetContent
@@ -80,7 +94,7 @@ export default function DashboardSidebar() {
           className="w-64"
         >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold">Dashboard</h2>
+            <h2 className="text-lg font-semibold">{tNav('dashboard')}</h2>
             <Button
               variant="ghost"
               size="icon"

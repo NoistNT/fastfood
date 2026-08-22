@@ -502,20 +502,12 @@
         "city": "Food City, FC 12345"
       },
       "phone": "(123) 456-7890",
+      "landmark": "Site footer",
       "navigation": {
         "home": "Home",
         "menu": "Menu",
-        "about": "About"
-      },
-      "menu": {
-        "burgers": "Burgers",
-        "sandwiches": "Sandwiches",
-        "pizzas": "Pizzas"
-      },
-      "about": {
-        "story": "Our Story",
-        "franchise": "Franchise",
-        "contact": "Contact"
+        "order": "Your Order",
+        "landmark": "Footer navigation"
       },
       "tos": "Terms of Service",
       "privacyPolicy": "Privacy Policy"
@@ -551,6 +543,15 @@
         "description": "Your session has expired. Please sign in again.",
         "signIn": "Sign In"
       }
+    },
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "orders": "Orders",
+      "customers": "Customers",
+      "products": "Products",
+      "inventory": "Inventory",
+      "reports": "Reports",
+      "toggle": "Toggle navigation"
     }
   }
 }

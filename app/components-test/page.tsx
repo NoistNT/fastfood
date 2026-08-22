@@ -1,75 +1,121 @@
+import { Bell, Package } from 'lucide-react';
+
+import { Avatar, AvatarFallback } from '@/modules/core/ui/avatar';
+import { Badge } from '@/modules/core/ui/badge';
+import { Button } from '@/modules/core/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/modules/core/ui/card';
+import { Checkbox } from '@/modules/core/ui/checkbox';
+import { Input } from '@/modules/core/ui/input';
+import { Label } from '@/modules/core/ui/label';
+import { Skeleton } from '@/modules/core/ui/skeleton';
+import { Switch } from '@/modules/core/ui/switch';
+
 export default function ComponentsTestPage() {
   return (
-    <div className="container mx-auto p-8 space-y-8">
+    <div className="container mx-auto space-y-10 p-8">
       <h1 className="text-2xl font-bold">Component Visual Test Page</h1>
 
-      {/* Button Variants */}
-      <section data-testid="button-variants">
-        <h2 className="text-xl font-semibold mb-4">Button Variants</h2>
+      <section
+        data-testid="button-variants"
+        className="space-y-4"
+      >
+        <h2 className="text-xl font-semibold">Buttons</h2>
         <div className="flex flex-wrap gap-4">
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 h-9 px-4 py-2">
-            Default Button
-          </button>
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90 h-9 px-4 py-2">
-            Destructive Button
-          </button>
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
-            Outline Button
-          </button>
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 h-9 px-4 py-2">
-            Secondary Button
-          </button>
+          <Button>Default</Button>
+          <Button variant="destructive">Destructive</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="link">Link</Button>
+          <Button disabled>Disabled</Button>
         </div>
       </section>
 
-      {/* Form Inputs */}
-      <section data-testid="form-inputs">
-        <h2 className="text-xl font-semibold mb-4">Form Inputs</h2>
-        <div className="space-y-4 max-w-md">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Textarea</label>
-            <textarea
-              placeholder="Enter your message"
-              className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-              rows={3}
-            />
-          </div>
+      <section
+        data-testid="badges"
+        className="space-y-4"
+      >
+        <h2 className="text-xl font-semibold">Status badges</h2>
+        <div className="flex flex-wrap gap-3">
+          <Badge>Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="destructive">Destructive</Badge>
+          <Badge variant="outline">Outline</Badge>
+          <Badge variant="success">Success</Badge>
+          <Badge variant="warning">Warning</Badge>
+          <Badge variant="info">Info</Badge>
         </div>
       </section>
 
-      {/* Cards */}
-      <section data-testid="cards">
-        <h2 className="text-xl font-semibold mb-4">Cards</h2>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold">Card Title</h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              This is a sample card with some content to demonstrate the visual appearance.
-            </p>
-          </div>
-          <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-            <h3 className="text-lg font-semibold">Another Card</h3>
-            <p className="text-sm text-muted-foreground mt-2">
-              Cards are used throughout the application for consistent content presentation.
-            </p>
-          </div>
+      <section
+        data-testid="cards"
+        className="space-y-4"
+      >
+        <h2 className="text-xl font-semibold">Card</h2>
+        <div className="max-w-sm">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Card title
+              </CardTitle>
+              <CardDescription>Card description supporting text.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-24 w-full rounded-lg" />
+            </CardContent>
+            <CardFooter className="justify-end gap-2">
+              <Button variant="ghost">Cancel</Button>
+              <Button>Confirm</Button>
+            </CardFooter>
+          </Card>
         </div>
+      </section>
+
+      <section
+        data-testid="forms"
+        className="max-w-sm space-y-6"
+      >
+        <h2 className="text-xl font-semibold">Form controls</h2>
+        <div className="space-y-2">
+          <Label htmlFor="ct-email">Email</Label>
+          <Input
+            id="ct-email"
+            type="email"
+            placeholder="name@example.com"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox id="ct-check" />
+          <Label htmlFor="ct-check">Checkbox option</Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch id="ct-switch" />
+          <Label htmlFor="ct-switch">Switch setting</Label>
+        </div>
+      </section>
+
+      <section
+        data-testid="misc"
+        className="flex items-center gap-6"
+      >
+        <h2 className="text-xl font-semibold">Misc</h2>
+        <Avatar>
+          <AvatarFallback>FF</AvatarFallback>
+        </Avatar>
+        <Button
+          size="icon"
+          variant="ghost"
+        >
+          <Bell className="h-5 w-5" />
+        </Button>
       </section>
     </div>
   );
