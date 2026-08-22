@@ -1,0 +1,50 @@
+# Path-based area labels for pull requests (applied by actions/labeler).
+# Type labels (feat/fix/…) express intent and are applied manually at
+# review time — paths can't know why a change was made.
+
+db:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'db/**'
+          - 'scripts/sql/**'
+          - 'drizzle.config.ts'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/**'
+
+ui:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'modules/core/ui/**'
+          - 'modules/core/components/**'
+          - 'app/globals.css'
+
+auth:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'modules/auth/**'
+          - 'lib/auth/**'
+          - 'app/api/auth/**'
+          - 'proxy.ts'
+          - 'app/login/**'
+          - 'app/register/**'
+          - 'app/forgot-password/**'
+          - 'app/reset-password/**'
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: 'app/api/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - 'README.md'
+          - 'AGENTS.md'
+
+test:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'test/**'
+          - 'e2e/**'

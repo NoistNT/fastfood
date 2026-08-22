@@ -46,14 +46,17 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ${{ github.workspace }}
 
+      # Sticky comment: exactly one per PR, updated in place on every push
       - name: Comment deployment URL on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9
         with:
           script: |
             const deploymentUrl = process.env.VERCEL_URL || '${{ steps.vercel-deployment.outputs.preview-url }}';
+            const marker = '<!-- preview-deployment -->';
 
-            const commentBody = `## 🚀 Preview Deployment Ready
+            const commentBody = `${marker}
+            ## 🚀 Preview Deployment Ready
 
             **Preview URL:** ${deploymentUrl}
 
@@ -70,9 +73,28 @@ jobs:
             - [ ] Visual regression tested
             - [ ] Performance verified`;
 
-            github.rest.issues.createComment({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: commentBody
             });
+
+            const existing = comments.find(
+              (c) => c.user?.type === 'Bot' && c.body?.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                comment_id: existing.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody,
+              });
+            }

@@ -24,10 +24,13 @@ INSERT INTO public.products (name, description, price, image_url) VALUES
   ('Classic Burger','Juicy beef burger with lettuce and tomato','8.99',NULL),
   ('Cheese Burger','Beef burger with cheese','9.99',NULL),
   ('Fries','Crispy french fries','3.99',NULL),
-  ('Pizza Margherita','Classic pizza','12.99',NULL);
+  ('Pizza Margherita','Classic pizza','12.99',NULL),
+  -- Caesar Salad @ 6.99 is part of the e2e journey contract
+  -- (e2e/user-journey.spec.ts asserts totals built on it)
+  ('Caesar Salad','Fresh salad with chicken and caesar dressing','6.99',NULL);
 
 INSERT INTO public.product_ingredients VALUES
-  (1,1),(1,2),(2,2),(4,2);
+  (1,1),(1,2),(2,2),(4,2),(5,1),(5,3);
 SELECT setval(pg_get_serial_sequence('products','id'),    (SELECT MAX(id) FROM public.products));
 SELECT setval(pg_get_serial_sequence('ingredients','id'), (SELECT MAX(id) FROM public.ingredients));
 
