@@ -113,6 +113,7 @@ export default function ComponentsTestPage() {
         <Button
           size="icon"
           variant="ghost"
+          aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />
         </Button>

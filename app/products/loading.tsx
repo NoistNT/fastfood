@@ -23,6 +23,7 @@ export default function ProductsLoading() {
   return (
     <section
       className="flex"
+      role="status"
       aria-busy="true"
       aria-label="Loading products"
     >

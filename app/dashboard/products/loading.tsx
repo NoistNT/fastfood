@@ -3,6 +3,7 @@ import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
 export default function ProductsLoading() {
   return (
     <div
+      role="status"
       aria-busy="true"
       aria-label="Loading products"
     >
