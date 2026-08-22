@@ -66,14 +66,16 @@ export function MobileHeader({ user, isAuthenticated }: MobileHeaderProps) {
               />
             )}
           </nav>
-          <SheetFooter className="absolute bottom-4 right-4">
-            <Button
-              variant="ghost"
-              onClick={handleLogout}
-            >
-              {tAuth('logout')}
-            </Button>
-          </SheetFooter>
+          {isAuthenticated && (
+            <SheetFooter className="absolute bottom-4 right-4">
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+              >
+                {tAuth('logout')}
+              </Button>
+            </SheetFooter>
+          )}
         </SheetContent>
       </Sheet>
     </div>

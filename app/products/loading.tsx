@@ -2,7 +2,7 @@ import { Skeleton } from '@/modules/core/ui/skeleton';
 
 function ProductCardSkeleton() {
   return (
-    <div className="flex h-full w-96 flex-col rounded-xl p-3 ring-1 ring-border sm:h-40 sm:w-full sm:max-w-xl sm:flex-row">
+    <div className="flex h-full w-full max-w-96 flex-col rounded-xl p-3 ring-1 ring-border sm:h-40 sm:w-full sm:max-w-xl sm:flex-row">
       <Skeleton className="h-40 w-full rounded-xl sm:aspect-square sm:h-auto sm:w-40" />
       <div className="mt-3 flex flex-1 flex-col justify-between p-2 sm:pb-0 sm:pl-4">
         <div className="flex justify-between">
