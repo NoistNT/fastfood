@@ -15,7 +15,7 @@ const missingInEs = [...enKeys].filter((key) => !esKeys.has(key));
 const missingInEn = [...esKeys].filter((key) => !enKeys.has(key));
 
 if (missingInEs.length === 0 && missingInEn.length === 0) {
-  console.log(`i18n key-sync OK (${enKeys.size}/${esKeys.size} keys matched)`);
+  process.stdout.write(`i18n key-sync OK (${enKeys.size}/${esKeys.size} keys matched)\n`);
 } else {
   if (missingInEs.length > 0) {
     console.error(`Keys missing in messages/es.json:`);
