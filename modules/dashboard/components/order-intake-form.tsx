@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -57,6 +57,7 @@ export default function OrderIntakeForm() {
   const [selectedPerson, setSelectedPerson] = useState<PickerPerson | null>(null);
 
   const [products, setProducts] = useState<ProductOption[]>([]);
+  const [productsError, setProductsError] = useState(false);
 
   const intakeSchema = useMemo(
     () =>
@@ -107,12 +108,10 @@ export default function OrderIntakeForm() {
   const items = useWatch({ control: form.control, name: 'items' });
   const orderType = useWatch({ control: form.control, name: 'orderType' });
 
-  useEffect(() => {
-    let cancelled = false;
+  const loadProducts = useCallback(() => {
     fetch('/api/products')
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('failed'))))
       .then((body) => {
-        if (cancelled) return;
         const rows = Array.isArray(body?.data) ? body.data : [];
         setProducts(
           rows
@@ -125,14 +124,17 @@ export default function OrderIntakeForm() {
               price: product.price,
             }))
         );
+        setProductsError(false);
       })
       .catch(() => {
         console.error('Product list failed to load for intake form');
+        setProductsError(true);
       });
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   useEffect(() => {
     const query = searchQuery.trim();
@@ -407,6 +409,20 @@ export default function OrderIntakeForm() {
 
           <fieldset className="space-y-3 rounded-md border p-4">
             <legend className="px-1 text-sm font-medium">{t('items')}</legend>
+
+            {productsError && (
+              <div className="flex items-center justify-between gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm">
+                <span>{t('productsLoadFailed')}</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={loadProducts}
+                >
+                  {t('retry')}
+                </Button>
+              </div>
+            )}
 
             {items.length === 0 && (
               <p className="text-sm text-muted-foreground">{t('itemsRequired')}</p>

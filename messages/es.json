@@ -190,7 +190,9 @@
         "submit": "Crear pedido",
         "submitting": "Creando…",
         "successToast": "Pedido creado correctamente",
-        "loadingMessage": "Cargando el formulario de pedido…"
+        "loadingMessage": "Cargando el formulario de pedido…",
+        "productsLoadFailed": "No se pudo cargar el catálogo de productos.",
+        "retry": "Reintentar"
       },
       "details": {
         "title": "Detalles del pedido",

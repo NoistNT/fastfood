@@ -190,7 +190,9 @@
         "submit": "Create order",
         "submitting": "Creating…",
         "successToast": "Order created successfully",
-        "loadingMessage": "Loading order form…"
+        "loadingMessage": "Loading order form…",
+        "productsLoadFailed": "Couldn't load the product catalog.",
+        "retry": "Retry"
       },
       "details": {
         "title": "Order Details",
