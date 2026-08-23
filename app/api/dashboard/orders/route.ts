@@ -62,7 +62,14 @@ export async function POST(request: NextRequest) {
       return apiError(ERROR_CODES.CSRF_INVALID, 'Invalid CSRF token', { status: 403 });
     }
 
-    const input = intakeOrderSchema.parse(await request.json());
+    let payload: unknown;
+    try {
+      payload = await request.json();
+    } catch {
+      return apiError(ERROR_CODES.VALIDATION_ERROR, 'Malformed JSON body', { status: 400 });
+    }
+
+    const input = intakeOrderSchema.parse(payload);
     const order = await createIntakeOrder(input);
 
     try {

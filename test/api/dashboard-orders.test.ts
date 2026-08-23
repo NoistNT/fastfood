@@ -1,3 +1,5 @@
+import type { UserWithRoles } from '@/types/auth';
+
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -24,8 +26,6 @@ import { getCSRFTokenFromRequest, verifyCSRFToken } from '@/lib/csrf';
 import { deductInventoryForOrder, validateOrderInventory } from '@/lib/inventory-management';
 import { createIntakeOrder } from '@/modules/orders/actions/intake';
 import { POST } from '@/app/api/dashboard/orders/route';
-
-import type { UserWithRoles } from '@/types/auth';
 
 const getSessionMock = vi.mocked(getSession);
 const getCSRFMock = vi.mocked(getCSRFTokenFromRequest);
@@ -170,6 +170,20 @@ describe('POST /api/dashboard/orders', () => {
 
     expect(response.status).toBe(201);
     expect(deductInventoryMock).not.toHaveBeenCalled();
+  });
+
+  it('rejects malformed JSON bodies as validation errors', async () => {
+    getSessionMock.mockResolvedValue(sessionWith('staff'));
+
+    const response = await POST(
+      new NextRequest('http://localhost:3000/api/dashboard/orders', {
+        method: 'POST',
+        body: 'not-json',
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe('VALIDATION_ERROR');
   });
 
   it('maps intake failures to an internal error envelope', async () => {

@@ -71,7 +71,6 @@ export async function createIntakeOrder(input: IntakeOrderInput): Promise<Intake
 
   const isDelivery = input.orderType === ORDER_TYPE.DELIVERY;
 
-  let lastError: unknown;
   for (let attempt = 0; attempt < MAX_TRACKING_ATTEMPTS; attempt += 1) {
     const trackingCode = generateTrackingCode();
     try {
@@ -123,10 +122,9 @@ export async function createIntakeOrder(input: IntakeOrderInput): Promise<Intake
       };
     } catch (error) {
       if (!isUniqueViolation(error)) throw error;
-      lastError = error;
     }
   }
 
-  console.error('Tracking code generation kept colliding:', lastError);
+  console.error(`Tracking code allocation collided after ${MAX_TRACKING_ATTEMPTS} attempts`);
   throw new Error('Could not allocate a tracking code');
 }
