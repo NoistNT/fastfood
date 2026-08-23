@@ -6,8 +6,8 @@
 -- contact snapshots · tracking codes · status history.
 --
 -- Dev/CI only. Apply via Neon SQL Editor or:
---   psql "$DB_URL" -f scripts/sql/dev-reset.sql
---   psql "$DB_URL" -f scripts/sql/dev-seed-minimal.sql
+--   psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/dev-reset.sql
+--   psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/dev-seed-minimal.sql
 -- ============================================================
 
 BEGIN;

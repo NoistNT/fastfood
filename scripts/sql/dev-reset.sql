@@ -5,7 +5,7 @@
 -- PR run against the ci-e2e branch as a drift canary).
 --
 -- DESTRUCTIVE: dev/CI branches only — never run against prod.
--- Apply via Neon SQL Editor or: psql "$DB_URL" -f scripts/sql/dev-reset.sql
+-- Apply via Neon SQL Editor or: psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/dev-reset.sql
 -- ============================================================
 
 BEGIN;
