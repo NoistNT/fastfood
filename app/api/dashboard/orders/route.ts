@@ -66,10 +66,12 @@ export async function POST(request: NextRequest) {
     const order = await createIntakeOrder(input);
 
     try {
-      if (!(await validateOrderInventory(order.id))) {
+      const hasStock = await validateOrderInventory(order.id);
+      if (!hasStock) {
         console.warn(`Order ${order.id} transcribed with insufficient inventory`);
+      } else {
+        await deductInventoryForOrder(order.id);
       }
-      await deductInventoryForOrder(order.id);
     } catch (error) {
       console.error('Failed to deduct inventory for order:', order.id, error);
     }

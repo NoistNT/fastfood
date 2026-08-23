@@ -161,6 +161,17 @@ describe('POST /api/dashboard/orders', () => {
     expect(response.status).toBe(201);
   });
 
+  it('never deducts stock when validation reports a shortage', async () => {
+    getSessionMock.mockResolvedValue(sessionWith('staff'));
+    createIntakeOrderMock.mockResolvedValue(createdResult);
+    validateInventoryMock.mockResolvedValue(false);
+
+    const response = await POST(requestWith(validBody()));
+
+    expect(response.status).toBe(201);
+    expect(deductInventoryMock).not.toHaveBeenCalled();
+  });
+
   it('maps intake failures to an internal error envelope', async () => {
     getSessionMock.mockResolvedValue(sessionWith('admin'));
     createIntakeOrderMock.mockRejectedValue(new Error('Invalid product IDs: 9'));
