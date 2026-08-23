@@ -2,10 +2,11 @@ import type { NextRequest } from 'next/server';
 import type { UserWithRoles } from '@/types/auth';
 
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 
 import { authRateLimit } from '@/lib/rate-limit';
 import { hashPassword } from '@/lib/auth/password';
+import { normalizePhoneNumber } from '@/lib/phone';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 import { sanitizeInput } from '@/lib/sanitize';
@@ -19,6 +20,14 @@ const registerSchema = z
       .max(50, 'Name must be less than 50 characters')
       .regex(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'),
     email: z.string().email('Please enter a valid email address').toLowerCase(),
+    phoneNumber: z.preprocess(
+      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      z
+        .string()
+        .trim()
+        .regex(/^\+?[0-9()\s-]{6,20}$/, 'Please enter a valid phone number')
+        .optional()
+    ),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -42,11 +51,13 @@ export async function POST(request: NextRequest) {
     const sanitizedBody = {
       name: sanitizeInput(body.name, 'text'),
       email: sanitizeInput(body.email, 'email'),
+      phoneNumber: typeof body.phoneNumber === 'string' ? body.phoneNumber.trim() : undefined,
       password: body.password, // Don't sanitize password as it needs special characters
       confirmPassword: body.confirmPassword,
     };
 
-    const { name, email, password } = registerSchema.parse(sanitizedBody);
+    const { name, email, phoneNumber, password } = registerSchema.parse(sanitizedBody);
+    const normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : '';
 
     // Rate limit by email (IP-based)
     const { success: ipSuccess } = await authRateLimit.limit(email);
@@ -68,6 +79,33 @@ export async function POST(request: NextRequest) {
     // Hash password
     const passwordHash = await hashPassword(password);
 
+    // Claim path: attach credentials to a matching record-only person
+    // (same normalized phone + name, never registered, not deleted).
+    if (normalizedPhone) {
+      const claimed = await db
+        .update(users)
+        .set({
+          passwordHash,
+          email: sql`COALESCE(${users.email}, ${email})`,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(users.phoneNumber, normalizedPhone),
+            sql`lower(${users.name}) = ${name.toLowerCase()}`,
+            isNull(users.passwordHash),
+            isNull(users.deletedAt)
+          )
+        )
+        .returning();
+
+      if (claimed.length > 0) {
+        const claimedUser = claimed[0];
+        const userWithRoles: UserWithRoles = { ...claimedUser, roles: [] };
+        return apiSuccess({ user: userWithRoles }, { status: 201 });
+      }
+    }
+
     // Create user
     const newUser = await db
       .insert(users)
@@ -86,8 +124,7 @@ export async function POST(request: NextRequest) {
 
     const createdUser = newUser[0];
 
-    // Registration grants zero roles — roles encode powers only. A later
-    // phone+name match may claim an existing record-only person instead.
+    // Registration grants zero roles — roles encode powers only.
     const userWithRoles: UserWithRoles = { ...createdUser, roles: [] };
 
     return apiSuccess({ user: userWithRoles }, { status: 201 });
