@@ -337,7 +337,7 @@ export default function OrderIntakeForm() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setSelectedPerson(null)}
+                  onClick={() => switchCustomerMode('existing')}
                 >
                   {t('change')}
                 </Button>

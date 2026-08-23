@@ -134,4 +134,20 @@ describe('OrderIntakeForm', () => {
 
     expect(await screen.findByRole('button', { name: /Ana/ })).toBeInTheDocument();
   });
+
+  it('blocks submission when selection is changed without reselecting a customer', async () => {
+    const user = userEvent.setup();
+    render(<OrderIntakeForm />);
+
+    const searchBox = await screen.findByPlaceholderText('searchPlaceholder');
+    await user.type(searchBox, 'ana');
+    await user.click(await screen.findByRole('button', { name: /Ana/ }));
+
+    await user.click(await screen.findByRole('button', { name: 'change' }));
+
+    await user.click(screen.getByRole('button', { name: 'submit' }));
+
+    expect(await screen.findAllByText('customerRequired')).not.toHaveLength(0);
+    expect(pushMock).not.toHaveBeenCalled();
+  });
 });
