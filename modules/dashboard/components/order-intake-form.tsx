@@ -49,7 +49,10 @@ export default function OrderIntakeForm() {
 
   const [customerMode, setCustomerMode] = useState<CustomerMode>('existing');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<PickerPerson[]>([]);
+  const [searchState, setSearchState] = useState<{
+    query: string;
+    people: PickerPerson[];
+  } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<PickerPerson | null>(null);
 
@@ -132,25 +135,30 @@ export default function OrderIntakeForm() {
   }, []);
 
   useEffect(() => {
-    if (customerMode !== 'existing' || searchQuery.trim().length < SEARCH_MIN_LENGTH) {
+    const query = searchQuery.trim();
+    if (customerMode !== 'existing' || query.length < SEARCH_MIN_LENGTH) {
       return undefined;
     }
     const controller = new AbortController();
     const timer = setTimeout(() => {
       setIsSearching(true);
-      fetch(`/api/customers/search?q=${encodeURIComponent(searchQuery.trim())}`, {
+      fetch(`/api/customers/search?q=${encodeURIComponent(query)}`, {
         signal: controller.signal,
       })
         .then((response) => (response.ok ? response.json() : Promise.reject(new Error('failed'))))
         .then((body) => {
-          setSearchResults(Array.isArray(body?.data?.people) ? body.data.people : []);
+          if (controller.signal.aborted) return;
+          const people = Array.isArray(body?.data?.people) ? body.data.people : [];
+          setSearchState({ query, people });
         })
         .catch((error: unknown) => {
           if ((error as Error)?.name !== 'AbortError') {
             console.error('Customer search failed with a request error');
           }
         })
-        .finally(() => setIsSearching(false));
+        .finally(() => {
+          if (!controller.signal.aborted) setIsSearching(false);
+        });
     }, SEARCH_DEBOUNCE_MS);
 
     return () => {
@@ -169,7 +177,7 @@ export default function OrderIntakeForm() {
     setCustomerMode(mode);
     setSelectedPerson(null);
     setSearchQuery('');
-    setSearchResults([]);
+    setSearchState(null);
     form.setValue('personName', '');
     form.setValue('personPhone', '');
   };
@@ -248,7 +256,8 @@ export default function OrderIntakeForm() {
 
   const radioLabelClass = 'flex items-center gap-2 text-sm';
   const searchTooShort = searchQuery.trim().length < SEARCH_MIN_LENGTH;
-  const visibleResults = searchTooShort ? [] : searchResults;
+  const visibleResults =
+    !searchTooShort && searchState?.query === searchQuery.trim() ? searchState.people : [];
 
   return (
     <div className="space-y-6">
