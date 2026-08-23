@@ -95,6 +95,9 @@ describe('Header — Information Architecture rules', () => {
     // Not a top-level destination
     expect(screen.queryByRole('link', { name: 'profile' })).not.toBeInTheDocument();
 
+    // Civilians get no dashboard entry point
+    expect(screen.queryByRole('link', { name: 'dashboard' })).not.toBeInTheDocument();
+
     // Cart links to /order
     const cartLink = screen.getByRole('link', { name: 'viewCart' });
     expect(cartLink.getAttribute('href')).toBe('/order');
@@ -106,7 +109,7 @@ describe('Header — Information Architecture rules', () => {
     expect(screen.getByRole('menuitem', { name: 'logout' })).toBeInTheDocument();
   });
 
-  it('dashboard is an admin-only toolbar icon, not a menu item', async () => {
+  it('dashboard is a toolbar icon for operational roles only, not a menu item', async () => {
     mockSession({ id: 'u2', name: 'Ada', email: 'ada@example.com', roles: [{ name: 'admin' }] });
     render(<Header />);
 
@@ -116,6 +119,14 @@ describe('Header — Information Architecture rules', () => {
     // Not in the account menu anymore
     await openUserMenu();
     expect(screen.queryByRole('menuitem', { name: 'dashboard' })).not.toBeInTheDocument();
+  });
+
+  it('staff sees the dashboard toolbar icon too — no URL-only dead ends', async () => {
+    mockSession({ id: 'u3', name: 'Sam', email: 'sam@example.com', roles: [{ name: 'staff' }] });
+    render(<Header />);
+
+    const dashboardLink = await screen.findByRole('link', { name: 'dashboard' });
+    expect(dashboardLink.getAttribute('href')).toBe('/dashboard');
   });
 
   it('theme controls live inside the avatar menu for authed users', async () => {
