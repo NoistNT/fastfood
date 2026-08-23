@@ -133,6 +133,7 @@
         }
       },
       "totalSales": "Ventas Totales",
+      "newOrder": "Nuevo pedido",
       "table": {
         "header": {
           "status": "Estado",
@@ -154,6 +155,41 @@
       },
       "date_picker": {
         "pick_a_date": "Seleccionar fecha"
+      },
+      "intake": {
+        "title": "Nuevo pedido",
+        "back": "Volver a pedidos",
+        "customer": "Cliente",
+        "customerExisting": "Cliente existente",
+        "customerNew": "Cliente nuevo",
+        "searchPlaceholder": "Buscar por nombre o teléfono…",
+        "searching": "Buscando…",
+        "searchEmpty": "Sin resultados",
+        "selectedLabel": "Seleccionado",
+        "change": "Cambiar",
+        "name": "Nombre",
+        "phone": "Teléfono",
+        "customerRequired": "Elegí un cliente o ingresá un nombre",
+        "items": "Productos",
+        "addItem": "Agregar producto",
+        "itemPlaceholder": "Elegí un producto",
+        "quantity": "Cant.",
+        "removeItem": "Quitar producto",
+        "itemsRequired": "Agregá al menos un producto",
+        "estimatedTotal": "Total estimado",
+        "pickup": "Retiro",
+        "delivery": "Entrega",
+        "address": "Dirección de entrega",
+        "addressPlaceholder": "Calle y número",
+        "addressRequired": "La dirección de entrega es obligatoria para entregas",
+        "notes": "Notas de entrega",
+        "payment": "Método de pago",
+        "cash": "Efectivo",
+        "card": "Tarjeta",
+        "online": "En línea (prepago)",
+        "submit": "Crear pedido",
+        "submitting": "Creando…",
+        "successToast": "Pedido creado correctamente"
       },
       "details": {
         "title": "Detalles del pedido",
