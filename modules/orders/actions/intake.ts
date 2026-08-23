@@ -73,51 +73,44 @@ export async function createIntakeOrder(input: IntakeOrderInput): Promise<Intake
 
   for (let attempt = 0; attempt < MAX_TRACKING_ATTEMPTS; attempt += 1) {
     const trackingCode = generateTrackingCode();
+    // neon-http has no interactive transactions; db.batch() is the atomic
+    // unit — all three statements succeed together or none do. The order id
+    // is pre-generated so dependents can be built in the same batch.
+    const orderId = crypto.randomUUID();
     try {
-      const created = await db.transaction(async (tx) => {
-        const [row] = await tx
-          .insert(orders)
-          .values({
-            userId: person.id,
-            total,
-            orderType: input.orderType,
-            paymentMethod: input.paymentMethod,
-            contactName: person.name,
-            contactPhone: person.phoneNumber ?? '',
-            deliveryAddress: isDelivery ? (input.deliveryAddress?.trim() ?? '') : '',
-            deliveryNotes: isDelivery ? (input.deliveryNotes?.trim() ?? '') : '',
-            trackingCode,
-          })
-          .returning({
-            id: orders.id,
-            total: orders.total,
-            orderType: orders.orderType,
-            paymentMethod: orders.paymentMethod,
-          });
-
-        await tx.insert(orderStatusHistory).values({
-          orderId: row.id,
+      await db.batch([
+        db.insert(orders).values({
+          id: orderId,
+          userId: person.id,
+          total,
+          orderType: input.orderType,
+          paymentMethod: input.paymentMethod,
+          contactName: person.name,
+          contactPhone: person.phoneNumber ?? '',
+          deliveryAddress: isDelivery ? (input.deliveryAddress?.trim() ?? '') : '',
+          deliveryNotes: isDelivery ? (input.deliveryNotes?.trim() ?? '') : '',
+          trackingCode,
+        }),
+        db.insert(orderStatusHistory).values({
+          orderId,
           status: ORDER_STATUS.PENDING,
-        });
-
-        await tx.insert(orderItem).values(
+        }),
+        db.insert(orderItem).values(
           input.items.map(({ productId, quantity }) => ({
-            orderId: row.id,
+            orderId,
             productId,
             quantity,
           }))
-        );
-
-        return row;
-      });
+        ),
+      ]);
 
       return {
-        id: created.id,
+        id: orderId,
         userId: person.id,
-        total: created.total,
+        total,
         status: ORDER_STATUS.PENDING,
-        orderType: created.orderType,
-        paymentMethod: created.paymentMethod,
+        orderType: input.orderType,
+        paymentMethod: input.paymentMethod,
         trackingCode,
       };
     } catch (error) {
