@@ -1,11 +1,11 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { USER_ROLES } from '@/types/auth';
 import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import Link from 'next/link';
 
-import { USER_ROLES } from '@/types/auth';
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { CustomerActionsCell } from '@/modules/dashboard/components/customer-actions-cell';
 import { UserRoleBadge } from '@/modules/dashboard/components/user-role-badge';
@@ -87,11 +87,11 @@ export const createColumns = (
             roles.map((role) => (
               <UserRoleBadge
                 key={role}
-                role={role as typeof USER_ROLES.ADMIN | typeof USER_ROLES.CUSTOMER}
+                role={role as typeof USER_ROLES.ADMIN | typeof USER_ROLES.STAFF}
               />
             ))
           ) : (
-            <UserRoleBadge role={USER_ROLES.CUSTOMER} />
+            <span className="text-sm text-muted-foreground">{t('customers.table.noRoles')}</span>
           )}
         </div>
       );

@@ -21,11 +21,10 @@ const publicRoutes = [
   '/api/health',
 ];
 
+// Roles encode powers only. Every non-public route requires a session;
+// only /dashboard additionally requires an operational role.
 const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
-  { path: '/dashboard', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/order', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/products', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/profile', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
+  { path: '/dashboard', roles: [USER_ROLES.ADMIN] },
 ];
 
 export default async function proxy(request: NextRequest) {

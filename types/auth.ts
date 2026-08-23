@@ -3,7 +3,7 @@ import type { users, roles } from '@/db/schema';
 
 export enum USER_ROLES {
   ADMIN = 'admin',
-  CUSTOMER = 'customer',
+  STAFF = 'staff',
 }
 
 export type User = InferSelectModel<typeof users>;

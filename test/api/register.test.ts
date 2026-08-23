@@ -38,7 +38,7 @@ const mockUser: UserWithRoles = {
   deletedAt: null,
   createdAt: new Date(),
   updatedAt: new Date(),
-  roles: [{ id: 2, name: 'customer', description: 'Customer' }],
+  roles: [],
 };
 
 describe('/api/auth/register', () => {
@@ -94,7 +94,7 @@ describe('/api/auth/register', () => {
           limit: vi.fn().mockResolvedValue([]), // No existing user by default
         }),
         innerJoin: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue([{ roles: mockUser.roles[0] }]),
+          where: vi.fn().mockResolvedValue([]),
         }),
       }),
     } as any);
@@ -109,31 +109,14 @@ describe('/api/auth/register', () => {
   describe('POST /api/auth/register', () => {
     it('should register user successfully', async () => {
       // Mock database calls in order
-      mockDb.select
-        .mockReturnValueOnce({
-          // Check existing user
-          from: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockResolvedValue([]), // No existing user
-            }),
+      mockDb.select.mockReturnValueOnce({
+        // Check existing user
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]), // No existing user
           }),
-        } as any)
-        .mockReturnValueOnce({
-          // Get customer role
-          from: vi.fn().mockReturnValue({
-            where: vi.fn().mockReturnValue({
-              limit: vi.fn().mockResolvedValue([{ id: 2, name: 'customer' }]),
-            }),
-          }),
-        } as any)
-        .mockReturnValueOnce({
-          // Get user roles for response
-          from: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue([{ roles: mockUser.roles[0] }]),
-            }),
-          }),
-        } as any);
+        }),
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/auth/register', {
         method: 'POST',
@@ -151,6 +134,105 @@ describe('/api/auth/register', () => {
       expect(response.status).toBe(201);
       expect(result.success).toBe(true);
       expect(result.data.user).toEqual(mockUser);
+    });
+
+    it('should claim a matching record-only person when phone is provided', async () => {
+      const recordOnly = {
+        ...mockUser,
+        email: 'alice.johnson@example.com',
+        passwordHash: 'hashed-password', // credentials now attached
+      };
+
+      mockDb.select.mockReturnValueOnce({
+        // Check existing user by email — none owns it
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      } as any);
+
+      mockDb.update.mockReturnValueOnce({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([recordOnly]),
+          }),
+        }),
+      } as any);
+
+      const request = new NextRequest('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Alice Johnson',
+          email: 'alice.johnson@example.com',
+          phoneNumber: '+54 9 11 4444 4444',
+          password: 'Password123',
+          confirmPassword: 'Password123',
+        }),
+      });
+
+      const response = await register(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(result.success).toBe(true);
+      expect(result.data.user).toEqual(recordOnly);
+      expect(mockDb.insert).not.toHaveBeenCalled();
+    });
+
+    it('should create a new user when no record-only match exists for the phone', async () => {
+      mockDb.select.mockReturnValueOnce({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      } as any);
+
+      mockDb.update.mockReturnValueOnce({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([]), // No record-only person matches phone+name
+          }),
+        }),
+      } as any);
+
+      const request = new NextRequest('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'John Doe',
+          email: 'user@example.com',
+          phoneNumber: '+54 9 11 9999 9999',
+          password: 'Password123',
+          confirmPassword: 'Password123',
+        }),
+      });
+
+      const response = await register(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(result.success).toBe(true);
+      expect(mockDb.insert).toHaveBeenCalled();
+    });
+
+    it('should return 400 for an invalid phone number format', async () => {
+      const request = new NextRequest('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'John Doe',
+          email: 'user@example.com',
+          phoneNumber: 'not-a-phone!!',
+          password: 'Password123',
+          confirmPassword: 'Password123',
+        }),
+      });
+
+      const response = await register(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(result.success).toBe(false);
     });
 
     it('should return 400 for email already registered', async () => {

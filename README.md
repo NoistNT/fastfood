@@ -18,18 +18,20 @@ pnpm install
 # Environment — copy the example and fill in real values
 cp .env.development.example .env.development
 
-# Database — push schema, then seed
-pnpm db:push
-pnpm db:seed
+# Database — apply schema + seed via the canonical SQL pair
+# (Neon SQL Editor, or `psql "$DB_URL" -f scripts/sql/<file>` when
+# your network allows direct Postgres access)
+psql "$DB_URL" -f scripts/sql/dev-reset.sql      # ⚠️ destructive reset
+psql "$DB_URL" -f scripts/sql/dev-seed-minimal.sql
 
 pnpm dev
 ```
 
 Open http://localhost:3000
 
-Seeded logins (all password `P4$$W0rD`): admin `john.doe@example.com`,
-customers `jane.smith@example.com`, `alice.johnson@example.com`,
-`bob.brown@example.com`.
+Seeded logins (password `P4$$W0rD`): admin `john.doe@example.com`,
+staff `bob.brown@example.com`, registered buyer `jane.smith@example.com`
+(`alice.johnson@example.com` is a record-only person — no password).
 
 > **External configuration** (Neon branches, Vercel dashboard vars, GitHub
 > Actions secrets, secret rotation, bootstrap-from-scratch) is documented in
@@ -53,7 +55,6 @@ customers `jane.smith@example.com`, `alice.johnson@example.com`,
 | `pnpm test:visual`      | Update Playwright visual snapshots                     |
 | `pnpm test:visual:ci`   | Run visual tests without updating                      |
 | `pnpm db:push`          | Push Drizzle schema to DB                              |
-| `pnpm db:seed`          | Seed the database (**destructive** — clears + reseeds) |
 | `pnpm db:studio`        | Drizzle Kit Studio                                     |
 | `pnpm db:generate`      | Generate Drizzle migrations                            |
 | `pnpm i18n:check`       | Verify en/es locale keys are in sync                   |
@@ -104,7 +105,7 @@ Where each lives (local `.env`, Vercel dashboard, GitHub Actions secrets) is in
 ├── types/                        # Shared TS types (auth, db)
 ├── messages/                     # next-intl translations (en.json, es.json)
 ├── i18n/                         # Locale detection / request config
-├── scripts/                      # Seed scripts + data
+├── scripts/                      # Ops scripts (i18n check) + sql/ canonical DB reset & seed
 ├── test/                         # Vitest, mirrored by type (api/, components/, …)
 ├── e2e/                          # Playwright specs + visual baselines (e2e/visual/)
 ├── public/                       # Static assets (icons, manifest, service worker)

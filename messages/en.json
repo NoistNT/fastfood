@@ -180,7 +180,8 @@
             "phone": "Phone",
             "role": "Role",
             "actions": "Actions"
-          }
+          },
+          "noRoles": "—"
         },
         "confirmDelete": "Are you sure you want to delete this user?",
         "toast": {
@@ -192,7 +193,11 @@
         },
         "roleNotFound": "Role not found",
         "updateFailed": "Failed to update user role",
-        "deleteFailed": "Failed to delete user"
+        "deleteFailed": "Failed to delete user",
+        "roleBadges": {
+          "admin": "Admin",
+          "staff": "Staff"
+        }
       },
       "products": {
         "title": "Products",

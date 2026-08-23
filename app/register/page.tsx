@@ -23,6 +23,14 @@ const registerSchema = z
       .max(50, 'Name must be less than 50 characters')
       .regex(/^[a-zA-Z\s]+$/, { message: 'Name can only contain letters and spaces' }),
     email: z.email('Please enter a valid email address').toLowerCase(),
+    phoneNumber: z
+      .string()
+      .trim()
+      .refine(
+        (value) => value === '' || /^\+?[0-9()\s-]{6,20}$/.test(value),
+        'Please enter a valid phone number'
+      )
+      .optional(),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -87,6 +95,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
+          phoneNumber: data.phoneNumber,
           password: data.password,
           confirmPassword: data.confirmPassword,
         }),
@@ -162,6 +171,24 @@ export default function RegisterPage() {
                 disabled={isFormDisabled}
               />
               {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+            </div>
+
+            {/* Phone Field (optional — enables claiming past guest orders) */}
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">
+                Phone <span className="text-muted-foreground">(optional)</span>
+              </Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="+54 9 11 2345-6789"
+                {...register('phoneNumber')}
+                className={errors.phoneNumber ? 'border-destructive' : ''}
+                disabled={isFormDisabled}
+              />
+              {errors.phoneNumber && (
+                <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+              )}
             </div>
 
             {/* Password Field */}

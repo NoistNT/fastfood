@@ -1,0 +1,24 @@
+name: Label Pull Request
+
+# Area labels only (db/ci/ui/auth/api/documentation/test), derived from
+# changed paths. Type labels (feat/fix/…) are applied manually at review.
+# Runs the base branch's copy of this workflow; it only labels, never
+# executes PR code.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/labeler@v5
+        with:
+          configuration-path: .github/labeler.yml
+          sync-labels: true

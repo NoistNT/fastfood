@@ -8,6 +8,21 @@ export const ORDER_STATUS = {
   DELIVERED: 'DELIVERED',
 } as const;
 
+export const ORDER_TYPE = {
+  PICKUP: 'pickup',
+  DELIVERY: 'delivery',
+} as const;
+
+// 'online' = prepaid via MercadoPago; 'cash'/'card' = collected at handover
+export const PAYMENT_METHOD = {
+  ONLINE: 'online',
+  CASH: 'cash',
+  CARD: 'card',
+} as const;
+
+export type OrderType = (typeof ORDER_TYPE)[keyof typeof ORDER_TYPE];
+export type PaymentMethod = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD];
+
 // View model for a product in an order context
 export interface OrderProductView {
   id: Product['id'];

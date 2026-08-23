@@ -98,8 +98,9 @@ its own hostname) and are managed in the **Neon dashboard**.
 | `development`| production | Local dev, Vercel preview       | Main dev branch for development work     |
 | `ci-e2e`     | development | GitHub Actions `e2e-journey`   | CI-owned scratch; wiped + reseeded every run |
 
-> **Warning:** `pnpm db:seed` **deletes all rows** in every table, then re-inserts
-> seed data. Never run it against a branch holding data you care about.
+> **Warning:** `scripts/sql/dev-reset.sql` **drops and recreates every table**,
+> then `dev-seed-minimal.sql` re-inserts seed data. Never run them against a
+> branch holding data you care about.
 
 ---
 
@@ -110,16 +111,18 @@ its own hostname) and are managed in the **Neon dashboard**.
    values (§2.1). If you no longer have the values, pull them from the Neon
    dashboard (branch `development`) and generate a fresh `SESSION_SECRET` with
    `openssl rand -base64 32`.
-3. **Local DB schema + seed:** `pnpm db:push` then `pnpm db:seed` (targets
-   whatever `DB_URL` points at).
+3. **Local DB schema + seed:** apply the canonical SQL pair against whatever
+   `DB_URL` points at — Neon SQL Editor, or `psql "$DB_URL" -f
+   scripts/sql/dev-reset.sql -f scripts/sql/dev-seed-minimal.sql` when your
+   network allows direct Postgres access.
 4. **Run:** `pnpm dev` → http://localhost:3000
-5. **Seeded logins** (password `P4$$W0rD` for all):
-   | Role     | Email                        |
-   | -------- | ---------------------------- |
-   | admin    | `john.doe@example.com`       |
-   | customer | `jane.smith@example.com`     |
-   | customer | `alice.johnson@example.com`  |
-   | customer | `bob.brown@example.com`      |
+5. **Seeded logins** (password `P4$$W0rD` unless noted):
+   | Role            | Email                        |
+   | --------------- | ---------------------------- |
+   | admin           | `john.doe@example.com`       |
+   | staff           | `bob.brown@example.com`      |
+   | registered buyer| `jane.smith@example.com`     |
+   | record-only     | `alice.johnson@example.com` (no password — cannot log in) |
 6. **CI:** no action needed — workflows run on push/PR. If `e2e-journey` shows
    skipped, the two CI secrets (§2.3) are missing or the `ci-e2e` Neon branch
    doesn't exist.
@@ -166,8 +169,9 @@ its own hostname) and are managed in the **Neon dashboard**.
   repo's own `vercel-preview.yml` (posted as `github-actions[bot]`), not from
   `vercel[bot]`. Deploys still happen through the `amondnet/vercel-action` +
   `VERCEL_TOKEN`/org/project secrets.
-- **`pnpm db:seed` is destructive** — it clears every table and re-seeds. Only
-  run it on the `development` (local/preview) or `ci-e2e` branches.
+- **`scripts/sql/dev-reset.sql` is destructive** — it drops and recreates every
+  table. Only run it (plus `dev-seed-minimal.sql`) on the `development`
+  (local/preview) or `ci-e2e` branches.
 - **`ci-e2e` branch is disposable** — the `e2e-journey` job seeds it on every
   run, so it never accumulates state. If you need a fresh E2E DB, delete and
   recreate the Neon branch.

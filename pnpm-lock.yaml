@@ -183,9 +183,6 @@ importers:
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
@@ -194,7 +191,7 @@ importers:
         version: 0.31.10
       drizzle-orm:
         specifier: ^0.45.2
-        version: 0.45.2(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(@upstash/redis@1.38.2)(pg@8.23.0)(postgres@3.4.9)
+        version: 0.45.2(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(@upstash/redis@1.38.2)(pg@8.23.0)
       eslint:
         specifier: ^9.39.5
         version: 9.39.5(jiti@2.7.0)
@@ -240,9 +237,6 @@ importers:
       pg:
         specifier: ^8.23.0
         version: 8.23.0
-      postgres:
-        specifier: ^3.4.9
-        version: 3.4.9
       prettier:
         specifier: ^3.9.5
         version: 3.9.6
@@ -6025,10 +6019,6 @@ packages:
     resolution: {integrity: sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==}
     engines: {node: '>=0.10.0'}
 
-  postgres@3.4.9:
-    resolution: {integrity: sha512-GD3qdB0x1z9xgFI6cdRD6xu2Sp2WCOEoe3mtnyB5Ee0XrrL5Pe+e4CCnJrRMnL1zYtRDZmQQVbvOttLnKDLnaw==}
-    engines: {node: '>=12'}
-
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -10929,14 +10919,13 @@ snapshots:
       esbuild: 0.28.1
       tsx: 4.23.12
 
-  drizzle-orm@0.45.2(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(@upstash/redis@1.38.2)(pg@8.23.0)(postgres@3.4.9):
+  drizzle-orm@0.45.2(@neondatabase/serverless@1.1.0)(@opentelemetry/api@1.9.1)(@types/pg@8.20.0)(@upstash/redis@1.38.2)(pg@8.23.0):
     optionalDependencies:
       '@neondatabase/serverless': 1.1.0
       '@opentelemetry/api': 1.9.1
       '@types/pg': 8.20.0
       '@upstash/redis': 1.38.2
       pg: 8.23.0
-      postgres: 3.4.9
 
   dunder-proto@1.0.1:
     dependencies:
@@ -13030,8 +13019,6 @@ snapshots:
   postgres-interval@1.2.0:
     dependencies:
       xtend: 4.0.2
-
-  postgres@3.4.9: {}
 
   prelude-ls@1.2.1: {}
 

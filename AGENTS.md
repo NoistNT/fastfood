@@ -19,7 +19,6 @@ Dev runs Turbopack by default (clear `.next` if it misbehaves); production build
 | `pnpm test:e2e`                     | Playwright E2E (server auto-boots)        |
 | `pnpm test:visual`                  | Update visual snapshots                   |
 | `pnpm db:push`                      | Push Drizzle schema to database           |
-| `pnpm db:seed`                      | Seed the database                         |
 | `pnpm db:studio`                    | Drizzle Studio (data browser)             |
 | `pnpm db:generate`                  | Generate Drizzle migrations               |
 | `pnpm i18n:check`                   | Verify en/es locale keys are in sync      |

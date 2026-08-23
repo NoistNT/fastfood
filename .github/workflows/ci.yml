@@ -97,8 +97,12 @@ jobs:
       - name: Install Playwright browsers
         uses: ./.github/actions/playwright
 
-      - name: Seed database
-        run: pnpm db:seed
+      # Applies the repo's canonical SQL pair (single source of truth with
+      # db/schema.ts); doubles as a drift canary on every PR run.
+      - name: Reset and seed database
+        run: |
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/sql/dev-reset.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f scripts/sql/dev-seed-minimal.sql
 
       - name: Build Application
         run: pnpm build
