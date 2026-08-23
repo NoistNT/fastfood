@@ -133,6 +133,7 @@
         }
       },
       "totalSales": "Total Sales",
+      "newOrder": "New order",
       "table": {
         "header": {
           "status": "Status",
@@ -154,6 +155,44 @@
       },
       "date_picker": {
         "pick_a_date": "Pick a date"
+      },
+      "intake": {
+        "title": "New order",
+        "back": "Back to orders",
+        "customer": "Customer",
+        "customerExisting": "Existing customer",
+        "customerNew": "New customer",
+        "searchPlaceholder": "Search by name or phone…",
+        "searching": "Searching…",
+        "searchEmpty": "No matches found",
+        "selectedLabel": "Selected",
+        "change": "Change",
+        "name": "Name",
+        "phone": "Phone",
+        "customerRequired": "Choose a customer or enter a name",
+        "items": "Items",
+        "addItem": "Add item",
+        "itemPlaceholder": "Choose a product",
+        "quantity": "Qty",
+        "removeItem": "Remove item",
+        "itemsRequired": "Add at least one item",
+        "estimatedTotal": "Estimated total",
+        "pickup": "Pickup",
+        "delivery": "Delivery",
+        "address": "Delivery address",
+        "addressPlaceholder": "Street and number",
+        "addressRequired": "Delivery address is required for delivery orders",
+        "notes": "Delivery notes",
+        "payment": "Payment method",
+        "cash": "Cash",
+        "card": "Card",
+        "online": "Online (prepaid)",
+        "submit": "Create order",
+        "submitting": "Creating…",
+        "successToast": "Order created successfully",
+        "loadingMessage": "Loading order form…",
+        "productsLoadFailed": "Couldn't load the product catalog.",
+        "retry": "Retry"
       },
       "details": {
         "title": "Order Details",

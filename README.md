@@ -19,10 +19,10 @@ pnpm install
 cp .env.development.example .env.development
 
 # Database — apply schema + seed via the canonical SQL pair
-# (Neon SQL Editor, or `psql "$DB_URL" -f scripts/sql/<file>` when
+# (Neon SQL Editor, or `psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/<file>` when
 # your network allows direct Postgres access)
-psql "$DB_URL" -f scripts/sql/dev-reset.sql      # ⚠️ destructive reset
-psql "$DB_URL" -f scripts/sql/dev-seed-minimal.sql
+psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/dev-reset.sql      # ⚠️ destructive reset
+psql -v ON_ERROR_STOP=1 "$DB_URL" -f scripts/sql/dev-seed-minimal.sql
 
 pnpm dev
 ```

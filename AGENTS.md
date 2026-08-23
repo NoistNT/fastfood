@@ -46,6 +46,9 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - Deferred review findings become a GitHub issue at deferral time
   (`enhancement`/`bug`); the resolving PR cites `Closes #N`. Never resolve
   a thread by promise alone
+- "Check a PR" means sweeping every surface: all reviewers' bodies (incl.
+  outside-diff findings), inline threads, PR comments, CI checks, and merge
+  state — never a single signal
 - PRs changing user-facing behavior, commands, or conventions update `README.md`
   and `AGENTS.md` in the same PR
 

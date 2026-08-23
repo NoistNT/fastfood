@@ -112,7 +112,7 @@ its own hostname) and are managed in the **Neon dashboard**.
    dashboard (branch `development`) and generate a fresh `SESSION_SECRET` with
    `openssl rand -base64 32`.
 3. **Local DB schema + seed:** apply the canonical SQL pair against whatever
-   `DB_URL` points at — Neon SQL Editor, or `psql "$DB_URL" -f
+   `DB_URL` points at — Neon SQL Editor, or `psql -v ON_ERROR_STOP=1 "$DB_URL" -f
    scripts/sql/dev-reset.sql -f scripts/sql/dev-seed-minimal.sql` when your
    network allows direct Postgres access.
 4. **Run:** `pnpm dev` → http://localhost:3000
