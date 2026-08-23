@@ -1,5 +1,7 @@
 'use client';
 
+import type { UserWithRoles } from '@/types/auth';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
@@ -7,7 +9,7 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, ShoppingCart, UtensilsCrossed } from 'lucide-react';
 
 import { useAuth } from '@/modules/auth/context/auth-context';
-import { USER_ROLES, type UserWithRoles } from '@/types/auth';
+import { hasOperationalRole } from '@/lib/auth/roles';
 import { MobileHeader } from '@/modules/core/components/mobile-header';
 import { UserMenu } from '@/modules/core/components/user-menu';
 import { cn } from '@/lib/utils';
@@ -62,8 +64,8 @@ export default function Header() {
     };
   }, [user]);
 
-  // Helper function to check if user has admin privileges
-  const hasAdminAccess = localUser?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
+  // Dashboard entry point is for operational roles only (owners + staff)
+  const hasOpsAccess = hasOperationalRole(localUser?.roles);
   const isOnMenu = pathname === '/products';
   const isOnCart = pathname === '/order';
 
@@ -132,7 +134,7 @@ export default function Header() {
                     <TooltipContent>{t('menu')}</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-                {hasAdminAccess && localUser && (
+                {hasOpsAccess && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>

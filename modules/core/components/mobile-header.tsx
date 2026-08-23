@@ -1,3 +1,5 @@
+import type { UserWithRoles } from '@/types/auth';
+
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
@@ -10,8 +12,8 @@ import {
   UtensilsCrossed,
 } from 'lucide-react';
 
+import { hasOperationalRole } from '@/lib/auth/roles';
 import { useAuth } from '@/modules/auth/context/auth-context';
-import { USER_ROLES, type UserWithRoles } from '@/types/auth';
 import { Button } from '@/modules/core/ui/button';
 import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@/modules/core/ui/sheet';
@@ -31,8 +33,8 @@ export function MobileHeader({ user, isAuthenticated, loading = false }: MobileH
   const { logout } = useAuth();
   const pathname = usePathname();
 
-  // Helper function to check if user has admin privileges
-  const hasAdminAccess = user?.roles?.some((role) => role.name === USER_ROLES.ADMIN) ?? false;
+  // Dashboard sheet row is for operational roles only (owners + staff)
+  const hasOpsAccess = hasOperationalRole(user?.roles);
 
   return (
     <div suppressHydrationWarning>
@@ -75,7 +77,7 @@ export function MobileHeader({ user, isAuthenticated, loading = false }: MobileH
                 active={pathname === '/order'}
               />
             )}
-            {hasAdminAccess && (
+            {hasOpsAccess && (
               <SheetItem
                 title={t('dashboard')}
                 href="/dashboard"

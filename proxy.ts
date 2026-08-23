@@ -1,7 +1,9 @@
+import type { USER_ROLES } from '@/types/auth';
+
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { OPERATIONAL_ROLES } from '@/lib/auth/roles';
 import { getSession, updateSession } from '@/lib/auth/session';
-import { USER_ROLES } from '@/types/auth';
 
 export const config = {
   matcher: [
@@ -24,7 +26,7 @@ const publicRoutes = [
 // Roles encode powers only. Every non-public route requires a session;
 // only /dashboard additionally requires an operational role.
 const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
-  { path: '/dashboard', roles: [USER_ROLES.ADMIN] },
+  { path: '/dashboard', roles: [...OPERATIONAL_ROLES] },
 ];
 
 export default async function proxy(request: NextRequest) {
