@@ -189,7 +189,8 @@
         "online": "En línea (prepago)",
         "submit": "Crear pedido",
         "submitting": "Creando…",
-        "successToast": "Pedido creado correctamente"
+        "successToast": "Pedido creado correctamente",
+        "loadingMessage": "Cargando el formulario de pedido…"
       },
       "details": {
         "title": "Detalles del pedido",

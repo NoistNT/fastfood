@@ -189,7 +189,8 @@
         "online": "Online (prepaid)",
         "submit": "Create order",
         "submitting": "Creating…",
-        "successToast": "Order created successfully"
+        "successToast": "Order created successfully",
+        "loadingMessage": "Loading order form…"
       },
       "details": {
         "title": "Order Details",
