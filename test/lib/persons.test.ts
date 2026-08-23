@@ -8,7 +8,7 @@ vi.mock('@/db/drizzle', () => ({
 }));
 
 import { db } from '@/db/drizzle';
-import { findOrCreatePerson, findPersonByPhone } from '@/modules/users/persons';
+import { escapeLikePattern, findOrCreatePerson, findPersonByPhone } from '@/modules/users/persons';
 
 const dbMock = vi.mocked(db);
 
@@ -52,6 +52,15 @@ function mockInsertReturning(rows: PersonRow[], error?: unknown) {
       }) as never
   );
 }
+
+describe('escapeLikePattern', () => {
+  it('literalizes LIKE metacharacters', () => {
+    expect(escapeLikePattern('100%')).toBe('100\\%');
+    expect(escapeLikePattern('ana_maria')).toBe('ana\\_maria');
+    expect(escapeLikePattern('back\\slash')).toBe('back\\\\slash');
+    expect(escapeLikePattern('plain')).toBe('plain');
+  });
+});
 
 describe('findOrCreatePerson', () => {
   beforeEach(() => {
@@ -103,6 +112,16 @@ describe('findOrCreatePerson', () => {
 
     expect(person.id).toBe('p1');
     expect(dbMock.insert).not.toHaveBeenCalled();
+  });
+
+  it('falls back to creating a new person when the name-only match misses', async () => {
+    mockSelectQueues([[]]);
+    mockInsertReturning([row({ id: 'p2' })]);
+
+    const person = await findOrCreatePerson({ name: 'Ana', phoneNumber: null });
+
+    expect(person.id).toBe('p2');
+    expect(dbMock.insert).toHaveBeenCalledTimes(1);
   });
 
   it('refuses to create a person without any name', async () => {

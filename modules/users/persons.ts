@@ -1,8 +1,10 @@
-import { and, eq, ilike, isNull, like, or, sql } from 'drizzle-orm';
+import { and, eq, ilike, isNull, like, or } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
+import { isUniqueViolation } from '@/lib/db-errors';
 import { normalizePhoneNumber } from '@/lib/phone';
+import { recordOnlyNameReuseCondition } from '@/modules/users/person-filters';
 
 export interface PersonInput {
   name?: string | null;
@@ -42,15 +44,6 @@ function toPersonRecord(row: PersonRow): PersonRecord {
   return { ...rest, hasCredentials: passwordHash !== null };
 }
 
-function isUniqueViolation(error: unknown): boolean {
-  let current: unknown = error;
-  for (let depth = 0; current && depth < 4; depth += 1) {
-    if ((current as { code?: string }).code === '23505') return true;
-    current = (current as { cause?: unknown }).cause;
-  }
-  return false;
-}
-
 /** Finds a non-deleted person by normalized phone number, or null. */
 export async function findPersonByPhone(
   phoneNumber: string | null | undefined
@@ -67,6 +60,11 @@ export async function findPersonByPhone(
   return row ? toPersonRecord(row) : null;
 }
 
+/** Literalizes SQL LIKE metacharacters so user input matches itself only. */
+export function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
+
 /**
  * Full-text-ish lookup for the intake customer picker: case-insensitive
  * partial match on name, plus partial match on the normalized phone digits
@@ -74,7 +72,8 @@ export async function findPersonByPhone(
  */
 export async function searchPersons(query: string, limit = 8): Promise<PersonRecord[]> {
   const digits = normalizePhoneNumber(query);
-  const conditions = [ilike(users.name, `%${query}%`)];
+  const pattern = `%${escapeLikePattern(query)}%`;
+  const conditions = [ilike(users.name, pattern)];
   if (digits) conditions.push(like(users.phoneNumber, `%${digits}%`));
 
   const rows = await db
@@ -109,13 +108,7 @@ export async function findOrCreatePerson(input: PersonInput): Promise<PersonReco
     const [row] = await db
       .select(personColumns)
       .from(users)
-      .where(
-        and(
-          sql`lower(${users.name}) = ${name.toLowerCase()}`,
-          isNull(users.passwordHash),
-          isNull(users.deletedAt)
-        )
-      )
+      .where(recordOnlyNameReuseCondition(name))
       .limit(1);
 
     if (row) return toPersonRecord(row);
