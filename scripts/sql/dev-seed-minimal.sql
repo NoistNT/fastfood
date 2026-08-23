@@ -54,11 +54,11 @@ INSERT INTO public.addresses (user_id, address, notes) VALUES
 
 INSERT INTO public.orders (user_id,total,status,order_type,payment_method,contact_name,contact_phone,tracking_code)
 VALUES ((SELECT id FROM public.users WHERE email='jane.smith@example.com'),
-        '24.97','PENDING','pickup','online','Jane Smith','5491133333333','BK7Q2M');
+        '21.97','PENDING','pickup','online','Jane Smith','5491133333333','BK7Q2M');
 
 INSERT INTO public.orders (user_id,total,status,order_type,payment_method,contact_name,contact_phone,delivery_address,delivery_notes,tracking_code)
 VALUES ((SELECT id FROM public.users WHERE email='alice.johnson@example.com'),
-        '13.98','PROCESSING','delivery','cash','Alice Johnson','5491144444444',
+        '16.98','PROCESSING','delivery','cash','Alice Johnson','5491144444444',
         'Calle Falsa 123, Buenos Aires','Depto 2°B, dejar en portería','DX4K9T');
 
 INSERT INTO public.orders (user_id,total,status,order_type,payment_method,contact_name,contact_phone,delivery_address,tracking_code)

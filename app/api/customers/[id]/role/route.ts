@@ -2,17 +2,33 @@ import type { NextRequest } from 'next/server';
 
 import { getTranslations } from 'next-intl/server';
 import { eq } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { db } from '@/db/drizzle';
 import { userRoles, roles } from '@/db/schema';
+import { getSession } from '@/lib/auth/session';
+import { USER_ROLES } from '@/types/auth';
 import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
+
+// Absent roleName = revoke all roles (person becomes a civilian).
+const roleUpdateSchema = z.object({ roleName: z.string().min(1).optional() });
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const t = await getTranslations('Dashboard.customers');
 
   try {
+    // Authorization first: only administrators mutate roles
+    const session = await getSession();
+    if (!session) {
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    }
+    const isAdmin = session.roles.some((role) => role.name === USER_ROLES.ADMIN);
+    if (!isAdmin) {
+      return apiError(ERROR_CODES.FORBIDDEN, 'Administrator access required', { status: 403 });
+    }
+
     // Verify CSRF token for role update operations
     const csrfToken = await getCSRFTokenFromRequest(request);
     if (!csrfToken || !(await verifyCSRFToken(csrfToken))) {
@@ -20,9 +36,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const body = await request.json();
-    const { roleName } = body ?? {};
+    const parsed = roleUpdateSchema.safeParse(body ?? {});
+    if (!parsed.success) {
+      return apiError(ERROR_CODES.INVALID_INPUT, t('updateFailed'), { status: 400 });
+    }
+    const roleName = parsed.data.roleName;
 
-    // Absent roleName = revoke all roles (person becomes a civilian).
     if (!roleName) {
       await db.delete(userRoles).where(eq(userRoles.userId, id));
       return apiSuccess({});

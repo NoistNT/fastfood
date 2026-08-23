@@ -7,6 +7,12 @@ on:
     branches: [main, dev]
     types: [opened, synchronize, reopened]
 
+# Superseded runs are cancelled so deployments and the sticky comment
+# never race into duplicates or stale URLs.
+concurrency:
+  group: preview-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   preview:
     if: github.actor != 'dependabot[bot]'
@@ -46,13 +52,17 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ${{ github.workspace }}
 
-      # Sticky comment: exactly one per PR, updated in place on every push
+      # Sticky comment: exactly one per PR, updated in place on every push.
+      # The deployment URL travels via env (never interpolated into the
+      # script source) to rule out template injection.
       - name: Comment deployment URL on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v9
+        env:
+          DEPLOYMENT_URL: ${{ steps.vercel-deployment.outputs.preview-url }}
         with:
           script: |
-            const deploymentUrl = process.env.VERCEL_URL || '${{ steps.vercel-deployment.outputs.preview-url }}';
+            const deploymentUrl = process.env.VERCEL_URL || process.env.DEPLOYMENT_URL;
             const marker = '<!-- preview-deployment -->';
 
             const commentBody = `${marker}
@@ -79,17 +89,26 @@ jobs:
               repo: context.repo.repo,
             });
 
-            const existing = comments.find(
+            const mine = comments.filter(
               (c) => c.user?.type === 'Bot' && c.body?.includes(marker)
             );
 
-            if (existing) {
+            // Reconcile duplicates from historical runs: keep the first,
+            // remove any extras.
+            if (mine.length > 0) {
               await github.rest.issues.updateComment({
-                comment_id: existing.id,
+                comment_id: mine[0].id,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: commentBody,
               });
+              for (const extra of mine.slice(1)) {
+                await github.rest.issues.deleteComment({
+                  comment_id: extra.id,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                });
+              }
             } else {
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,

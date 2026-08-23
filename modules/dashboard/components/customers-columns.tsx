@@ -91,7 +91,7 @@ export const createColumns = (
               />
             ))
           ) : (
-            <span className="text-sm text-muted-foreground">—</span>
+            <span className="text-sm text-muted-foreground">{t('customers.table.noRoles')}</span>
           )}
         </div>
       );

@@ -1,5 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+// Mock next-intl — keys are asserted directly
+vi.mock('next-intl', () => ({
+  useTranslations: (namespace: string) => (key: string) => `${namespace}.${key}`,
+}));
 
 import { USER_ROLES } from '@/types/auth';
 import { UserRoleBadge } from '@/modules/dashboard/components/user-role-badge';
@@ -8,7 +13,7 @@ describe('UserRoleBadge', () => {
   it('renders admin badge with correct styling', () => {
     render(<UserRoleBadge role={USER_ROLES.ADMIN} />);
 
-    const badge = screen.getByText('Admin');
+    const badge = screen.getByText('Features.dashboard.customers.roleBadges.admin');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass(
       'border-destructive/40',
@@ -22,7 +27,7 @@ describe('UserRoleBadge', () => {
   it('renders staff badge with correct styling', () => {
     render(<UserRoleBadge role={USER_ROLES.STAFF} />);
 
-    const badge = screen.getByText('Staff');
+    const badge = screen.getByText('Features.dashboard.customers.roleBadges.staff');
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass(
       'border-info/40',
