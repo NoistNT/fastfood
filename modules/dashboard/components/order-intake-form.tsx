@@ -258,8 +258,13 @@ export default function OrderIntakeForm() {
 
   const radioLabelClass = 'flex items-center gap-2 text-sm';
   const searchTooShort = searchQuery.trim().length < SEARCH_MIN_LENGTH;
-  const visibleResults =
-    !searchTooShort && searchState?.query === searchQuery.trim() ? searchState.people : [];
+  const searchActive = customerMode === 'existing' && !searchTooShort;
+  const showSearching = isSearching && searchActive;
+  const visibleResults = searchActive
+    ? searchState?.query === searchQuery.trim()
+      ? searchState.people
+      : []
+    : [];
 
   return (
     <div className="space-y-6">
@@ -314,7 +319,7 @@ export default function OrderIntakeForm() {
                     aria-label={t('searchPlaceholder')}
                   />
                 </div>
-                {isSearching && <p className="text-sm text-muted-foreground">{t('searching')}</p>}
+                {showSearching && <p className="text-sm text-muted-foreground">{t('searching')}</p>}
                 {!isSearching && !searchTooShort && visibleResults.length === 0 && (
                   <p className="text-sm text-muted-foreground">{t('searchEmpty')}</p>
                 )}
