@@ -75,38 +75,42 @@ export async function createIntakeOrder(input: IntakeOrderInput): Promise<Intake
   for (let attempt = 0; attempt < MAX_TRACKING_ATTEMPTS; attempt += 1) {
     const trackingCode = generateTrackingCode();
     try {
-      const [created] = await db
-        .insert(orders)
-        .values({
-          userId: person.id,
-          total,
-          orderType: input.orderType,
-          paymentMethod: input.paymentMethod,
-          contactName: person.name,
-          contactPhone: person.phoneNumber ?? '',
-          deliveryAddress: isDelivery ? (input.deliveryAddress?.trim() ?? '') : '',
-          deliveryNotes: isDelivery ? (input.deliveryNotes?.trim() ?? '') : '',
-          trackingCode,
-        })
-        .returning({
-          id: orders.id,
-          total: orders.total,
-          orderType: orders.orderType,
-          paymentMethod: orders.paymentMethod,
+      const created = await db.transaction(async (tx) => {
+        const [row] = await tx
+          .insert(orders)
+          .values({
+            userId: person.id,
+            total,
+            orderType: input.orderType,
+            paymentMethod: input.paymentMethod,
+            contactName: person.name,
+            contactPhone: person.phoneNumber ?? '',
+            deliveryAddress: isDelivery ? (input.deliveryAddress?.trim() ?? '') : '',
+            deliveryNotes: isDelivery ? (input.deliveryNotes?.trim() ?? '') : '',
+            trackingCode,
+          })
+          .returning({
+            id: orders.id,
+            total: orders.total,
+            orderType: orders.orderType,
+            paymentMethod: orders.paymentMethod,
+          });
+
+        await tx.insert(orderStatusHistory).values({
+          orderId: row.id,
+          status: ORDER_STATUS.PENDING,
         });
 
-      await db.insert(orderStatusHistory).values({
-        orderId: created.id,
-        status: ORDER_STATUS.PENDING,
-      });
+        await tx.insert(orderItem).values(
+          input.items.map(({ productId, quantity }) => ({
+            orderId: row.id,
+            productId,
+            quantity,
+          }))
+        );
 
-      await db.insert(orderItem).values(
-        input.items.map(({ productId, quantity }) => ({
-          orderId: created.id,
-          productId,
-          quantity,
-        }))
-      );
+        return row;
+      });
 
       return {
         id: created.id,

@@ -4,6 +4,7 @@ vi.mock('@/db/drizzle', () => ({
   db: {
     select: vi.fn(),
     insert: vi.fn(),
+    transaction: vi.fn(),
   },
 }));
 
@@ -64,14 +65,14 @@ type OrderInsert = {
 };
 
 /**
- * Mocks `insert()`: the orders table gets `.returning()`, auxiliary tables
- * resolve directly. Returns every captured orders-row for assertions.
+ * Mocks `db.transaction()`: the orders table gets `.returning()`, auxiliary
+ * tables resolve directly. Returns every captured orders-row for assertions.
  */
 function mockInserts(returningQueue: Array<Record<string, string> | Error>) {
   const insertedOrders: OrderInsert[] = [];
   let attempt = 0;
 
-  dbMock.insert.mockImplementation(((table: unknown) => {
+  const txInsert = vi.fn((table: unknown) => {
     if (table !== orders) return { values: () => Promise.resolve([]) };
     return {
       values: (values: OrderInsert) => {
@@ -83,7 +84,12 @@ function mockInserts(returningQueue: Array<Record<string, string> | Error>) {
         };
       },
     };
-  }) as never);
+  });
+
+  const transaction = dbMock.transaction as unknown as ReturnType<typeof vi.fn>;
+  transaction.mockImplementation((callback: (tx: { insert: typeof txInsert }) => unknown) =>
+    callback({ insert: txInsert })
+  );
 
   return insertedOrders;
 }
