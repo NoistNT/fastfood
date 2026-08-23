@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     if (error instanceof ZodError) {
       return apiError(ERROR_CODES.VALIDATION_ERROR, error.issues[0].message, { status: 400 });
     }
-    console.error('Customer search failed:', error);
+    console.error('Customer search failed with a database error');
     return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to search customers', { status: 500 });
   }
 }
