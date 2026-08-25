@@ -50,14 +50,14 @@ test.describe('Complete User Journey', () => {
         .filter({ hasText: 'Classic Burger' });
       await expect(burgerCard).toBeVisible();
       await burgerCard.getByTestId('add-to-cart-button').click();
-      await expect(page.getByText('Classic Burger added to order')).toBeVisible();
+      await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
 
       const saladCard = page
         .locator('[data-testid="product-card"]')
         .filter({ hasText: 'Caesar Salad' });
       await expect(saladCard).toBeVisible();
       await saladCard.getByTestId('add-to-cart-button').click();
-      await expect(page.getByText('Caesar Salad added to order')).toBeVisible();
+      await expect(page.getByText('Caesar Salad added to order', { exact: true })).toBeVisible();
     });
 
     await test.step('Review the order and adjust quantities', async () => {
