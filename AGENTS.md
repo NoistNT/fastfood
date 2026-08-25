@@ -57,6 +57,10 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - Security/transitive pins live in `pnpm-workspace.yaml` `overrides:` — never package.json
 - Never hand-edit `pnpm-lock.yaml`; regenerate via `pnpm install`
 - `@types/node` tracks the runtime major (Node 24 = current Vercel max)
+- Dependabot PRs merge as-is or get closed — any bump needing rework moves to
+  our own branch (`chore/deps-<pkg>`) referencing the PR. Majors always run
+  the full local net first (E2E + visual): Dependabot CI skips e2e, preview,
+  and CodeQL
 
 ## Architecture
 
