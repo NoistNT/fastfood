@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# E2E jobs reset and seed a shared database; overlapping runs deadlock on it
+# (seen on dev: two pushes 4s apart raced reset vs seed). One run per ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality-check:
     runs-on: ubuntu-latest
