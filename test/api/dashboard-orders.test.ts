@@ -13,7 +13,6 @@ vi.mock('@/lib/csrf', () => ({
 }));
 
 vi.mock('@/lib/inventory-management', () => ({
-  validateOrderInventory: vi.fn(),
   deductInventoryForOrder: vi.fn(),
 }));
 
@@ -23,7 +22,7 @@ vi.mock('@/modules/orders/actions/intake', () => ({
 
 import { getSession } from '@/lib/auth/session';
 import { getCSRFTokenFromRequest, verifyCSRFToken } from '@/lib/csrf';
-import { deductInventoryForOrder, validateOrderInventory } from '@/lib/inventory-management';
+import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { createIntakeOrder } from '@/modules/orders/actions/intake';
 import { POST } from '@/app/api/dashboard/orders/route';
 
@@ -31,7 +30,6 @@ const getSessionMock = vi.mocked(getSession);
 const getCSRFMock = vi.mocked(getCSRFTokenFromRequest);
 const verifyCSRFPass = vi.mocked(verifyCSRFToken);
 const createIntakeOrderMock = vi.mocked(createIntakeOrder);
-const validateInventoryMock = vi.mocked(validateOrderInventory);
 const deductInventoryMock = vi.mocked(deductInventoryForOrder);
 
 function sessionWith(...roleNames: string[]): UserWithRoles {
@@ -79,8 +77,7 @@ describe('POST /api/dashboard/orders', () => {
     vi.clearAllMocks();
     getCSRFMock.mockResolvedValue('token');
     verifyCSRFPass.mockResolvedValue(true);
-    validateInventoryMock.mockResolvedValue(true);
-    deductInventoryMock.mockResolvedValue(undefined);
+    deductInventoryMock.mockResolvedValue({ shortfalls: [] });
   });
 
   it('requires authentication', async () => {
@@ -147,29 +144,30 @@ describe('POST /api/dashboard/orders', () => {
         deliveryAddress: 'Calle 1',
       })
     );
-    expect(validateInventoryMock).toHaveBeenCalledWith(createdResult.id);
     expect(deductInventoryMock).toHaveBeenCalledWith(createdResult.id);
   });
 
   it('still answers 201 when inventory bookkeeping explodes', async () => {
     getSessionMock.mockResolvedValue(sessionWith('admin'));
     createIntakeOrderMock.mockResolvedValue(createdResult);
-    validateInventoryMock.mockRejectedValue(new Error('inventory down'));
+    deductInventoryMock.mockRejectedValue(new Error('inventory down'));
 
     const response = await POST(requestWith(validBody()));
 
     expect(response.status).toBe(201);
   });
 
-  it('never deducts stock when validation reports a shortage', async () => {
+  it('still answers 201 when the atomic deduction reports shortfalls', async () => {
     getSessionMock.mockResolvedValue(sessionWith('staff'));
     createIntakeOrderMock.mockResolvedValue(createdResult);
-    validateInventoryMock.mockResolvedValue(false);
+    deductInventoryMock.mockResolvedValue({
+      shortfalls: [{ ingredientId: 7, requested: 2, available: 0 }],
+    });
 
     const response = await POST(requestWith(validBody()));
 
     expect(response.status).toBe(201);
-    expect(deductInventoryMock).not.toHaveBeenCalled();
+    expect(deductInventoryMock).toHaveBeenCalledWith(createdResult.id);
   });
 
   it('rejects malformed JSON bodies as validation errors', async () => {

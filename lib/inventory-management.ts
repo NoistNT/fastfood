@@ -1,12 +1,25 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { inventory, productIngredients, inventoryMovements, orderItem } from '@/db/schema';
 
-// Deduct inventory when an order is placed
-export async function deductInventoryForOrder(orderId: string): Promise<void> {
+export interface InventoryShortfall {
+  ingredientId: number;
+  requested: number;
+  available: number;
+}
+
+export interface DeductInventoryResult {
+  shortfalls: InventoryShortfall[];
+}
+
+// Deduct inventory when an order is placed. Each decrement is one atomic
+// conditional UPDATE (`quantity >= qty`), so concurrent orders can never
+// double-spend the same units and stock never goes negative. Movements are
+// recorded only for stock that was actually removed; shortages are reported
+// as shortfalls instead of being silently clamped at zero.
+export async function deductInventoryForOrder(orderId: string): Promise<DeductInventoryResult> {
   try {
-    // Get all order items for this order
     const orderItems = await db
       .select({
         productId: orderItem.productId,
@@ -15,7 +28,8 @@ export async function deductInventoryForOrder(orderId: string): Promise<void> {
       .from(orderItem)
       .where(eq(orderItem.orderId, orderId));
 
-    // Process each order item
+    const shortfalls: InventoryShortfall[] = [];
+
     for (const item of orderItems) {
       // Get ingredients for this product
       const productIngredientsList = await db
@@ -26,112 +40,65 @@ export async function deductInventoryForOrder(orderId: string): Promise<void> {
         .where(eq(productIngredients.productId, item.productId));
 
       // Deduct inventory for each ingredient (1 unit per ingredient per product)
-      for (const productIngredient of productIngredientsList) {
-        await adjustInventory(
-          productIngredient.ingredientId,
-          -item.quantity, // negative for deduction
+      for (const { ingredientId } of productIngredientsList) {
+        const shortfall = await deductStock(
+          ingredientId,
+          item.quantity,
           'order',
           `Order ${orderId}`,
           orderId
         );
+        if (shortfall) shortfalls.push(shortfall);
       }
     }
+
+    return { shortfalls };
   } catch (error) {
     console.error('Error deducting inventory for order:', orderId, error);
     throw error;
   }
 }
 
-// Generic inventory adjustment function
-export async function adjustInventory(
+async function deductStock(
   ingredientId: number,
-  quantityChange: number, // positive for addition, negative for deduction
+  quantity: number,
   type: 'in' | 'out' | 'adjustment' | 'order',
   reason: string,
   referenceId?: string
-): Promise<void> {
+): Promise<InventoryShortfall | null> {
   try {
-    // Get current inventory
-    const currentInventory = await db
-      .select()
-      .from(inventory)
-      .where(eq(inventory.ingredientId, ingredientId))
-      .limit(1);
+    // Atomic conditional decrement — zero affected rows means the on-hand
+    // stock was already below the requested amount.
+    const deducted = await db
+      .update(inventory)
+      .set({ quantity: sql`${inventory.quantity} - ${quantity}`, lastUpdated: new Date() })
+      .where(and(eq(inventory.ingredientId, ingredientId), gte(inventory.quantity, quantity)))
+      .returning({ id: inventory.id });
 
-    if (currentInventory.length === 0) {
-      throw new Error(`No inventory found for ingredient ${ingredientId}`);
+    if (deducted.length === 0) {
+      const current = await db
+        .select({ quantity: inventory.quantity })
+        .from(inventory)
+        .where(eq(inventory.ingredientId, ingredientId))
+        .limit(1);
+      const available = current[0]?.quantity ?? 0;
+      console.warn(
+        `Insufficient stock for ingredient ${ingredientId}: requested ${quantity}, available ${available}`
+      );
+      return { ingredientId, requested: quantity, available };
     }
 
-    const inventoryItem = currentInventory[0];
-    const newQuantity = Math.max(0, inventoryItem.quantity + quantityChange);
-
-    // Update inventory
-    await db
-      .update(inventory)
-      .set({
-        quantity: newQuantity,
-        lastUpdated: new Date(),
-      })
-      .where(eq(inventory.id, inventoryItem.id));
-
-    // Record movement
+    // Record movement only after a successful decrement.
     await db.insert(inventoryMovements).values({
-      inventoryId: inventoryItem.id,
+      inventoryId: deducted[0].id,
       type,
-      quantity: quantityChange,
+      quantity: -quantity,
       reason,
       referenceId,
     });
+    return null;
   } catch (error) {
-    console.error(
-      'Error adjusting inventory:',
-      { ingredientId, quantityChange, type, reason },
-      error
-    );
+    console.error('Error deducting stock:', { ingredientId, quantity, type, reason }, error);
     throw error;
-  }
-}
-
-// Check if order can be fulfilled with current inventory
-export async function validateOrderInventory(orderId: string): Promise<boolean> {
-  try {
-    // Get all order items
-    const orderItems = await db
-      .select({
-        productId: orderItem.productId,
-        quantity: orderItem.quantity,
-      })
-      .from(orderItem)
-      .where(eq(orderItem.orderId, orderId));
-
-    // Check inventory for each required ingredient
-    for (const item of orderItems) {
-      const ingredientsNeeded = await db
-        .select({
-          ingredientId: productIngredients.ingredientId,
-        })
-        .from(productIngredients)
-        .where(eq(productIngredients.productId, item.productId));
-
-      for (const ingredient of ingredientsNeeded) {
-        const inventoryData = await db
-          .select({ quantity: inventory.quantity })
-          .from(inventory)
-          .where(eq(inventory.ingredientId, ingredient.ingredientId))
-          .limit(1);
-
-        const availableQuantity = inventoryData.length > 0 ? inventoryData[0].quantity : 0;
-        const requiredQuantity = item.quantity; // 1 unit per ingredient per product
-
-        if (availableQuantity < requiredQuantity) {
-          return false; // Insufficient inventory
-        }
-      }
-    }
-
-    return true; // All inventory checks passed
-  } catch (error) {
-    console.error('Error validating order inventory:', orderId, error);
-    return false; // Fail safe - don't allow order if we can't check inventory
   }
 }
