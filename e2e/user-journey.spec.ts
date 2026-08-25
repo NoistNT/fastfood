@@ -135,7 +135,7 @@ test.describe('Complete User Journey', () => {
 
       const firstProduct = page.locator('[data-testid="product-card"]').first();
       await firstProduct.getByTestId('add-to-cart-button').click();
-      await expect(page.getByText(/added to order/)).toBeVisible();
+      await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
     });
 
     await test.step('Modify quantities in the order', async () => {
