@@ -1,4 +1,4 @@
-import { and, eq, gte, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { inventory, productIngredients, inventoryMovements, orderItem } from '@/db/schema';
@@ -13,11 +13,14 @@ export interface DeductInventoryResult {
   shortfalls: InventoryShortfall[];
 }
 
-// Deduct inventory when an order is placed. Each decrement is one atomic
-// conditional UPDATE (`quantity >= qty`), so concurrent orders can never
-// double-spend the same units and stock never goes negative. Movements are
-// recorded only for stock that was actually removed; shortages are reported
-// as shortfalls instead of being silently clamped at zero.
+/**
+ * Deducts the ingredients of a placed order from stock and reports any
+ * shortfalls. Each ingredient deduction is one atomic statement (see
+ * `deductStock`), so concurrent orders can never double-spend the same
+ * units and stock never goes negative. Movements are recorded only for
+ * stock that was actually removed; shortages are reported as shortfalls
+ * instead of being silently clamped at zero.
+ */
 export async function deductInventoryForOrder(orderId: string): Promise<DeductInventoryResult> {
   try {
     const orderItems = await db
@@ -53,29 +56,42 @@ export async function deductInventoryForOrder(orderId: string): Promise<DeductIn
     }
 
     return { shortfalls };
-  } catch (error) {
-    console.error('Error deducting inventory for order:', orderId, error);
-    throw error;
+  } catch {
+    console.error('Order inventory deduction failed');
+    throw new Error('Inventory deduction failed');
   }
 }
 
+/**
+ * Deducts stock and records the ledger movement as ONE atomic statement:
+ * a data-modifying CTE feeds the conditional UPDATE's output straight into
+ * the movement INSERT, so a decrement can never commit without its ledger
+ * entry — neon-http has no interactive transactions, but a single statement
+ * is inherently atomic on Postgres. Zero affected rows means the on-hand
+ * stock was already below the requested amount; no row is inserted then.
+ */
 async function deductStock(
   ingredientId: number,
   quantity: number,
   type: 'in' | 'out' | 'adjustment' | 'order',
   reason: string,
-  referenceId?: string
+  referenceId: string | null
 ): Promise<InventoryShortfall | null> {
   try {
-    // Atomic conditional decrement — zero affected rows means the on-hand
-    // stock was already below the requested amount.
-    const deducted = await db
-      .update(inventory)
-      .set({ quantity: sql`${inventory.quantity} - ${quantity}`, lastUpdated: new Date() })
-      .where(and(eq(inventory.ingredientId, ingredientId), gte(inventory.quantity, quantity)))
-      .returning({ id: inventory.id });
+    const result = await db.execute(sql`
+      WITH deducted AS (
+        UPDATE ${inventory}
+        SET quantity = quantity - ${quantity}, last_updated = now()
+        WHERE ${inventory.ingredientId} = ${ingredientId}
+          AND ${inventory.quantity} >= ${quantity}
+        RETURNING id
+      )
+      INSERT INTO ${inventoryMovements} (inventory_id, type, quantity, reason, reference_id)
+      SELECT id, ${type}, ${-quantity}, ${reason}, ${referenceId} FROM deducted
+      RETURNING id
+    `);
 
-    if (deducted.length === 0) {
+    if (result.rows.length === 0) {
       const current = await db
         .select({ quantity: inventory.quantity })
         .from(inventory)
@@ -88,17 +104,9 @@ async function deductStock(
       return { ingredientId, requested: quantity, available };
     }
 
-    // Record movement only after a successful decrement.
-    await db.insert(inventoryMovements).values({
-      inventoryId: deducted[0].id,
-      type,
-      quantity: -quantity,
-      reason,
-      referenceId,
-    });
     return null;
-  } catch (error) {
-    console.error('Error deducting stock:', { ingredientId, quantity, type, reason }, error);
-    throw error;
+  } catch {
+    console.error('Ingredient stock deduction failed', { ingredientId });
+    throw new Error('Inventory stock deduction failed');
   }
 }

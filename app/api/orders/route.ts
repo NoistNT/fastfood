@@ -22,6 +22,11 @@ const submitOrderSchema = z.object({
   }),
 });
 
+/**
+ * Places an order for the authenticated session. Inventory is deducted
+ * atomically after creation; shortfalls never fail the order and stock
+ * never goes negative.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
