@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // Mock dependencies before imports
 vi.mock('@/lib/auth/session');
-vi.mock('@/modules/orders/actions/actions');
+vi.mock('@/modules/orders/create-order');
 vi.mock('@/lib/inventory-management');
 vi.mock('@/lib/api-response');
 vi.mock('@/db/drizzle', () => ({
@@ -20,14 +20,13 @@ vi.mock('@/db/drizzle', () => ({
 
 import { POST } from '@/app/api/orders/route';
 import { getSession } from '@/lib/auth/session';
-import { create } from '@/modules/orders/actions/actions';
+import { createOrder } from '@/modules/orders/create-order';
 import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError } from '@/lib/api-response';
 import { db } from '@/db/drizzle';
-import { ORDER_STATUS } from '@/modules/orders/types';
 
 const mockGetSession = vi.mocked(getSession);
-const mockCreate = vi.mocked(create);
+const mockCreateOrder = vi.mocked(createOrder);
 const mockDeductInventory = vi.mocked(deductInventoryForOrder);
 const mockApiSuccess = vi.mocked(apiSuccess);
 const mockApiError = vi.mocked(apiError);
@@ -118,10 +117,17 @@ describe('/api/orders', () => {
       expect(result.error.code).toBe('VALIDATION_ERROR');
     });
 
-    it('should validate order schema - invalid total', async () => {
+    it('should accept and ignore malformed legacy totals', async () => {
       mockGetSession.mockResolvedValue(mockUser);
       // Mock the database user lookup
       mockDbFindFirst.mockResolvedValue(mockUser);
+      mockCreateOrder.mockResolvedValue({
+        id: 'order-125',
+        userId: validUserId,
+        total: '21.00',
+        status: 'PENDING' as const,
+      });
+      mockDeductInventory.mockResolvedValue({ shortfalls: [] });
 
       const request = new NextRequest('http://localhost:3000/api/orders', {
         method: 'POST',
@@ -132,11 +138,12 @@ describe('/api/orders', () => {
       });
 
       const response = await POST(request);
-      const result = await response.json();
 
-      expect(response.status).toBe(400);
-      expect(result.success).toBe(false);
-      expect(result.error.code).toBe('VALIDATION_ERROR');
+      expect(response.status).toBe(201);
+      expect(mockCreateOrder).toHaveBeenCalledWith({
+        items: [{ productId: 1, quantity: 2 }],
+        userId: validUserId,
+      });
     });
 
     it('should create order successfully with valid data', async () => {
@@ -144,12 +151,12 @@ describe('/api/orders', () => {
         id: 'order-123',
         userId: validUserId,
         total: '15.99',
-        status: ORDER_STATUS.PENDING,
+        status: 'PENDING' as const,
       };
 
       mockGetSession.mockResolvedValue(mockUser);
       mockDbFindFirst.mockResolvedValue(mockUser);
-      mockCreate.mockResolvedValue(mockOrderResult);
+      mockCreateOrder.mockResolvedValue(mockOrderResult);
       mockDeductInventory.mockResolvedValue({ shortfalls: [] });
 
       const request = new NextRequest('http://localhost:3000/api/orders', {
@@ -163,15 +170,42 @@ describe('/api/orders', () => {
       const response = await POST(request);
       const result = await response.json();
 
-      expect(mockCreate).toHaveBeenCalledWith({
+      expect(mockCreateOrder).toHaveBeenCalledWith({
         items: [{ productId: 1, quantity: 2 }],
-        total: '15.99',
         userId: validUserId,
       });
       expect(mockDeductInventory).toHaveBeenCalledWith('order-123');
       expect(response.status).toBe(201);
       expect(result.success).toBe(true);
       expect(result.data).toEqual(mockOrderResult);
+    });
+
+    it('should ignore tampered client totals', async () => {
+      mockGetSession.mockResolvedValue(mockUser);
+      mockDbFindFirst.mockResolvedValue(mockUser);
+      mockCreateOrder.mockResolvedValue({
+        id: 'order-124',
+        userId: validUserId,
+        total: '31.98',
+        status: 'PENDING' as const,
+      });
+      mockDeductInventory.mockResolvedValue({ shortfalls: [] });
+
+      const request = new NextRequest('http://localhost:3000/api/orders', {
+        method: 'POST',
+        body: JSON.stringify({
+          items: [{ productId: 1, quantity: 2 }],
+          total: '0.01',
+        }),
+      });
+
+      const response = await POST(request);
+
+      expect(response.status).toBe(201);
+      expect(mockCreateOrder).toHaveBeenCalledTimes(1);
+      expect(mockCreateOrder).not.toHaveBeenCalledWith(
+        expect.objectContaining({ total: expect.anything() })
+      );
     });
   });
 });

@@ -1,10 +1,9 @@
-import { inArray } from 'drizzle-orm';
-
 import { db } from '@/db/drizzle';
-import { orderItem, orderStatusHistory, orders, products } from '@/db/schema';
+import { orderItem, orderStatusHistory, orders } from '@/db/schema';
 import { isUniqueViolation } from '@/lib/db-errors';
 import { generateTrackingCode } from '@/lib/tracking-code';
 import { findOrCreatePerson } from '@/modules/users/persons';
+import { computeOrderTotal } from '@/modules/orders/pricing';
 import {
   ORDER_STATUS,
   ORDER_TYPE,
@@ -52,22 +51,7 @@ const MAX_TRACKING_ATTEMPTS = 5;
  */
 export async function createIntakeOrder(input: IntakeOrderInput): Promise<IntakeOrderResult> {
   const person = await findOrCreatePerson(input.person);
-
-  const productIds = input.items.map((item) => item.productId);
-  const catalog = await db
-    .select({ id: products.id, price: products.price })
-    .from(products)
-    .where(inArray(products.id, productIds));
-
-  const priceById = new Map(catalog.map((product) => [product.id, parseFloat(product.price)]));
-  const invalidProductIds = [...new Set(productIds)].filter((id) => !priceById.has(id));
-  if (invalidProductIds.length > 0) {
-    throw new Error(`Invalid product IDs: ${invalidProductIds.join(', ')}`);
-  }
-
-  const total = input.items
-    .reduce((sum, item) => sum + priceById.get(item.productId)! * item.quantity, 0)
-    .toFixed(2);
+  const total = await computeOrderTotal(input.items);
 
   const isDelivery = input.orderType === ORDER_TYPE.DELIVERY;
 
