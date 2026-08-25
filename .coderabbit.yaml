@@ -1,5 +1,10 @@
 language: en-US
 early_access: false
+tone_instructions: >-
+  Prioritize data integrity, security/PII hygiene, and runtime correctness over
+  style nits. Flag synchronous setState inside effects, unescaped SQL LIKE
+  input, non-atomic writes, raw error-object logging, and undefined internal
+  jargon in docs.
 reviews:
   profile: chill
   request_changes_workflow: false
@@ -12,7 +17,6 @@ reviews:
       - dev
   path_filters:
     - '!pnpm-lock.yaml'
-    - '!e2e/**'
     - '!messages/**'
     - '!docs/**'
     - '!.opencode/**'
@@ -25,3 +29,21 @@ reviews:
       instructions: >-
         Focus on JWT/session handling correctness (HS256, expiry), secret hygiene, and that no
         token material is ever logged or exposed in responses.
+    - path: modules/orders/**
+      instructions: >-
+        Verify multi-table writes are atomic for the driver (neon-http has no
+        transactions — use db.batch), totals are computed server-side, and
+        inventory deduction never runs after a failed availability check.
+    - path: lib/inventory-management.ts
+      instructions: >-
+        Stock changes must be atomic conditional decrements, not
+        read-modify-write; movements recorded only after successful decrements.
+    - path: e2e/**
+      instructions: >-
+        Locators must be strict-mode safe (no ambiguous getByText regexes),
+        avoid asserting on toast wrapper duplication, and keep environment
+        assumptions explicit.
+    - path: test/**
+      instructions: >-
+        Mocks must mirror real driver constraints (e.g. neon-http batch/transaction
+        support) so green tests cannot mask runtime breakage.
