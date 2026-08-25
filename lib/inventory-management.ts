@@ -1,12 +1,28 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { inventory, productIngredients, inventoryMovements, orderItem } from '@/db/schema';
 
-// Deduct inventory when an order is placed
-export async function deductInventoryForOrder(orderId: string): Promise<void> {
+export interface InventoryShortfall {
+  ingredientId: number;
+  requested: number;
+  available: number;
+}
+
+export interface DeductInventoryResult {
+  shortfalls: InventoryShortfall[];
+}
+
+/**
+ * Deducts the ingredients of a placed order from stock and reports any
+ * shortfalls. Each ingredient deduction is one atomic statement (see
+ * `deductStock`), so concurrent orders can never double-spend the same
+ * units and stock never goes negative. Movements are recorded only for
+ * stock that was actually removed; shortages are reported as shortfalls
+ * instead of being silently clamped at zero.
+ */
+export async function deductInventoryForOrder(orderId: string): Promise<DeductInventoryResult> {
   try {
-    // Get all order items for this order
     const orderItems = await db
       .select({
         productId: orderItem.productId,
@@ -15,7 +31,8 @@ export async function deductInventoryForOrder(orderId: string): Promise<void> {
       .from(orderItem)
       .where(eq(orderItem.orderId, orderId));
 
-    // Process each order item
+    const shortfalls: InventoryShortfall[] = [];
+
     for (const item of orderItems) {
       // Get ingredients for this product
       const productIngredientsList = await db
@@ -26,112 +43,70 @@ export async function deductInventoryForOrder(orderId: string): Promise<void> {
         .where(eq(productIngredients.productId, item.productId));
 
       // Deduct inventory for each ingredient (1 unit per ingredient per product)
-      for (const productIngredient of productIngredientsList) {
-        await adjustInventory(
-          productIngredient.ingredientId,
-          -item.quantity, // negative for deduction
+      for (const { ingredientId } of productIngredientsList) {
+        const shortfall = await deductStock(
+          ingredientId,
+          item.quantity,
           'order',
           `Order ${orderId}`,
           orderId
         );
+        if (shortfall) shortfalls.push(shortfall);
       }
     }
-  } catch (error) {
-    console.error('Error deducting inventory for order:', orderId, error);
-    throw error;
+
+    return { shortfalls };
+  } catch {
+    console.error('Order inventory deduction failed');
+    throw new Error('Inventory deduction failed');
   }
 }
 
-// Generic inventory adjustment function
-export async function adjustInventory(
+/**
+ * Deducts stock and records the ledger movement as ONE atomic statement:
+ * a data-modifying CTE feeds the conditional UPDATE's output straight into
+ * the movement INSERT, so a decrement can never commit without its ledger
+ * entry — neon-http has no interactive transactions, but a single statement
+ * is inherently atomic on Postgres. Zero affected rows means the on-hand
+ * stock was already below the requested amount; no row is inserted then.
+ */
+async function deductStock(
   ingredientId: number,
-  quantityChange: number, // positive for addition, negative for deduction
+  quantity: number,
   type: 'in' | 'out' | 'adjustment' | 'order',
   reason: string,
-  referenceId?: string
-): Promise<void> {
+  referenceId: string | null
+): Promise<InventoryShortfall | null> {
   try {
-    // Get current inventory
-    const currentInventory = await db
-      .select()
-      .from(inventory)
-      .where(eq(inventory.ingredientId, ingredientId))
-      .limit(1);
+    const result = await db.execute(sql`
+      WITH deducted AS (
+        UPDATE ${inventory}
+        SET quantity = quantity - ${quantity}, last_updated = now()
+        WHERE ${inventory.ingredientId} = ${ingredientId}
+          AND ${inventory.quantity} >= ${quantity}
+        RETURNING id
+      )
+      INSERT INTO ${inventoryMovements} (inventory_id, type, quantity, reason, reference_id)
+      SELECT id, ${type}, ${-quantity}, ${reason}, ${referenceId} FROM deducted
+      RETURNING id
+    `);
 
-    if (currentInventory.length === 0) {
-      throw new Error(`No inventory found for ingredient ${ingredientId}`);
+    if (result.rows.length === 0) {
+      const current = await db
+        .select({ quantity: inventory.quantity })
+        .from(inventory)
+        .where(eq(inventory.ingredientId, ingredientId))
+        .limit(1);
+      const available = current[0]?.quantity ?? 0;
+      console.warn(
+        `Insufficient stock for ingredient ${ingredientId}: requested ${quantity}, available ${available}`
+      );
+      return { ingredientId, requested: quantity, available };
     }
 
-    const inventoryItem = currentInventory[0];
-    const newQuantity = Math.max(0, inventoryItem.quantity + quantityChange);
-
-    // Update inventory
-    await db
-      .update(inventory)
-      .set({
-        quantity: newQuantity,
-        lastUpdated: new Date(),
-      })
-      .where(eq(inventory.id, inventoryItem.id));
-
-    // Record movement
-    await db.insert(inventoryMovements).values({
-      inventoryId: inventoryItem.id,
-      type,
-      quantity: quantityChange,
-      reason,
-      referenceId,
-    });
-  } catch (error) {
-    console.error(
-      'Error adjusting inventory:',
-      { ingredientId, quantityChange, type, reason },
-      error
-    );
-    throw error;
-  }
-}
-
-// Check if order can be fulfilled with current inventory
-export async function validateOrderInventory(orderId: string): Promise<boolean> {
-  try {
-    // Get all order items
-    const orderItems = await db
-      .select({
-        productId: orderItem.productId,
-        quantity: orderItem.quantity,
-      })
-      .from(orderItem)
-      .where(eq(orderItem.orderId, orderId));
-
-    // Check inventory for each required ingredient
-    for (const item of orderItems) {
-      const ingredientsNeeded = await db
-        .select({
-          ingredientId: productIngredients.ingredientId,
-        })
-        .from(productIngredients)
-        .where(eq(productIngredients.productId, item.productId));
-
-      for (const ingredient of ingredientsNeeded) {
-        const inventoryData = await db
-          .select({ quantity: inventory.quantity })
-          .from(inventory)
-          .where(eq(inventory.ingredientId, ingredient.ingredientId))
-          .limit(1);
-
-        const availableQuantity = inventoryData.length > 0 ? inventoryData[0].quantity : 0;
-        const requiredQuantity = item.quantity; // 1 unit per ingredient per product
-
-        if (availableQuantity < requiredQuantity) {
-          return false; // Insufficient inventory
-        }
-      }
-    }
-
-    return true; // All inventory checks passed
-  } catch (error) {
-    console.error('Error validating order inventory:', orderId, error);
-    return false; // Fail safe - don't allow order if we can't check inventory
+    return null;
+  } catch {
+    console.error('Ingredient stock deduction failed', { ingredientId });
+    throw new Error('Inventory stock deduction failed');
   }
 }

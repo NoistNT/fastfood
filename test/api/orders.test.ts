@@ -21,14 +21,13 @@ vi.mock('@/db/drizzle', () => ({
 import { POST } from '@/app/api/orders/route';
 import { getSession } from '@/lib/auth/session';
 import { create } from '@/modules/orders/actions/actions';
-import { validateOrderInventory, deductInventoryForOrder } from '@/lib/inventory-management';
+import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError } from '@/lib/api-response';
 import { db } from '@/db/drizzle';
 import { ORDER_STATUS } from '@/modules/orders/types';
 
 const mockGetSession = vi.mocked(getSession);
 const mockCreate = vi.mocked(create);
-const mockValidateInventory = vi.mocked(validateOrderInventory);
 const mockDeductInventory = vi.mocked(deductInventoryForOrder);
 const mockApiSuccess = vi.mocked(apiSuccess);
 const mockApiError = vi.mocked(apiError);
@@ -150,9 +149,8 @@ describe('/api/orders', () => {
 
       mockGetSession.mockResolvedValue(mockUser);
       mockDbFindFirst.mockResolvedValue(mockUser);
-      mockValidateInventory.mockResolvedValue(true);
       mockCreate.mockResolvedValue(mockOrderResult);
-      mockDeductInventory.mockResolvedValue(undefined);
+      mockDeductInventory.mockResolvedValue({ shortfalls: [] });
 
       const request = new NextRequest('http://localhost:3000/api/orders', {
         method: 'POST',
@@ -170,7 +168,6 @@ describe('/api/orders', () => {
         total: '15.99',
         userId: validUserId,
       });
-      expect(mockValidateInventory).toHaveBeenCalledWith('order-123');
       expect(mockDeductInventory).toHaveBeenCalledWith('order-123');
       expect(response.status).toBe(201);
       expect(result.success).toBe(true);

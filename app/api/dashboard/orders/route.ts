@@ -6,7 +6,7 @@ import { ZodError } from 'zod';
 import { apiError, apiSuccess, ERROR_CODES } from '@/lib/api-response';
 import { requireOperationalRole } from '@/lib/auth/guards';
 import { getCSRFTokenFromRequest, verifyCSRFToken } from '@/lib/csrf';
-import { validateOrderInventory, deductInventoryForOrder } from '@/lib/inventory-management';
+import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { createIntakeOrder } from '@/modules/orders/actions/intake';
 import { ORDER_TYPE, PAYMENT_METHOD } from '@/modules/orders/types';
 
@@ -73,11 +73,9 @@ export async function POST(request: NextRequest) {
     const order = await createIntakeOrder(input);
 
     try {
-      const hasStock = await validateOrderInventory(order.id);
-      if (!hasStock) {
+      const { shortfalls } = await deductInventoryForOrder(order.id);
+      if (shortfalls.length > 0) {
         console.warn(`Order ${order.id} transcribed with insufficient inventory`);
-      } else {
-        await deductInventoryForOrder(order.id);
       }
     } catch (error) {
       console.error('Failed to deduct inventory for order:', order.id, error);

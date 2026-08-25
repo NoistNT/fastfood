@@ -7,7 +7,7 @@ import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
 import { create } from '@/modules/orders/actions/actions';
-import { validateOrderInventory, deductInventoryForOrder } from '@/lib/inventory-management';
+import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 const orderItemSchema = z.object({
@@ -22,6 +22,11 @@ const submitOrderSchema = z.object({
   }),
 });
 
+/**
+ * Places an order for the authenticated session. Inventory is deducted
+ * atomically after creation; shortfalls never fail the order and stock
+ * never goes negative.
+ */
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
@@ -46,17 +51,13 @@ export async function POST(request: NextRequest) {
       return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create order', { status: 500 });
     }
 
-    // Validate inventory availability
-    const hasInventory = await validateOrderInventory(order.id);
-    if (!hasInventory) {
-      // Order is created but inventory is insufficient
-      // In a real app, you might want to cancel the order or notify the user
-      console.warn(`Order ${order.id} placed with insufficient inventory`);
-    }
-
-    // Deduct inventory (this will handle the case where inventory becomes insufficient)
+    // Deduct inventory atomically; shortfalls mean stock was already gone —
+    // nothing is removed and stock never goes negative.
     try {
-      await deductInventoryForOrder(order.id);
+      const { shortfalls } = await deductInventoryForOrder(order.id);
+      if (shortfalls.length > 0) {
+        console.warn(`Order ${order.id} placed with insufficient inventory`);
+      }
     } catch (error) {
       console.error('Failed to deduct inventory for order:', order.id, error);
       // Order is still created, but inventory wasn't updated
