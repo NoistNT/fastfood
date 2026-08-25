@@ -11,7 +11,6 @@ export const queryKeys = {
     charts: (period: string) => ['dashboard', 'charts', period] as const,
   },
   products: ['products'] as const,
-  customers: ['customers'] as const,
   inventory: ['inventory'] as const,
   ingredients: ['ingredients'] as const,
   orders: ['orders'] as const,
@@ -53,20 +52,6 @@ export function useProducts() {
       const response = await fetch('/api/products');
       if (!response.ok) {
         throw new Error('Failed to fetch products');
-      }
-      return response.json();
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-export function useCustomers() {
-  return useQuery({
-    queryKey: queryKeys.customers,
-    queryFn: async () => {
-      const response = await fetch('/api/customers');
-      if (!response.ok) {
-        throw new Error('Failed to fetch customers');
       }
       return response.json();
     },
