@@ -79,6 +79,13 @@ jobs:
     if: needs.e2e-journey-gate.outputs.configured == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Reset and seed hit a single shared database; overlapping runs deadlock
+    # on it (dev incident: two pushes 4s apart raced reset vs seed). One
+    # journey at a time, newest wins — every run re-seeds first, so
+    # cancellation is safe. quality-check uses a mock DB and stays parallel.
+    concurrency:
+      group: ci-shared-db
+      cancel-in-progress: true
 
     env:
       DB_URL: ${{ secrets.CI_E2E_DB_URL }}
