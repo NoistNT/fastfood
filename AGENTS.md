@@ -58,9 +58,9 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - Never hand-edit `pnpm-lock.yaml`; regenerate via `pnpm install`
 - `@types/node` tracks the runtime major (Node 24 = current Vercel max)
 - Dependabot PRs merge as-is or get closed — any bump needing rework moves to
-  our own branch (`chore/deps-<pkg>`) referencing the PR. Majors always run
-  the full local net first (E2E + visual): Dependabot CI skips e2e, preview,
-  and CodeQL
+  our own branch (`chore/deps-<pkg>`) referencing the PR. Major upgrades must
+  run the full local validation suite first (E2E + visual): Dependabot CI
+  skips E2E, preview, and CodeQL
 
 ## Architecture
 
