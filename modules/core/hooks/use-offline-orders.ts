@@ -9,6 +9,7 @@ interface OfflineOrder {
   id: string;
   items: unknown[];
   total: string;
+  details?: unknown;
   timestamp: number;
   status: 'pending' | 'syncing' | 'failed';
 }
@@ -51,11 +52,12 @@ export function useOfflineOrders() {
 
   // Add order to offline queue
   const addOfflineOrder = useCallback(
-    (orderData: { items: unknown[]; total: string }) => {
+    (orderData: { items: unknown[]; total: string; details?: unknown }) => {
       const offlineOrder: OfflineOrder = {
         id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         items: orderData.items,
         total: orderData.total,
+        details: orderData.details,
         timestamp: Date.now(),
         status: 'pending',
       };
@@ -109,6 +111,7 @@ export function useOfflineOrders() {
           body: JSON.stringify({
             items: order.items,
             total: order.total,
+            ...(order.details ?? {}),
           }),
         });
 
@@ -170,6 +173,7 @@ export function useOfflineOrders() {
           body: JSON.stringify({
             items: order.items,
             total: order.total,
+            ...(order.details ?? {}),
           }),
         });
 

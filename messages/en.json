@@ -47,6 +47,23 @@
         "errorDescription": "Your order could not be registered.",
         "actionText": "Try again"
       },
+      "checkout": {
+        "title": "Contact & delivery details",
+        "orderType": "How do you want your order?",
+        "pickup": "Pickup at the shop",
+        "delivery": "Delivery",
+        "fullName": "Full name",
+        "phone": "Phone number",
+        "email": "Email",
+        "emailOptional": "Email (optional)",
+        "address": "Delivery address",
+        "notes": "Delivery notes"
+      },
+      "accountNudge": {
+        "title": "Want to track this order?",
+        "description": "Create an account — your details are already loaded, just add a password.",
+        "cta": "Create account"
+      },
       "handlePayToast": {
         "errorTitle": "Payment Error",
         "errorDescription": "There was an error processing your payment."

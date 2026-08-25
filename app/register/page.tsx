@@ -65,11 +65,28 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
   });
+
+  // A guest who just placed an order lands here with their details in the
+  // URL — prefill so claiming their identity is one password away.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    const email = params.get('email');
+    const phone = params.get('phone');
+    if (name || email || phone) {
+      reset({
+        ...(name ? { name } : {}),
+        ...(email ? { email } : {}),
+        ...(phone ? { phoneNumber: phone } : {}),
+      });
+    }
+  }, [reset]);
 
   const password = watch('password', '');
 

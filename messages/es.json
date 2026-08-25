@@ -47,6 +47,23 @@
         "errorDescription": "No se pudo registrar tu pedido.",
         "actionText": "Reintentar"
       },
+      "checkout": {
+        "title": "Datos de contacto y entrega",
+        "orderType": "¿Cómo querés tu pedido?",
+        "pickup": "Retiro en el local",
+        "delivery": "Envío a domicilio",
+        "fullName": "Nombre y Apellido",
+        "phone": "Teléfono",
+        "email": "Email",
+        "emailOptional": "Email (opcional)",
+        "address": "Dirección de envío",
+        "notes": "Notas del envío"
+      },
+      "accountNudge": {
+        "title": "¿Querés seguir este pedido?",
+        "description": "Creá tu cuenta — tus datos ya están cargados, solo falta la contraseña.",
+        "cta": "Crear cuenta"
+      },
       "handlePayToast": {
         "errorTitle": "Error de Pago",
         "errorDescription": "Hubo un error al procesar el pago"

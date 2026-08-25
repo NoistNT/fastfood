@@ -69,3 +69,16 @@ export interface NewOrderRequest extends Omit<
 > {
   items: NewOrderRequestItem[];
 }
+
+// Guest checkout details collected at the storefront
+export interface CheckoutPerson {
+  fullName: string;
+  phoneNumber: string;
+  email?: string;
+}
+export interface CheckoutDetails {
+  person: CheckoutPerson;
+  orderType: OrderType;
+  deliveryAddress?: string;
+  deliveryNotes?: string;
+}

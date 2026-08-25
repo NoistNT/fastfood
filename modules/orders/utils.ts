@@ -1,4 +1,4 @@
-import type { CartItem } from '@/modules/orders/types';
+import type { CartItem, CheckoutDetails } from '@/modules/orders/types';
 
 export const toFixed = (value: string) => parseFloat(value).toFixed(2);
 
@@ -8,15 +8,17 @@ export const calculateTotal = (items: CartItem[]) => {
     .toFixed(2);
 };
 
+export type SubmitOrderPayload = { items: CartItem[]; total: string } & CheckoutDetails;
+
 export const submitOrder = async (
-  { items, total }: { items: CartItem[]; total: string },
+  { items, total, ...checkout }: SubmitOrderPayload,
   clearOrder: () => void
 ) => {
   // Call the order API endpoint instead of directly calling server functions
   const response = await fetch('/api/orders', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items, total }),
+    body: JSON.stringify({ items, total, ...checkout }),
   });
 
   if (!response.ok) {
