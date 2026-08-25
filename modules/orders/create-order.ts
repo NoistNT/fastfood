@@ -67,8 +67,8 @@ export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder
       total: validatedNewOrder.total,
       status: ORDER_STATUS.PENDING,
     };
-  } catch (error) {
-    console.error('Error in create order:', error);
+  } catch {
+    console.error('Order creation failed');
     throw new Error(t('errors.createOrderError'));
   }
 }
