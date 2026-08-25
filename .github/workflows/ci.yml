@@ -9,10 +9,11 @@ on:
 permissions:
   contents: read
 
-# E2E jobs reset and seed a shared database; overlapping runs deadlock on it
-# (seen on dev: two pushes 4s apart raced reset vs seed). One run per ref.
+# E2E jobs reset and seed a single shared database; overlapping runs deadlock
+# on it (dev incident: two pushes 4s apart raced reset vs seed). One CI run
+# at a time, newest wins — every run re-seeds first, so cancellation is safe.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-shared-db
   cancel-in-progress: true
 
 jobs:
