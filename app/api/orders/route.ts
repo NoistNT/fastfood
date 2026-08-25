@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
-import { create } from '@/modules/orders/actions/actions';
+import { createOrder } from '@/modules/orders/create-order';
 import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -15,11 +15,11 @@ const orderItemSchema = z.object({
   quantity: z.number().min(1),
 });
 
+// `total` is accepted (optional) for backward compatibility with existing
+// clients but never trusted — the amount is recomputed server-side.
 const submitOrderSchema = z.object({
   items: z.array(orderItemSchema).min(1, 'Order must contain at least one item'),
-  total: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-    message: 'Total must be a valid positive number',
-  }),
+  total: z.string().optional(),
 });
 
 /**
@@ -42,10 +42,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { items, total } = submitOrderSchema.parse(body);
+    const { items } = submitOrderSchema.parse(body);
 
-    // Create the order
-    const order = await create({ items, total, userId: user.id });
+    // Create the order (total is computed server-side from catalog prices)
+    const order = await createOrder({ items, userId: user.id });
 
     if (!order) {
       return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create order', { status: 500 });
