@@ -91,10 +91,11 @@ export default function Page() {
         await submitOrder({ items, total, ...details }, clearOrder);
         if (!prefilled) {
           try {
-            // lgtm[js/clear-text-storage-of-sensitive-information] — self-typed
-            // contact data, short-lived (cleared on register mount), intentional
-            // per privacy review: URL leak fixed, storage is the approved
-            // trade-off; cross-device claim tokens deferred to #64/R3.
+            // self-typed contact data, short-lived (cleared on register
+            // mount), intentional per privacy review: URL leak fixed,
+            // storage is the approved trade-off; cross-device claim tokens
+            // deferred to #64/R3.
+            // lgtm[js/clear-text-storage-of-sensitive-information]
             sessionStorage.setItem(
               'guest_checkout_claim',
               JSON.stringify({
