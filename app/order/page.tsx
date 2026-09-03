@@ -32,7 +32,7 @@ export default function Page() {
 
   const [isPending, startTransition] = useTransition();
   const [checkout, setCheckout] = useState<CheckoutFormState>(emptyCheckoutDetails);
-  const [prefilled, setPrefilled] = useState(false);
+  const [prefilled, setPrefilled] = useState<boolean | null>(null);
   const [placedOrder, setPlacedOrder] = useState<{ guest: boolean } | null>(null);
 
   // Signed-in buyers get their contact details prefilled — no re-typing.
@@ -52,7 +52,9 @@ export default function Page() {
           email: state.email || (user.email ?? ''),
         }));
       })
-      .catch(() => undefined);
+      .catch(() => {
+        // leave as null (unknown) — do not show guest prompt
+      });
     return () => {
       cancelled = true;
     };
@@ -89,7 +91,7 @@ export default function Page() {
 
         // Submit order online
         await submitOrder({ items, total, ...details }, clearOrder);
-        if (!prefilled) {
+        if (prefilled === false) {
           setPlacedOrder({ guest: true });
         } else {
           setPlacedOrder(null);
