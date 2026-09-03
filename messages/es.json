@@ -76,10 +76,11 @@
         "invalidUserId": "ID de usuario inválido",
         "totalNonEmpty": "El total no puede estar vacío"
       },
-      "errors": {
-        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+    "errors": {
+        "createItemError": "Error al crear el ítem para el pedido {orderId}.",
         "noUsers": "No se encontraron usuarios en la base de datos.",
         "createOrderError": "No se pudo crear el pedido.",
+        "rateLimited": "Demasiados intentos de pedido. Intentá nuevamente más tarde.",
         "invalidStatus": "Estado inválido",
         "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
         "orderNotFound": "Pedido no encontrado",

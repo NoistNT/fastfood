@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 
 import { z } from 'zod';
+import { getTranslations } from 'next-intl/server';
 
 import { getSession } from '@/lib/auth/session';
 import { createOrder } from '@/modules/orders/create-order';
@@ -8,6 +9,7 @@ import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 import { findOrCreatePerson } from '@/modules/users/persons';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/request-ip';
 import { ORDER_TYPE, PAYMENT_METHOD } from '@/modules/orders/types';
 
 const orderItemSchema = z.object({
@@ -52,16 +54,13 @@ const submitOrderSchema = z
  */
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    const ip = getClientIp(request);
     const { success } = await sensitiveOperationRateLimit.limit(ip);
     if (!success) {
-      return apiError(
-        ERROR_CODES.RATE_LIMIT_EXCEEDED,
-        'Too many order attempts. Try again later.',
-        {
-          status: 429,
-        }
-      );
+      const t = await getTranslations('Orders');
+      return apiError(ERROR_CODES.RATE_LIMIT_EXCEEDED, t('errors.rateLimited'), {
+        status: 429,
+      });
     }
 
     const body = await request.json();
@@ -94,7 +93,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (!order) {
-      return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create order', { status: 500 });
+      const t = await getTranslations('Orders');
+      return apiError(ERROR_CODES.INTERNAL_ERROR, t('errors.createOrderError'), { status: 500 });
     }
 
     // Deduct inventory atomically; shortfalls mean stock was already gone —
@@ -118,6 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Order submission failed');
-    return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create order', { status: 500 });
+    const t = await getTranslations('Orders');
+    return apiError(ERROR_CODES.INTERNAL_ERROR, t('errors.createOrderError'), { status: 500 });
   }
 }

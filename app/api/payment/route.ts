@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/request-ip';
 import { paymentCircuitBreaker } from '@/lib/circuit-breaker';
 import { apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -17,7 +18,7 @@ const mercadopago = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_T
 export async function POST(req: Request) {
   try {
     // Rate limit payment operations
-    const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+    const ip = getClientIp(req);
     const { success } = await sensitiveOperationRateLimit.limit(ip);
     if (!success) {
       return apiError(

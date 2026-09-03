@@ -4,6 +4,9 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock dependencies before imports
+vi.mock('next-intl/server', () => ({
+  getTranslations: vi.fn(async () => (key: string) => key),
+}));
 vi.mock('@/lib/auth/session');
 vi.mock('@/modules/orders/create-order');
 vi.mock('@/lib/inventory-management');

@@ -9,13 +9,14 @@ import { passwordResetRateLimit } from '@/lib/rate-limit';
 import { sendPasswordResetEmail } from '@/lib/mail';
 import { sanitizeInput } from '@/lib/sanitize';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
+import { getClientIp } from '@/lib/request-ip';
 
 const requestPasswordResetSchema = z.object({
   email: z.email(),
 });
 
 export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1';
+  const ip = getClientIp(req);
   const { success } = await passwordResetRateLimit.limit(ip);
   if (!success) {
     return apiError(

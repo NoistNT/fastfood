@@ -65,28 +65,40 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
-    reset,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
+    defaultValues: (() => {
+      if (typeof window === 'undefined') return undefined;
+      try {
+        const stored = sessionStorage.getItem('guest_checkout_claim');
+        if (stored) {
+          const data = JSON.parse(stored) as { name?: string; email?: string; phone?: string };
+          sessionStorage.removeItem('guest_checkout_claim');
+          const defaults: Partial<RegisterForm> = {};
+          if (data.name) defaults.name = data.name;
+          if (data.email) defaults.email = data.email;
+          if (data.phone) defaults.phoneNumber = data.phone;
+          if (Object.keys(defaults).length) return defaults;
+        }
+      } catch {
+        // ignore storage/parse errors
+      }
+      const params = new URLSearchParams(window.location.search);
+      const name = params.get('name');
+      const email = params.get('email');
+      const phone = params.get('phone');
+      if (name || email || phone) {
+        const defaults: Partial<RegisterForm> = {};
+        if (name) defaults.name = name;
+        if (email) defaults.email = email;
+        if (phone) defaults.phoneNumber = phone;
+        return defaults;
+      }
+      return undefined;
+    })(),
   });
-
-  // A guest who just placed an order lands here with their details in the
-  // URL — prefill so claiming their identity is one password away.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const name = params.get('name');
-    const email = params.get('email');
-    const phone = params.get('phone');
-    if (name || email || phone) {
-      reset({
-        ...(name ? { name } : {}),
-        ...(email ? { email } : {}),
-        ...(phone ? { phoneNumber: phone } : {}),
-      });
-    }
-  }, [reset]);
 
   const password = watch('password', '');
 

@@ -33,9 +33,7 @@ export default function Page() {
   const [isPending, startTransition] = useTransition();
   const [checkout, setCheckout] = useState<CheckoutFormState>(emptyCheckoutDetails);
   const [prefilled, setPrefilled] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState<{ guest: boolean; registerHref: string } | null>(
-    null
-  );
+  const [placedOrder, setPlacedOrder] = useState<{ guest: boolean } | null>(null);
 
   // Signed-in buyers get their contact details prefilled — no re-typing.
   useEffect(() => {
@@ -61,6 +59,22 @@ export default function Page() {
   }, []);
 
   const handleSubmit = async () => {
+    if (!checkout.fullName.trim() || !checkout.phoneNumber.trim()) {
+      toast({
+        title: t('submitToast.errorTitle'),
+        description: t('checkout.fullName'),
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (checkout.orderType === 'delivery' && !checkout.deliveryAddress.trim()) {
+      toast({
+        title: t('submitToast.errorTitle'),
+        description: t('checkout.address'),
+        variant: 'destructive',
+      });
+      return;
+    }
     startTransition(async () => {
       try {
         const details = toCheckoutDetails(checkout);
@@ -75,14 +89,23 @@ export default function Page() {
 
         // Submit order online
         await submitOrder({ items, total, ...details }, clearOrder);
-        setPlacedOrder(
-          prefilled
-            ? null
-            : {
-                guest: true,
-                registerHref: `/register?name=${encodeURIComponent(details.person.fullName)}&phone=${encodeURIComponent(details.person.phoneNumber)}${details.person.email ? `&email=${encodeURIComponent(details.person.email)}` : ''}`,
-              }
-        );
+        if (!prefilled) {
+          try {
+            sessionStorage.setItem(
+              'guest_checkout_claim',
+              JSON.stringify({
+                name: details.person.fullName,
+                phone: details.person.phoneNumber,
+                email: details.person.email ?? '',
+              })
+            );
+          } catch {
+            // ignore storage errors (private mode, quota)
+          }
+          setPlacedOrder({ guest: true });
+        } else {
+          setPlacedOrder(null);
+        }
         toast({
           title: t('submitToast.successTitle'),
           description: t('submitToast.successDescription'),
@@ -159,7 +182,12 @@ export default function Page() {
             <SubmitOrder
               handlePay={handlePay}
               handleSubmit={handleSubmit}
-              isPending={isPending || !checkout.fullName.trim() || !checkout.phoneNumber.trim()}
+              isPending={
+                isPending ||
+                !checkout.fullName.trim() ||
+                !checkout.phoneNumber.trim() ||
+                (checkout.orderType === 'delivery' && !checkout.deliveryAddress.trim())
+              }
             />
           </>
         )}
@@ -173,8 +201,9 @@ export default function Page() {
             <Button
               asChild
               size="sm"
+              variant="default"
             >
-              <a href={placedOrder.registerHref}>{t('accountNudge.cta')}</a>
+              <a href="/register">{t('accountNudge.cta')}</a>
             </Button>
           </aside>
         )}

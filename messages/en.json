@@ -80,6 +80,7 @@
         "createItemError": "Error creating item for order {orderId}.",
         "noUsers": "No users found in the database.",
         "createOrderError": "Order could not be created.",
+        "rateLimited": "Too many order attempts. Try again later.",
         "invalidStatus": "Invalid status",
         "noOrders": "No orders found. Please try again later or contact support.",
         "orderNotFound": "Order not found",
