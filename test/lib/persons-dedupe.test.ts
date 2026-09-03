@@ -58,22 +58,9 @@ describe('findOrCreatePerson dedupe precedence', () => {
     expect(selectResults).toHaveLength(0);
   });
 
-  it('falls back to the phone match when the email is unknown', async () => {
-    selectResults.push([], [personRow({ id: 'p-phone', phoneNumber: '+5491111111111' })]);
-
-    const person = await findOrCreatePerson({
-      name: 'John Doe',
-      phoneNumber: '+54 9 11 1111-1111',
-      email: 'new@example.com',
-    });
-
-    expect(person.id).toBe('p-phone');
-    expect(selectResults).toHaveLength(0);
-  });
-
-  it('creates a fresh identity on email miss without name-based reuse', async () => {
-    // Two selects (email, phone) both miss; creation must follow immediately.
-    selectResults.push([], []);
+  it('creates a fresh identity on email miss without phone or name reuse', async () => {
+    // Email miss must not fall back to phone even when a phone owner exists.
+    selectResults.push([]);
     insertedRows.push([
       personRow({ id: 'p-new', email: 'jhondoe@gmail.com', phoneNumber: '+5491122222222' }),
     ]);

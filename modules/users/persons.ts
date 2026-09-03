@@ -113,11 +113,12 @@ export async function searchPersons(query: string, limit = 8): Promise<PersonRec
  * Single dedupe entry point shared by staff intake and checkout.
  *
  * Precedence: a provided email is the strongest key — an email hit wins,
- * and an email miss creates a fresh identity WITHOUT falling back to the
- * name heuristic, so `jhon_doe@x` and `jhondoe@x` never merge. Next, a
- * normalized-phone match always wins (same phone = same human). Without
- * email or phone, an exact-name record-only person may be reused;
- * otherwise a new record-only person (null passwordHash) is created.
+ * and an email miss creates a fresh identity WITHOUT falling back to phone
+ * or name, so `jhon_doe@x` and `jhondoe@x` never merge and a new email with
+ * another person's phone cannot hijack that phone's identity. Without an
+ * email, a normalized-phone match wins (same phone = same human). Without
+ * email or phone, an exact-name record-only person may be reused; otherwise
+ * a new record-only person (null passwordHash) is created.
  *
  * Name-only reuse is deliberately conservative to avoid attaching orders to
  * the wrong real account — duplicates get merged by the directory tool.
@@ -132,9 +133,7 @@ export async function findOrCreatePerson(input: PersonInput): Promise<PersonReco
   if (normalizedEmail) {
     const byEmail = await findPersonByEmail(normalizedEmail);
     if (byEmail) return byEmail;
-  }
-
-  if (normalizedPhone) {
+  } else if (normalizedPhone) {
     const existing = await findPersonByPhone(normalizedPhone);
     if (existing) return existing;
   }
@@ -159,14 +158,14 @@ export async function findOrCreatePerson(input: PersonInput): Promise<PersonReco
     return toPersonRecord(created);
   } catch (error) {
     // A concurrent insert raced the partial unique indexes on phone_number
-    // or email; the winner of that race is the person we wanted all along.
+    // or email. When the caller supplied an email, only the email winner is
+    // relevant — do not fall back to the phone owner after an email miss.
     if (isUniqueViolation(error)) {
-      if (normalizedPhone) {
-        const raced = await findPersonByPhone(normalizedPhone);
-        if (raced) return raced;
-      }
       if (normalizedEmail) {
         const raced = await findPersonByEmail(normalizedEmail);
+        if (raced) return raced;
+      } else if (normalizedPhone) {
+        const raced = await findPersonByPhone(normalizedPhone);
         if (raced) return raced;
       }
     }

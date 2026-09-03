@@ -17,33 +17,33 @@ const orderItemSchema = z.object({
   quantity: z.number().int().min(1),
 });
 
-// `total` is accepted (optional) for backward compatibility with existing
-// clients but never trusted — the amount is recomputed server-side.
-const submitOrderSchema = z
-  .object({
-    items: z.array(orderItemSchema).min(1, 'Order must contain at least one item'),
-    total: z.string().optional(),
-    person: z.object({
-      fullName: z.string().trim().min(1).max(120),
-      phoneNumber: z.string().trim().min(5).max(40),
-      email: z.string().trim().email().max(120).optional(),
-    }),
-    orderType: z.enum([ORDER_TYPE.PICKUP, ORDER_TYPE.DELIVERY]).default(ORDER_TYPE.PICKUP),
-    paymentMethod: z
-      .enum([PAYMENT_METHOD.CASH, PAYMENT_METHOD.CARD, PAYMENT_METHOD.ONLINE])
-      .default(PAYMENT_METHOD.ONLINE),
-    deliveryAddress: z.string().trim().max(500).optional(),
-    deliveryNotes: z.string().trim().max(500).optional(),
-  })
-  .superRefine((value, ctx) => {
-    if (value.orderType === ORDER_TYPE.DELIVERY && !value.deliveryAddress) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Delivery address is required for delivery orders',
-        path: ['deliveryAddress'],
-      });
-    }
-  });
+function getSubmitOrderSchema(t: (key: string) => string) {
+  return z
+    .object({
+      items: z.array(orderItemSchema).min(1, t('errors.itemsRequired')),
+      total: z.string().optional(),
+      person: z.object({
+        fullName: z.string().trim().min(1, t('errors.fullNameRequired')).max(120),
+        phoneNumber: z.string().trim().min(5, t('errors.phoneRequired')).max(40),
+        email: z.string().trim().email().max(120).optional(),
+      }),
+      orderType: z.enum([ORDER_TYPE.PICKUP, ORDER_TYPE.DELIVERY]).default(ORDER_TYPE.PICKUP),
+      paymentMethod: z
+        .enum([PAYMENT_METHOD.CASH, PAYMENT_METHOD.CARD, PAYMENT_METHOD.ONLINE])
+        .default(PAYMENT_METHOD.ONLINE),
+      deliveryAddress: z.string().trim().max(500).optional(),
+      deliveryNotes: z.string().trim().max(500).optional(),
+    })
+    .superRefine((value, ctx) => {
+      if (value.orderType === ORDER_TYPE.DELIVERY && !value.deliveryAddress) {
+        ctx.addIssue({
+          code: 'custom',
+          message: t('errors.deliveryAddressRequired'),
+          path: ['deliveryAddress'],
+        });
+      }
+    });
+}
 
 /**
  * Places an order for anyone — no account required (guest checkout).
@@ -63,9 +63,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    const t = await getTranslations('Orders');
     const body = await request.json();
     const { items, person, orderType, paymentMethod, deliveryAddress, deliveryNotes } =
-      submitOrderSchema.parse(body);
+      getSubmitOrderSchema(t).parse(body);
 
     // A signed-in buyer keeps their account identity; anyone else becomes a
     // deduped guest person (null passwordHash) through the shared service.
@@ -93,7 +94,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (!order) {
-      const t = await getTranslations('Orders');
       return apiError(ERROR_CODES.INTERNAL_ERROR, t('errors.createOrderError'), { status: 500 });
     }
 
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('Order submission failed');
-    const t = await getTranslations('Orders');
-    return apiError(ERROR_CODES.INTERNAL_ERROR, t('errors.createOrderError'), { status: 500 });
+    const te = await getTranslations('Orders');
+    return apiError(ERROR_CODES.INTERNAL_ERROR, te('errors.createOrderError'), { status: 500 });
   }
 }
