@@ -47,6 +47,23 @@
         "errorDescription": "No se pudo registrar tu pedido.",
         "actionText": "Reintentar"
       },
+      "checkout": {
+        "title": "Datos de contacto y entrega",
+        "orderType": "¿Cómo querés tu pedido?",
+        "pickup": "Retiro en el local",
+        "delivery": "Envío a domicilio",
+        "fullName": "Nombre y Apellido",
+        "phone": "Teléfono",
+        "email": "Email",
+        "emailOptional": "Email (opcional)",
+        "address": "Dirección de envío",
+        "notes": "Notas del envío"
+      },
+      "accountNudge": {
+        "title": "¿Querés seguir este pedido?",
+        "description": "Creá tu cuenta — tus datos ya están cargados, solo falta la contraseña.",
+        "cta": "Crear cuenta"
+      },
       "handlePayToast": {
         "errorTitle": "Error de Pago",
         "errorDescription": "Hubo un error al procesar el pago"
@@ -59,10 +76,15 @@
         "invalidUserId": "ID de usuario inválido",
         "totalNonEmpty": "El total no puede estar vacío"
       },
-      "errors": {
-        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+    "errors": {
+        "createItemError": "Error al crear el ítem para el pedido {orderId}.",
         "noUsers": "No se encontraron usuarios en la base de datos.",
         "createOrderError": "No se pudo crear el pedido.",
+        "rateLimited": "Demasiados intentos de pedido. Intentá nuevamente más tarde.",
+        "fullNameRequired": "El nombre completo es obligatorio",
+        "phoneRequired": "El teléfono es obligatorio",
+        "deliveryAddressRequired": "La dirección de envío es obligatoria para pedidos con entrega",
+        "itemsRequired": "El pedido debe contener al menos un producto",
         "invalidStatus": "Estado inválido",
         "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
         "orderNotFound": "Pedido no encontrado",

@@ -5,11 +5,24 @@ import { db } from '@/db/drizzle';
 import { orderItem, orders, orderStatusHistory } from '@/db/schema';
 import { getOrderSchemas, validateData } from '@/modules/orders/helpers';
 import { computeOrderTotal } from '@/modules/orders/pricing';
-import { ORDER_STATUS, type NewOrderRequestItem } from '@/modules/orders/types';
+import {
+  ORDER_STATUS,
+  ORDER_TYPE,
+  PAYMENT_METHOD,
+  type NewOrderRequestItem,
+  type OrderType,
+  type PaymentMethod,
+} from '@/modules/orders/types';
 
 export interface CreateOrderInput {
   userId: string;
   items: NewOrderRequestItem[];
+  orderType?: OrderType;
+  paymentMethod?: PaymentMethod;
+  contactName?: string | null;
+  contactPhone?: string | null;
+  deliveryAddress?: string | null;
+  deliveryNotes?: string | null;
 }
 
 export interface CreatedOrder {
@@ -17,6 +30,7 @@ export interface CreatedOrder {
   userId: string;
   total: string;
   status: typeof ORDER_STATUS.PENDING;
+  orderType: OrderType;
 }
 
 /**
@@ -38,12 +52,22 @@ export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder
       total,
     });
 
+    const orderType = input.orderType ?? ORDER_TYPE.PICKUP;
+    const paymentMethod = input.paymentMethod ?? PAYMENT_METHOD.ONLINE;
+    const isDelivery = orderType === ORDER_TYPE.DELIVERY;
+
     const orderId = crypto.randomUUID();
     await db.batch([
       db.insert(orders).values({
         id: orderId,
         userId: validatedNewOrder.userId,
         total: validatedNewOrder.total,
+        orderType,
+        paymentMethod,
+        contactName: input.contactName ?? '',
+        contactPhone: input.contactPhone ?? '',
+        deliveryAddress: isDelivery ? (input.deliveryAddress ?? '') : '',
+        deliveryNotes: isDelivery ? (input.deliveryNotes?.trim() ?? '') : '',
       }),
       db.insert(orderStatusHistory).values({
         orderId,
@@ -66,6 +90,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder
       userId: validatedNewOrder.userId,
       total: validatedNewOrder.total,
       status: ORDER_STATUS.PENDING,
+      orderType,
     };
   } catch {
     console.error('Order creation failed');

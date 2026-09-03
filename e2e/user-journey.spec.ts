@@ -79,6 +79,11 @@ test.describe('Complete User Journey', () => {
     });
 
     await test.step('Submit the order', async () => {
+      // Contact details are required at checkout; fill them explicitly so
+      // the step is deterministic regardless of session-prefill timing.
+      await page.getByLabel('Full name').fill(testUser.name);
+      await page.getByLabel('Phone number').fill('+54 9 11 5555-5555');
+
       await page.getByRole('button', { name: 'Confirm order' }).click();
 
       // The order is registered and the cart is cleared
@@ -96,10 +101,14 @@ test.describe('Complete User Journey', () => {
   });
 
   test('unauthenticated user cannot access protected routes', async ({ page }) => {
-    for (const path of ['/dashboard', '/profile', '/order', '/products']) {
+    for (const path of ['/dashboard', '/profile', '/products']) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login/);
     }
+
+    // /order is public by design — guests can browse the cart and buy.
+    await page.goto('/order');
+    await expect(page.getByText("You don't have any products in your order")).toBeVisible();
   });
 
   test('error handling for invalid registration', async ({ page }) => {

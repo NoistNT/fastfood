@@ -1,5 +1,7 @@
 'use client';
 
+import type { CheckoutDetails } from '@/modules/orders/types';
+
 import { useEffect, useState, useCallback } from 'react';
 
 import { useToast } from '@/modules/core/hooks/use-toast';
@@ -9,6 +11,7 @@ interface OfflineOrder {
   id: string;
   items: unknown[];
   total: string;
+  details?: CheckoutDetails;
   timestamp: number;
   status: 'pending' | 'syncing' | 'failed';
 }
@@ -27,8 +30,17 @@ export function useOfflineOrders() {
     try {
       const stored = localStorage.getItem(OFFLINE_ORDERS_KEY);
       if (stored) {
-        const orders = JSON.parse(stored);
-        setOfflineOrders(orders);
+        const parsed = JSON.parse(stored) as unknown[];
+        const validOrders = (Array.isArray(parsed) ? parsed : []).filter(
+          (order): order is OfflineOrder =>
+            typeof order === 'object' &&
+            order !== null &&
+            'id' in order &&
+            'items' in order &&
+            'total' in order &&
+            Array.isArray((order as OfflineOrder).items)
+        );
+        setOfflineOrders(validOrders);
       }
     } catch (_error) {
       if (process.env.NODE_ENV === 'development') {
@@ -51,11 +63,12 @@ export function useOfflineOrders() {
 
   // Add order to offline queue
   const addOfflineOrder = useCallback(
-    (orderData: { items: unknown[]; total: string }) => {
+    (orderData: { items: unknown[]; total: string; details?: CheckoutDetails }) => {
       const offlineOrder: OfflineOrder = {
         id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         items: orderData.items,
         total: orderData.total,
+        details: orderData.details,
         timestamp: Date.now(),
         status: 'pending',
       };
@@ -109,6 +122,14 @@ export function useOfflineOrders() {
           body: JSON.stringify({
             items: order.items,
             total: order.total,
+            ...(order.details
+              ? {
+                  person: order.details.person,
+                  orderType: order.details.orderType,
+                  deliveryAddress: order.details.deliveryAddress,
+                  deliveryNotes: order.details.deliveryNotes,
+                }
+              : {}),
           }),
         });
 
@@ -170,6 +191,14 @@ export function useOfflineOrders() {
           body: JSON.stringify({
             items: order.items,
             total: order.total,
+            ...(order.details
+              ? {
+                  person: order.details.person,
+                  orderType: order.details.orderType,
+                  deliveryAddress: order.details.deliveryAddress,
+                  deliveryNotes: order.details.deliveryNotes,
+                }
+              : {}),
           }),
         });
 

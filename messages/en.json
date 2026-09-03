@@ -47,6 +47,23 @@
         "errorDescription": "Your order could not be registered.",
         "actionText": "Try again"
       },
+      "checkout": {
+        "title": "Contact & delivery details",
+        "orderType": "How do you want your order?",
+        "pickup": "Pickup at the shop",
+        "delivery": "Delivery",
+        "fullName": "Full name",
+        "phone": "Phone number",
+        "email": "Email",
+        "emailOptional": "Email (optional)",
+        "address": "Delivery address",
+        "notes": "Delivery notes"
+      },
+      "accountNudge": {
+        "title": "Want to track this order?",
+        "description": "Create an account — your details are already loaded, just add a password.",
+        "cta": "Create account"
+      },
       "handlePayToast": {
         "errorTitle": "Payment Error",
         "errorDescription": "There was an error processing your payment."
@@ -63,6 +80,11 @@
         "createItemError": "Error creating item for order {orderId}.",
         "noUsers": "No users found in the database.",
         "createOrderError": "Order could not be created.",
+        "rateLimited": "Too many order attempts. Try again later.",
+        "fullNameRequired": "Full name is required",
+        "phoneRequired": "Phone number is required",
+        "deliveryAddressRequired": "Delivery address is required for delivery orders",
+        "itemsRequired": "Order must contain at least one item",
         "invalidStatus": "Invalid status",
         "noOrders": "No orders found. Please try again later or contact support.",
         "orderNotFound": "Order not found",
