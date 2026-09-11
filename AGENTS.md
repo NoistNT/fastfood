@@ -125,6 +125,8 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - Playwright boots its own server via `webServer` config (seeded DB if present, mock DB fallback); visual tests are Chromium-only, manual `workflow_dispatch`
 - Lint/format: `pnpm lint` = ESLint + `tsc --noEmit` (strict; `consistent-type-imports`; `import/order`; scoped `no-console`); Prettier 100-width single quotes; `pnpm format` autofixes
 - CI order mirrors gates then E2E: lint → test:run → build → start → wait-on → chromium; Dependabot, CodeQL, CodeRabbit, weekly audit run automatically (Dependabot PRs skip preview deploys — secrets are withheld from that actor)
-- Logging: no logger/Sentry (privacy) — `console.error` without PII; never log bodies, tokens, or user agents
+- Logging: no logger/Sentry (privacy) — `logError()` allowlist in `lib/log-error.ts`;
+  correlation IDs (order/tracking/ingredient) and curated messages required;
+  never log PII, bodies, tokens, or user agents
 - Env: production requires `DB_URL` `NEXT_PUBLIC_BASE_URL` `SESSION_SECRET` `MP_ACCESS_TOKEN`; optional Redis/Resend keys. All locations & rotation: [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md) — read before any env work
 - Deploy: preview on PR, production on push to `main` (install: `pnpm install --frozen-lockfile`); API routes cap at 30s

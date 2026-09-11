@@ -2,6 +2,7 @@ import { eq, sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { inventory, productIngredients, inventoryMovements, orderItem } from '@/db/schema';
+import { errorMessage, logError } from '@/lib/log-error';
 
 export interface InventoryShortfall {
   ingredientId: number;
@@ -56,8 +57,11 @@ export async function deductInventoryForOrder(orderId: string): Promise<DeductIn
     }
 
     return { shortfalls };
-  } catch {
-    console.error('Order inventory deduction failed');
+  } catch (error) {
+    logError('inventory', 'Order inventory deduction failed', {
+      orderId,
+      cause: errorMessage(error),
+    });
     throw new Error('Inventory deduction failed');
   }
 }
@@ -105,8 +109,11 @@ async function deductStock(
     }
 
     return null;
-  } catch {
-    console.error('Ingredient stock deduction failed', { ingredientId });
+  } catch (error) {
+    logError('inventory', 'Ingredient stock deduction failed', {
+      ingredientId,
+      cause: errorMessage(error),
+    });
     throw new Error('Inventory stock deduction failed');
   }
 }

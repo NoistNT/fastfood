@@ -7,6 +7,7 @@ import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/request-ip';
 import { paymentCircuitBreaker } from '@/lib/circuit-breaker';
+import { errorMessage, logError } from '@/lib/log-error';
 import { db } from '@/db/drizzle';
 import { orders } from '@/db/schema';
 import { ORDER_STATUS } from '@/modules/orders/types';
@@ -90,7 +91,9 @@ export async function POST(req: Request) {
     if (error instanceof z.ZodError) {
       return apiError(ERROR_CODES.VALIDATION_ERROR, 'Invalid order ID', { status: 400 });
     }
-    console.error('Payment preference creation failed');
+    logError('payment', 'Payment preference creation failed', {
+      cause: errorMessage(error),
+    });
     return apiError(ERROR_CODES.EXTERNAL_SERVICE_ERROR, 'Failed to create payment', {
       status: 500,
     });
