@@ -14,6 +14,10 @@ if (!dbUrl) {
   throw new Error('SHOWCASE_DB_URL is not set — refusing to run without an explicit target');
 }
 
+// Forensics, not credentials: log which host we are about to reset so a
+// misconfigured secret is visible in the run log before anything runs.
+console.log(`reseed target host: ${new URL(dbUrl).hostname}`);
+
 const sql = neon(dbUrl);
 
 function statements(file: string): string[] {
@@ -26,6 +30,7 @@ function statements(file: string): string[] {
 
 for (const file of ['scripts/sql/dev-reset.sql', 'scripts/sql/dev-seed-minimal.sql']) {
   const parts = statements(file);
+  const codes: string[] = [];
   for (const part of parts) {
     const code = part
       .split('\n')
@@ -33,8 +38,11 @@ for (const file of ['scripts/sql/dev-reset.sql', 'scripts/sql/dev-seed-minimal.s
       .join('\n')
       .trim();
     if (!code || /^BEGIN;?$/i.test(code) || /^COMMIT;?$/i.test(code)) continue;
-    await sql.query(code);
+    codes.push(code);
   }
+  // One non-interactive transaction: a mid-sequence failure rolls everything
+  // back instead of leaving a half-reset database behind.
+  await sql.transaction((txn) => codes.map((code) => txn.query(code)));
   console.log(`applied ${file}`);
 }
 

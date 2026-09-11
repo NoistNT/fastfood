@@ -134,7 +134,7 @@ test.describe('Complete User Journey', () => {
     await test.step('Sign in as a seeded customer', async () => {
       await page.goto('/login');
       await page.getByLabel('Email').fill('jane.smith@example.com');
-      await page.getByLabel('Password', { exact: true }).fill('P4$$W0rD');
+      await page.getByLabel('Password', { exact: true }).fill('StaffDemo2026');
       await page.locator('form').getByRole('button', { name: 'Sign In' }).click();
       await page.waitForURL('/', { timeout: 10000 });
     });
