@@ -86,18 +86,38 @@ export async function POST(request: NextRequest) {
     if (typeof body.claimToken === 'string' && body.claimToken) {
       const personId = await consumeClaimToken(body.claimToken);
       if (personId) {
-        const [adopted] = await db
-          .update(users)
-          .set({
-            passwordHash,
-            email: sql`COALESCE(${users.email}, ${email})`,
-            updatedAt: new Date(),
+        const [person] = await db
+          .select({
+            email: users.email,
+            passwordHash: users.passwordHash,
+            deletedAt: users.deletedAt,
           })
-          .where(and(eq(users.id, personId), isNull(users.passwordHash), isNull(users.deletedAt)))
-          .returning();
-        if (adopted) {
-          const adoptedUser: UserWithRoles = { ...adopted, roles: [] };
-          return apiSuccess({ user: adoptedUser }, { status: 201 });
+          .from(users)
+          .where(eq(users.id, personId))
+          .limit(1);
+        // Adopt only when the submitted email matches (or the person has
+        // none): binding credentials to a row unreachable by the login
+        // email would brick the account. Mismatches fall through below —
+        // the spent token stays spent (single-use must hold regardless).
+        const emailMatches =
+          person &&
+          !person.passwordHash &&
+          !person.deletedAt &&
+          (!person.email || person.email.toLowerCase() === email.toLowerCase());
+        if (emailMatches) {
+          const [adopted] = await db
+            .update(users)
+            .set({
+              passwordHash,
+              email: sql`COALESCE(${users.email}, ${email})`,
+              updatedAt: new Date(),
+            })
+            .where(and(eq(users.id, personId), isNull(users.passwordHash), isNull(users.deletedAt)))
+            .returning();
+          if (adopted) {
+            const adoptedUser: UserWithRoles = { ...adopted, roles: [] };
+            return apiSuccess({ user: adoptedUser }, { status: 201 });
+          }
         }
       }
     }

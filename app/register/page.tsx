@@ -67,6 +67,7 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     reset,
+    getValues,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -87,10 +88,16 @@ export default function RegisterPage() {
         const person = data?.data?.person;
         if (!person) return;
         setClaimToken(token);
+        // Fill only untouched fields — never overwrite what the user
+        // already typed while the preview was in flight.
+        const current = getValues();
         reset({
-          ...(person.name ? { name: person.name } : {}),
-          ...(person.email ? { email: person.email } : {}),
-          ...(person.phoneNumber ? { phoneNumber: person.phoneNumber } : {}),
+          ...current,
+          ...(current.name || !person.name ? {} : { name: person.name }),
+          ...(current.email || !person.email ? {} : { email: person.email }),
+          ...(current.phoneNumber || !person.phoneNumber
+            ? {}
+            : { phoneNumber: person.phoneNumber }),
         });
       })
       .catch(() => undefined);

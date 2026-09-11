@@ -240,6 +240,19 @@ describe('/api/auth/register', () => {
 
       mockConsumeClaimToken.mockResolvedValue('550e8400-e29b-41d4-a716-446655440099');
 
+      mockDb.select.mockReturnValueOnce({
+        // Token person lookup — record-only row with a matching email
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue([
+                { email: 'guest@example.com', passwordHash: null, deletedAt: null },
+              ]),
+          }),
+        }),
+      } as any);
+
       mockDb.update.mockReturnValueOnce({
         set: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
@@ -279,6 +292,50 @@ describe('/api/auth/register', () => {
       } as any);
 
       mockConsumeClaimToken.mockResolvedValue(null);
+
+      const request = new NextRequest('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'John Doe',
+          email: 'user@example.com',
+          password: 'Password123',
+          confirmPassword: 'Password123',
+          claimToken: 'f'.repeat(64),
+        }),
+      });
+
+      const response = await register(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(result.success).toBe(true);
+      expect(mockDb.insert).toHaveBeenCalled();
+    });
+
+    it('should fall back to match-claim when the token email differs', async () => {
+      mockDb.select.mockReturnValueOnce({
+        // Check existing user by email — none owns it
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      } as any);
+
+      mockConsumeClaimToken.mockResolvedValue('550e8400-e29b-41d4-a716-446655440099');
+
+      mockDb.select.mockReturnValueOnce({
+        // Token person carries a different email — must not adopt
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi
+              .fn()
+              .mockResolvedValue([
+                { email: 'other@example.com', passwordHash: null, deletedAt: null },
+              ]),
+          }),
+        }),
+      } as any);
 
       const request = new NextRequest('http://localhost:3000/api/auth/register', {
         method: 'POST',
