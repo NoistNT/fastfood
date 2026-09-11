@@ -23,7 +23,8 @@ type CustomerWithRoles = {
 export const createColumns = (
   t: (key: string) => string,
   tTable?: (key: string) => string,
-  onEdit?: (user: CustomerWithRoles) => void
+  onEdit?: (user: CustomerWithRoles) => void,
+  onMerge?: (user: CustomerWithRoles) => void
 ): ColumnDef<DataTableFeatures, CustomerWithRoles>[] => [
   {
     accessorKey: 'name',
@@ -131,6 +132,7 @@ export const createColumns = (
       <CustomerActionsCell
         user={row.original}
         onEdit={onEdit}
+        onMerge={onMerge}
       />
     ),
   },

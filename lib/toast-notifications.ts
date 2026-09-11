@@ -58,6 +58,8 @@ export const toastNotifications = {
       }),
     customerDeleted: () =>
       toast({ title: 'Customer deleted', description: 'The customer has been deleted.' }),
+    customerMerged: () =>
+      toast({ title: 'Customers merged', description: 'The duplicate was merged successfully.' }),
     roleUpdated: () =>
       toast({ title: 'Role updated', description: 'The customer role has been updated.' }),
 
