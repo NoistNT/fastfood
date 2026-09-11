@@ -66,12 +66,24 @@ describe('route protection matrix', () => {
     const session = sessionWith('customer');
     await expectRedirect('/dashboard', session, '/forbidden');
     await expectRedirect('/dashboard/orders', session, '/forbidden');
+    await expectRedirect('/dashboard/reports', session, '/forbidden');
   });
 
-  it('admits admin and staff everywhere under /dashboard', async () => {
+  it('admits admin and staff to the shared dashboard surfaces', async () => {
     await expectPassThrough('/dashboard', sessionWith('admin'));
     await expectPassThrough('/dashboard', sessionWith('staff'));
     await expectPassThrough('/dashboard/orders', sessionWith('staff'));
-    await expectPassThrough('/dashboard/customers', sessionWith('admin', 'staff'));
+    await expectPassThrough('/dashboard/orders/new', sessionWith('staff'));
+    await expectPassThrough('/dashboard/products', sessionWith('staff'));
+    await expectPassThrough('/dashboard/inventory', sessionWith('staff'));
+  });
+
+  it('reserves reports and customers for admin', async () => {
+    await expectPassThrough('/dashboard/reports', sessionWith('admin'));
+    await expectPassThrough('/dashboard/customers', sessionWith('admin'));
+    await expectPassThrough('/dashboard/customers/abc', sessionWith('admin'));
+    await expectRedirect('/dashboard/reports', sessionWith('staff'), '/forbidden');
+    await expectRedirect('/dashboard/customers', sessionWith('staff'), '/forbidden');
+    await expectRedirect('/dashboard/customers/abc', sessionWith('staff'), '/forbidden');
   });
 });

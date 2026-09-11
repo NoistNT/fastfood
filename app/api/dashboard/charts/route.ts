@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { orders } from '@/db/schema';
-import { getSession } from '@/lib/auth/session';
+import { requireOperationalRole } from '@/lib/auth/guards';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 // Helper to handle database errors gracefully
@@ -31,10 +31,15 @@ const handleDatabaseError = (error: unknown, defaultMessage: string) => {
 
 export async function GET(request: Request) {
   try {
-    // Check authentication
-    const user = await getSession();
-    if (!user) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    // Staff-visible aggregates (dashboard home + reports share this feed);
+    // operational role required, owners-only pages fence above this layer.
+    const guard = await requireOperationalRole();
+    if (!guard.ok) {
+      return apiError(
+        guard.reason === 'forbidden' ? ERROR_CODES.FORBIDDEN : ERROR_CODES.UNAUTHORIZED,
+        guard.reason === 'forbidden' ? 'Forbidden' : 'Authentication required',
+        { status: guard.reason === 'forbidden' ? 403 : 401 }
+      );
     }
 
     const { searchParams } = new URL(request.url);

@@ -89,6 +89,21 @@ describe('/api/dashboard/charts', () => {
       expect(result.error.code).toBe('UNAUTHORIZED');
     });
 
+    it('should return 403 for civilians without an operational role', async () => {
+      mockGetSession.mockResolvedValue({
+        ...mockUser,
+        roles: [{ id: 2, name: 'customer', description: 'Customer' }],
+      });
+
+      const request = new Request('http://localhost:3000/api/dashboard/charts');
+      const response = await getCharts(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(result.success).toBe(false);
+      expect(result.error.code).toBe('FORBIDDEN');
+    });
+
     it('should return chart data for default period (30d)', async () => {
       const mockRevenueData = [
         { date: '2024-01-01', revenue: 150.5, orderCount: 3 },

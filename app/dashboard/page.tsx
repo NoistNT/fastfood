@@ -4,6 +4,7 @@ import { ClipboardList, Package, Users } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
+import { getSession } from '@/lib/auth/session';
 import {
   DashboardCardSkeleton,
   ChartSkeleton,
@@ -34,6 +35,8 @@ const RecentOrders = lazy(() =>
 
 export default async function DashboardOverview() {
   const t = await getTranslations('Features.dashboard.overview');
+  const session = await getSession();
+  const isAdmin = session?.roles.some((role) => role.name === 'admin') ?? false;
 
   return (
     <div className="space-y-6">
@@ -118,18 +121,20 @@ export default async function DashboardOverview() {
               </div>
               <ClipboardList className="h-6 w-6 text-primary" />
             </Link>
-            <Link
-              href="/dashboard/customers"
-              className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
-            >
-              <div>
-                <h3 className="font-medium">{t('quickActions.customers.title')}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('quickActions.customers.description')}
-                </p>
-              </div>
-              <Users className="h-6 w-6 text-primary" />
-            </Link>
+            {isAdmin && (
+              <Link
+                href="/dashboard/customers"
+                className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
+              >
+                <div>
+                  <h3 className="font-medium">{t('quickActions.customers.title')}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {t('quickActions.customers.description')}
+                  </p>
+                </div>
+                <Users className="h-6 w-6 text-primary" />
+              </Link>
+            )}
             <Link
               href="/dashboard/products"
               className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
