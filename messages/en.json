@@ -387,6 +387,24 @@
             "edit": "Edit",
             "adjustStock": "Adjust Stock",
             "delete": "Delete"
+          },
+          "form": {
+            "titleCreate": "Add ingredient",
+            "description": "New ingredients start with zero stock. Set the starting threshold here.",
+            "name": "Name",
+            "nameRequired": "Name is required",
+            "unit": "Unit",
+            "unitRequired": "Unit is required",
+            "unitPlaceholder": "kg, loaves, liters…",
+            "price": "Price",
+            "pricePlaceholder": "2.00",
+            "priceInvalid": "Price must be a valid non-negative number",
+            "threshold": "Minimum threshold",
+            "thresholdInvalid": "Threshold must be zero or more",
+            "save": "Save ingredient",
+            "saving": "Saving…",
+            "cancel": "Cancel",
+            "saveFailed": "Could not save the ingredient."
           }
         }
       }

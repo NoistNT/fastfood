@@ -45,6 +45,11 @@ export const toastNotifications = {
         title: 'Inventory updated',
         description: 'Inventory has been updated successfully.',
       }),
+    ingredientCreated: () =>
+      toast({
+        title: 'Ingredient added',
+        description: 'The ingredient has been added with zero stock.',
+      }),
     stockAlertResolved: () =>
       toast({ title: 'Alert resolved', description: 'The stock alert has been resolved.' }),
 
