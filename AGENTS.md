@@ -32,6 +32,10 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   has it — default to the current official recommendation of each library
   (e.g., `asChild` slot composition instead of nested interactive elements);
   when you find an anti-pattern, propose the upgrade
+- **Review before proposing**: treat every finding — CodeRabbit's, yours,
+  anyone's — as unverified until checked against current code. Fix only
+  still-valid issues with minimal diffs; record skipped findings with a
+  one-line reason
 - Finish every change with the quality gates before reporting done:
   `pnpm lint` → `pnpm test:run` → `pnpm build`
 - Keep diffs minimal and scoped to what was agreed

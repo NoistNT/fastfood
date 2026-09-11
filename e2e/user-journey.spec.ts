@@ -86,8 +86,9 @@ test.describe('Complete User Journey', () => {
 
       await page.getByRole('button', { name: 'Confirm order' }).click();
 
-      // The order is registered and the cart is cleared
-      await expect(page.getByText("You don't have any products in your order")).toBeVisible({
+      // The order is registered, the cart is cleared, and the success
+      // state offers online payment for the placed order.
+      await expect(page.getByRole('button', { name: /Checkout · \$/ })).toBeVisible({
         timeout: 20000,
       });
     });

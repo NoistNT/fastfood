@@ -33,7 +33,6 @@
         }
       },
       "submitOrder": {
-        "redirecting": "Redirigiendo...",
         "checkout": "Pagar",
         "cancel": "Cancelar pedido",
         "addMore": "Agregar más productos",
