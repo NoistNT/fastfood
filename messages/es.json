@@ -387,6 +387,24 @@
             "edit": "Editar",
             "adjustStock": "Ajustar Stock",
             "delete": "Eliminar"
+          },
+          "form": {
+            "titleCreate": "Agregar ingrediente",
+            "description": "Los ingredientes nuevos empiezan con stock cero. Definí el umbral inicial acá.",
+            "name": "Nombre",
+            "nameRequired": "El nombre es obligatorio",
+            "unit": "Unidad",
+            "unitRequired": "La unidad es obligatoria",
+            "unitPlaceholder": "kg, panes, litros…",
+            "price": "Precio",
+            "pricePlaceholder": "2.00",
+            "priceInvalid": "El precio debe ser un número válido no negativo",
+            "threshold": "Umbral mínimo",
+            "thresholdInvalid": "El umbral debe ser cero o más",
+            "save": "Guardar ingrediente",
+            "saving": "Guardando…",
+            "cancel": "Cancelar",
+            "saveFailed": "No se pudo guardar el ingrediente."
           }
         }
       }

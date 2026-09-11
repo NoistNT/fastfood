@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Download } from 'lucide-react';
 
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
@@ -24,6 +25,7 @@ import { Badge } from '@/modules/core/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { useInventory } from '@/modules/core/hooks/use-api-cache';
 import { exportToCSV } from '@/lib/utils';
+import { IngredientFormDialog } from '@/modules/dashboard/components/ingredient-form-dialog';
 
 interface InventoryItem {
   id: string;
@@ -38,6 +40,7 @@ interface InventoryItem {
 export function InventoryTable() {
   const t = useTranslations('Features.dashboard.inventory');
   const { data, isPending, isError } = useInventory();
+  const [dialogOpen, setDialogOpen] = useState(false);
   const items: InventoryItem[] = ((data?.data ?? []) as InventoryItem[]).map((item) => {
     let status: 'normal' | 'low' | 'out' = 'normal';
     if (item.quantity === 0) {
@@ -100,7 +103,7 @@ export function InventoryTable() {
               <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>
-            <Button>
+            <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               {t('inventoryTable.addItem')}
             </Button>
@@ -183,6 +186,10 @@ export function InventoryTable() {
           </TableBody>
         </Table>
       </CardContent>
+      <IngredientFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </Card>
   );
 }
