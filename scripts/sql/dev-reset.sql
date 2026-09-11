@@ -58,7 +58,8 @@ CREATE TABLE public.roles (
 
 CREATE TABLE public.user_roles (
   "user_id" uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  "role_id" integer NOT NULL REFERENCES public.roles(id) ON DELETE CASCADE
+  "role_id" integer NOT NULL REFERENCES public.roles(id) ON DELETE CASCADE,
+  CONSTRAINT user_roles_user_id_role_id_unique UNIQUE("user_id", "role_id")
 );
 
 CREATE TABLE public.addresses (

@@ -263,6 +263,7 @@
           "loser": "Duplicate to retire",
           "ordersMoving": "Orders moving",
           "rolesGranting": "Roles granted",
+          "tokensInvalidated": "Claim links retired",
           "fieldsFilling": "Fields filled",
           "none": "None",
           "confirm": "Merge duplicate",

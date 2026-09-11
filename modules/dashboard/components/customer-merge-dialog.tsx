@@ -32,6 +32,7 @@ interface MergePreview {
   loser: { id: string; name: string };
   ordersMoving: number;
   rolesGranting: string[];
+  tokensInvalidated: number;
   fieldsFilling: string[];
 }
 
@@ -110,7 +111,10 @@ export function CustomerMergeDialog({
 
   const loadPreview = async (candidate: MergeCandidate) => {
     if (!loser) return;
+    // Invalidate the displayed preview immediately: the confirm button
+    // must never submit a new winner against the previous winner's numbers.
     setWinner(candidate);
+    setPreview(null);
     setLoadingPreview(true);
     try {
       const response = await fetch(
@@ -237,6 +241,10 @@ export function CustomerMergeDialog({
                   </dd>
                 </div>
                 <div className="flex justify-between">
+                  <dt className="text-muted-foreground">{t('tokensInvalidated')}</dt>
+                  <dd className="font-medium">{preview.tokensInvalidated}</dd>
+                </div>
+                <div className="flex justify-between">
                   <dt className="text-muted-foreground">{t('fieldsFilling')}</dt>
                   <dd className="font-medium">
                     {preview.fieldsFilling.length > 0
@@ -263,14 +271,14 @@ export function CustomerMergeDialog({
           <Button
             type="button"
             variant="secondary"
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
           >
             {t('cancel')}
           </Button>
           <Button
             type="button"
             variant="default"
-            disabled={!preview || isMerging}
+            disabled={!preview || isMerging || loadingPreview}
             onClick={handleMerge}
           >
             {isMerging ? (

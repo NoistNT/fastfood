@@ -26,15 +26,23 @@ function makeSelectBuilder(rows: unknown[]) {
 vi.mock('@/db/drizzle', () => ({
   db: {
     select: () => makeSelectBuilder(selectQueues.shift() ?? []),
-    insert: () => ({ values: () => ({}) }),
-    update: () => ({ set: () => ({ where: () => ({}) }) }),
-    delete: () => ({ where: () => ({}) }),
+    insert: (table: unknown) => ({
+      values: () => ({ table, op: 'insert', onConflictDoNothing: () => ({ table, op: 'insert' }) }),
+    }),
+    update: (table: unknown) => ({
+      set: () => ({ where: () => ({ table, op: 'update' }) }),
+    }),
+    delete: (table: unknown) => ({
+      where: () => ({ table, op: 'delete' }),
+    }),
     batch: async (statements: unknown[]) => {
       batchedStatements.push(statements);
       return [];
     },
   },
 }));
+
+import { orders, users, userRoles, claimTokens } from '@/db/schema';
 
 import { GET as previewMerge, POST as executeMerge } from '@/app/api/customers/merge/route';
 import { requireAdmin } from '@/lib/auth/guards';
@@ -160,13 +168,14 @@ describe('/api/customers/merge', () => {
       expect(result.error.code).toBe('VALIDATION_ERROR');
     });
 
-    it('previews orders, roles, and fields without writing', async () => {
+    it('previews orders, roles, tokens, and fields without writing', async () => {
       selectQueues.push(
         [winnerRow],
         [loserRow],
         [{ roleId: 1 }],
         [{ roleId: 1 }, { roleId: 2 }],
         [{ value: 3 }],
+        [{ value: 2 }],
         [{ name: 'staff' }]
       );
 
@@ -179,6 +188,7 @@ describe('/api/customers/merge', () => {
         loser: { id: LOSER_ID, name: 'Ana Dupe' },
         ordersMoving: 3,
         rolesGranting: ['staff'],
+        tokensInvalidated: 2,
         fieldsFilling: ['email', 'phoneNumber'],
       });
       expect(batchedStatements).toHaveLength(0);
@@ -262,9 +272,15 @@ describe('/api/customers/merge', () => {
         },
       });
       // Orders repoint + roles union + field fill + token invalidation +
-      // soft-delete — a single atomic batch.
+      // soft-delete — a single atomic batch, in dependency order.
       expect(batchedStatements).toHaveLength(1);
-      expect(batchedStatements[0]).toHaveLength(5);
+      expect(batchedStatements[0]).toEqual([
+        { table: orders, op: 'update' },
+        { table: userRoles, op: 'insert' },
+        { table: users, op: 'update' },
+        { table: claimTokens, op: 'delete' },
+        { table: users, op: 'update' },
+      ]);
     });
 
     it('skips empty writes when nothing needs union or fill', async () => {
@@ -286,7 +302,11 @@ describe('/api/customers/merge', () => {
 
       expect(response.status).toBe(200);
       expect(batchedStatements).toHaveLength(1);
-      expect(batchedStatements[0]).toHaveLength(3);
+      expect(batchedStatements[0]).toEqual([
+        { table: orders, op: 'update' },
+        { table: claimTokens, op: 'delete' },
+        { table: users, op: 'update' },
+      ]);
     });
   });
 });

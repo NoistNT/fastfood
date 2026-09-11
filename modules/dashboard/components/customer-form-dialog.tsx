@@ -200,7 +200,13 @@ export function CustomerFormDialog({
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => onOpenChange(false)}
+                onClick={() => {
+                  // Same session guard as the merge dialog: a pending save
+                  // owns this session, so dismissals wait for it to settle
+                  // instead of letting a late resolve close a new form.
+                  if (isSaving) return;
+                  onOpenChange(false);
+                }}
               >
                 {t('cancel')}
               </Button>

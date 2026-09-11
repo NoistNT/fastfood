@@ -99,10 +99,11 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const [winnerRoles, loserRoles, orderRows] = await Promise.all([
+    const [winnerRoles, loserRoles, orderRows, tokenRows] = await Promise.all([
       roleIdsOf(winnerId),
       roleIdsOf(loserId),
       db.select({ value: count() }).from(orders).where(eq(orders.userId, loserId)),
+      db.select({ value: count() }).from(claimTokens).where(eq(claimTokens.personId, loserId)),
     ]);
     const grantingIds = loserRoles.filter((roleId) => !winnerRoles.includes(roleId));
     const grantingNames =
@@ -117,6 +118,7 @@ export async function GET(request: NextRequest) {
       loser: { id: loser.id, name: loser.name },
       ordersMoving: orderRows[0]?.value ?? 0,
       rolesGranting: grantingNames,
+      tokensInvalidated: tokenRows[0]?.value ?? 0,
       fieldsFilling: [
         ...(!winner.email && loser.email ? (['email'] as const) : []),
         ...(!winner.phoneNumber && loser.phoneNumber ? (['phoneNumber'] as const) : []),
@@ -178,11 +180,14 @@ export async function POST(request: NextRequest) {
 
     await db.batch([
       db.update(orders).set({ userId: winnerId }).where(eq(orders.userId, loserId)),
+      // No unique arbiter games: the UNIQUE(user_id, role_id) constraint
+      // makes a repeated merge a harmless no-op instead of duplicating rows.
       ...(rolesGranting.length > 0
         ? [
             db
               .insert(userRoles)
-              .values(rolesGranting.map((roleId) => ({ userId: winnerId, roleId }))),
+              .values(rolesGranting.map((roleId) => ({ userId: winnerId, roleId })))
+              .onConflictDoNothing(),
           ]
         : []),
       ...(fieldsFilling.length > 0
