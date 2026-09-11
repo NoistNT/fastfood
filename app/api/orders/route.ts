@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getTranslations } from 'next-intl/server';
 
 import { getSession } from '@/lib/auth/session';
+import { errorMessage, logError } from '@/lib/log-error';
 import { createOrder } from '@/modules/orders/create-order';
 import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
@@ -105,7 +106,10 @@ export async function POST(request: NextRequest) {
         console.warn(`Order ${order.id} placed with insufficient inventory`);
       }
     } catch (error) {
-      console.error('Failed to deduct inventory for order:', order.id, error);
+      logError('orders', 'Failed to deduct inventory for order', {
+        orderId: order.id,
+        cause: errorMessage(error),
+      });
       // Order is still created, but inventory wasn't updated
       // This should trigger manual intervention
     }
@@ -117,7 +121,7 @@ export async function POST(request: NextRequest) {
       return apiError(ERROR_CODES.VALIDATION_ERROR, firstError.message, { status: 400 });
     }
 
-    console.error('Order submission failed');
+    logError('orders', 'Order submission failed', { cause: errorMessage(error) });
     const te = await getTranslations('Orders');
     return apiError(ERROR_CODES.INTERNAL_ERROR, te('errors.createOrderError'), { status: 500 });
   }

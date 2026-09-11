@@ -5,6 +5,7 @@ import { db } from '@/db/drizzle';
 import { orderItem, orders, orderStatusHistory } from '@/db/schema';
 import { getOrderSchemas, validateData } from '@/modules/orders/helpers';
 import { computeOrderTotal } from '@/modules/orders/pricing';
+import { errorMessage, logError } from '@/lib/log-error';
 import {
   ORDER_STATUS,
   ORDER_TYPE,
@@ -92,8 +93,12 @@ export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder
       status: ORDER_STATUS.PENDING,
       orderType,
     };
-  } catch {
-    console.error('Order creation failed');
+  } catch (error) {
+    logError('orders', 'Order creation failed', {
+      userId: input.userId,
+      itemCount: input.items.length,
+      cause: errorMessage(error),
+    });
     throw new Error(t('errors.createOrderError'));
   }
 }
