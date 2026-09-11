@@ -15,6 +15,10 @@ export const searchQuerySchema = z.object({
  * GET /api/customers/search?q= — operational-role lookup for the intake
  * customer picker. Returns client-safe person records (no credential
  * material), newest matches capped to keep the picker snappy.
+ *
+ * Deliberately NOT admin-only: staff intake depends on it to transcribe
+ * WhatsApp orders. Directory administration (customers pages, role and
+ * delete mutations) is fenced to ADMIN above this layer.
  */
 export async function GET(request: NextRequest) {
   try {

@@ -16,21 +16,25 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/modules/core/ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/modules/core/ui/sheet';
+import { useAuth } from '@/modules/auth/context/auth-context';
 import { cn } from '@/lib/utils';
 
 const navigation = [
   { labelKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
   { labelKey: 'orders', href: '/dashboard/orders', icon: ClipboardList },
-  { labelKey: 'customers', href: '/dashboard/customers', icon: Users },
+  { labelKey: 'customers', href: '/dashboard/customers', icon: Users, adminOnly: true },
   { labelKey: 'products', href: '/dashboard/products', icon: Sandwich },
   { labelKey: 'inventory', href: '/dashboard/inventory', icon: Package },
-  { labelKey: 'reports', href: '/dashboard/reports', icon: BarChart3 },
+  { labelKey: 'reports', href: '/dashboard/reports', icon: BarChart3, adminOnly: true },
 ] as const;
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const t = useTranslations('Components.header');
   const tNav = useTranslations('Components.sidebar');
+  const { user } = useAuth();
+  const isAdmin = user?.roles.some((role) => role.name === 'admin') ?? false;
+  const visibleNavigation = navigation.filter((item) => isAdmin || !('adminOnly' in item));
 
   return (
     <>
@@ -46,7 +50,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         className="flex flex-col space-y-2"
         aria-label={t('dashboard')}
       >
-        {navigation.map((item) => (
+        {visibleNavigation.map((item) => (
           <Link
             key={item.href}
             href={item.href}

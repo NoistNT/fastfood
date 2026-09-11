@@ -1,7 +1,6 @@
-import type { USER_ROLES } from '@/types/auth';
-
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { USER_ROLES } from '@/types/auth';
 import { OPERATIONAL_ROLES } from '@/lib/auth/roles';
 import { getSession, updateSession } from '@/lib/auth/session';
 
@@ -25,8 +24,11 @@ const publicRoutes = [
 ];
 
 // Roles encode powers only. Every non-public route requires a session;
-// only /dashboard additionally requires an operational role.
+// /dashboard additionally requires an operational role, except the
+// owners-only surfaces below which require ADMIN. Longest prefix wins.
 const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
+  { path: '/dashboard/reports', roles: [USER_ROLES.ADMIN] },
+  { path: '/dashboard/customers', roles: [USER_ROLES.ADMIN] },
   { path: '/dashboard', roles: [...OPERATIONAL_ROLES] },
 ];
 
