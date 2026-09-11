@@ -33,7 +33,11 @@ export default function Page() {
   const [isPending, startTransition] = useTransition();
   const [checkout, setCheckout] = useState<CheckoutFormState>(emptyCheckoutDetails);
   const [prefilled, setPrefilled] = useState<boolean | null>(null);
-  const [placedOrder, setPlacedOrder] = useState<{ guest: boolean } | null>(null);
+  const [placedOrder, setPlacedOrder] = useState<{
+    guest: boolean;
+    id: string;
+    total: string;
+  } | null>(null);
 
   // Signed-in buyers get their contact details prefilled — no re-typing.
   useEffect(() => {
@@ -90,12 +94,8 @@ export default function Page() {
         }
 
         // Submit order online
-        await submitOrder({ items, total, ...details }, clearOrder);
-        if (prefilled === false) {
-          setPlacedOrder({ guest: true });
-        } else {
-          setPlacedOrder(null);
-        }
+        const placed = await submitOrder({ items, total, ...details }, clearOrder);
+        setPlacedOrder({ guest: prefilled === false, id: placed.id, total: placed.total });
         toast({
           title: t('submitToast.successTitle'),
           description: t('submitToast.successDescription'),
@@ -124,6 +124,7 @@ export default function Page() {
   };
 
   const handlePay = async () => {
+    if (!placedOrder) return;
     startTransition(async () => {
       try {
         const csrfToken = await getToken();
@@ -133,12 +134,11 @@ export default function Page() {
             'Content-Type': 'application/json',
             ...(csrfToken ? { 'x-csrf-token': csrfToken } : {}),
           },
-          body: JSON.stringify({
-            title: 'Order Payment',
-            quantity: items.length,
-            price: +total,
-          }),
+          body: JSON.stringify({ orderId: placedOrder.id }),
         });
+        if (!response.ok) {
+          throw new Error('Payment preference failed');
+        }
         const data = await response.json();
         window.location.href = data.init_point;
       } catch (_error) {
@@ -170,7 +170,6 @@ export default function Page() {
               onChange={(patch) => setCheckout((s) => ({ ...s, ...patch }))}
             />
             <SubmitOrder
-              handlePay={handlePay}
               handleSubmit={handleSubmit}
               isPending={
                 isPending ||
@@ -181,20 +180,36 @@ export default function Page() {
             />
           </>
         )}
-        {placedOrder?.guest && (
+        {placedOrder && (
           <aside
             className="rounded-lg border p-4 space-y-2"
             aria-live="polite"
           >
-            <p className="text-sm font-medium">{t('accountNudge.title')}</p>
-            <p className="text-sm text-muted-foreground">{t('accountNudge.description')}</p>
-            <Button
-              asChild
-              size="sm"
-              variant="default"
-            >
-              <a href="/register">{t('accountNudge.cta')}</a>
-            </Button>
+            {placedOrder.guest && (
+              <>
+                <p className="text-sm font-medium">{t('accountNudge.title')}</p>
+                <p className="text-sm text-muted-foreground">{t('accountNudge.description')}</p>
+              </>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                onClick={handlePay}
+                disabled={isPending}
+                size="sm"
+                variant="default"
+              >
+                {t('submitOrder.checkout')} · ${placedOrder.total}
+              </Button>
+              {placedOrder.guest && (
+                <Button
+                  asChild
+                  size="sm"
+                  variant="secondary"
+                >
+                  <a href="/register">{t('accountNudge.cta')}</a>
+                </Button>
+              )}
+            </div>
           </aside>
         )}
       </div>
