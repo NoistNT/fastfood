@@ -244,6 +244,22 @@
           "noRoles": "—"
         },
         "confirmDelete": "¿Estás seguro que querés eliminar este usuario?",
+        "newPerson": "Nueva persona",
+        "form": {
+          "titleCreate": "Agregar persona",
+          "titleEdit": "Editar persona",
+          "description": "Datos de contacto para el directorio. Los duplicados se unifican automáticamente cuando comparten teléfono o email.",
+          "fullName": "Nombre y Apellido",
+          "phone": "Teléfono",
+          "email": "Email",
+          "emailOptional": "Email (opcional)",
+          "nameRequired": "El nombre completo es obligatorio",
+          "emailInvalid": "Ingresá un email válido",
+          "save": "Guardar persona",
+          "saving": "Guardando…",
+          "cancel": "Cancelar",
+          "saveFailed": "No se pudo guardar la persona."
+        },
         "toast": {
           "promoteSuccess": "Usuario promovido exitosamente",
           "demoteSuccess": "Usuario degradado exitosamente",

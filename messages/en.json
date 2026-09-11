@@ -244,6 +244,22 @@
           "noRoles": "—"
         },
         "confirmDelete": "Are you sure you want to delete this user?",
+        "newPerson": "New person",
+        "form": {
+          "titleCreate": "Add person",
+          "titleEdit": "Edit person",
+          "description": "Contact details for the directory. Duplicates converge automatically when they share a phone or email.",
+          "fullName": "Full name",
+          "phone": "Phone number",
+          "email": "Email",
+          "emailOptional": "Email (optional)",
+          "nameRequired": "Full name is required",
+          "emailInvalid": "Enter a valid email address",
+          "save": "Save person",
+          "saving": "Saving…",
+          "cancel": "Cancel",
+          "saveFailed": "Could not save the person."
+        },
         "toast": {
           "promoteSuccess": "User promoted successfully",
           "demoteSuccess": "User demoted successfully",
