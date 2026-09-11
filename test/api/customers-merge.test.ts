@@ -133,6 +133,15 @@ describe('/api/customers/merge', () => {
       expect(response.status).toBe(400);
     });
 
+    it('returns 400 for malformed ids', async () => {
+      const response = await previewMerge(previewRequest('not-a-uuid', LOSER_ID));
+      const result = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(result.error.code).toBe('VALIDATION_ERROR');
+      expect(selectQueues).toHaveLength(0);
+    });
+
     it('returns 404 when either person is missing', async () => {
       selectQueues.push([winnerRow], []);
 
@@ -200,6 +209,15 @@ describe('/api/customers/merge', () => {
       );
 
       expect(response.status).toBe(400);
+      expect(batchedStatements).toHaveLength(0);
+    });
+
+    it('returns 400 for malformed ids', async () => {
+      const response = await executeMerge(mergeRequest({ winnerId: 'nope', loserId: LOSER_ID }));
+      const result = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(result.error.code).toBe('VALIDATION_ERROR');
       expect(batchedStatements).toHaveLength(0);
     });
 
