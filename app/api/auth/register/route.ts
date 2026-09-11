@@ -38,6 +38,10 @@ const registerSchema = z
         'Password must contain at least one lowercase letter, one uppercase letter, and one number'
       ),
     confirmPassword: z.string(),
+    claimToken: z
+      .string()
+      .regex(/^[0-9a-f]{64}$/, 'Invalid claim link')
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -55,9 +59,10 @@ export async function POST(request: NextRequest) {
       phoneNumber: typeof body.phoneNumber === 'string' ? body.phoneNumber.trim() : undefined,
       password: body.password, // Don't sanitize password as it needs special characters
       confirmPassword: body.confirmPassword,
+      claimToken: typeof body.claimToken === 'string' ? body.claimToken.trim() : undefined,
     };
 
-    const { name, email, phoneNumber, password } = registerSchema.parse(sanitizedBody);
+    const { name, email, phoneNumber, password, claimToken } = registerSchema.parse(sanitizedBody);
     const normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : '';
 
     // Rate limit by email (IP-based)
@@ -83,8 +88,8 @@ export async function POST(request: NextRequest) {
     // Token path: adopt the exact guest identity the token was minted for —
     // stronger than matching, no guessing. Invalid, expired, or consumed
     // tokens fall through to the legacy match-claim below.
-    if (typeof body.claimToken === 'string' && body.claimToken) {
-      const personId = await consumeClaimToken(body.claimToken);
+    if (claimToken) {
+      const personId = await consumeClaimToken(claimToken);
       if (personId) {
         const [person] = await db
           .select({

@@ -96,8 +96,11 @@ export default function Page() {
 
         // Submit order online
         const placed = await submitOrder({ items, total, ...details }, clearOrder);
+        // The server response is authoritative: only guest orders carry a
+        // claim URL. A still-pending session check must not hide it, and a
+        // mint failure keeps the plain-register fallback for confirmed guests.
         setPlacedOrder({
-          guest: prefilled === false,
+          guest: prefilled === false || Boolean(placed.claimUrl),
           id: placed.id,
           total: placed.total,
           claimUrl: placed.claimUrl,

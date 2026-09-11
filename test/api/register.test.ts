@@ -138,7 +138,54 @@ describe('/api/auth/register', () => {
 
       expect(response.status).toBe(201);
       expect(result.success).toBe(true);
-      expect(result.data.user).toEqual(mockUser);
+      expect(mockDb.insert).toHaveBeenCalled();
+    });
+
+    it('should use legacy match-claim when the token is spent but phone matches', async () => {
+      const claimed = {
+        ...mockUser,
+        email: 'legacy@example.com',
+        passwordHash: 'hashed-password',
+      };
+
+      mockDb.select.mockReturnValueOnce({
+        // Check existing user by email — none owns it
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      } as any);
+
+      mockConsumeClaimToken.mockResolvedValue(null);
+
+      mockDb.update.mockReturnValueOnce({
+        set: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            returning: vi.fn().mockResolvedValue([claimed]),
+          }),
+        }),
+      } as any);
+
+      const request = new NextRequest('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: 'Legacy User',
+          email: 'legacy@example.com',
+          phoneNumber: '+54 9 11 7777 7777',
+          password: 'Password123',
+          confirmPassword: 'Password123',
+          claimToken: 'f'.repeat(64),
+        }),
+      });
+
+      const response = await register(request);
+      const result = await response.json();
+
+      expect(response.status).toBe(201);
+      expect(result.success).toBe(true);
+      expect(result.data.user).toEqual(claimed);
+      expect(mockDb.insert).not.toHaveBeenCalled();
     });
 
     it('should claim a matching record-only person when phone is provided', async () => {

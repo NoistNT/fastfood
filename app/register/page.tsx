@@ -68,6 +68,7 @@ export default function RegisterPage() {
     watch,
     reset,
     getValues,
+    getFieldState,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -88,23 +89,24 @@ export default function RegisterPage() {
         const person = data?.data?.person;
         if (!person) return;
         setClaimToken(token);
-        // Fill only untouched fields — never overwrite what the user
-        // already typed while the preview was in flight.
-        const current = getValues();
+        // Fill only untouched fields — an empty value is not proof the
+        // user didn't type-then-clear while the preview was in flight.
+        const untouched = (field: 'name' | 'email' | 'phoneNumber') =>
+          !getFieldState(field).isTouched;
         reset({
-          ...current,
-          ...(current.name || !person.name ? {} : { name: person.name }),
-          ...(current.email || !person.email ? {} : { email: person.email }),
-          ...(current.phoneNumber || !person.phoneNumber
-            ? {}
-            : { phoneNumber: person.phoneNumber }),
+          ...getValues(),
+          ...(untouched('name') && person.name ? { name: person.name } : {}),
+          ...(untouched('email') && person.email ? { email: person.email } : {}),
+          ...(untouched('phoneNumber') && person.phoneNumber
+            ? { phoneNumber: person.phoneNumber }
+            : {}),
         });
       })
       .catch(() => undefined);
     return () => {
       cancelled = true;
     };
-  }, [reset]);
+  }, [reset, getFieldState]);
 
   const password = watch('password', '');
 
