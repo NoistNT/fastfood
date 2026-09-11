@@ -6,10 +6,20 @@ export default async function TotalSales({ date }: { date: Date }) {
   const { totalSales } = await getTotalSales(date);
   const t = await getTranslations('Features.dashboard');
 
-  const formattedTotalSales = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(totalSales);
+  // Fork-level currency (e.g. ARS for Argentine shops); defaults to USD.
+  // Falls back on misconfiguration instead of crashing the dashboard.
+  let formattedTotalSales: string;
+  try {
+    formattedTotalSales = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: process.env.NEXT_PUBLIC_CURRENCY ?? 'USD',
+    }).format(totalSales);
+  } catch {
+    formattedTotalSales = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(totalSales);
+  }
 
   return (
     <span className="text-primary text-sm font-medium bg-primary-foreground px-2 py-2 rounded-md shadow-xs">
