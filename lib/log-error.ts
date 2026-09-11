@@ -1,6 +1,6 @@
 /**
  * Privacy-bounded error logging. Server logs are the only trace we have when
- * the owners report a problem over WhatsApp, so errors must carry enough to
+ * the admins report a problem over WhatsApp, so errors must carry enough to
  * debug — but never personal data. This is the single choke point:
  * correlation IDs (order, tracking, ingredient) and curated messages go
  * through; PII, bodies, tokens, and user agents are dropped.

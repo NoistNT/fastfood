@@ -30,10 +30,19 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
+
+  // Demo-only quick fill. Public credentials by design (shown in the UI);
+  // rendered solely when NEXT_PUBLIC_DEMO_MODE is set — forks never see it.
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+  const fillDemoCredentials = (email: string, password: string) => {
+    setValue('email', email, { shouldValidate: true });
+    setValue('password', password, { shouldValidate: true });
+  };
 
   useEffect(() => {
     if (isAuthenticated && !loading && user) {
@@ -123,6 +132,26 @@ export default function LoginPage() {
 
         {/* Links */}
         <div className="mt-6 space-y-4 text-center">
+          {isDemoMode && (
+            <div className="flex justify-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fillDemoCredentials('bob.brown@example.com', 'StaffDemo2026')}
+              >
+                {t('tryAsStaff')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fillDemoCredentials('john.doe@example.com', 'AdminDemo2026')}
+              >
+                {t('tryAsAdmin')}
+              </Button>
+            </div>
+          )}
           <div>
             <Link
               href="/forgot-password"

@@ -15,6 +15,7 @@ real shipped-or-caught bug; check the file, not the intent.
 
 ## Correctness
 - Empty vs. absent distinguished? (`''` must clear, missing must skip — #76)
+- Rotating seed credentials? grep E2E + docs for the old secret (#79)
 - Confirm screens: invalidate displayed preview on input change; disable
   confirm while reloading? (#75)
 - Dialog Cancel must route through the busy guard like every other
@@ -31,8 +32,8 @@ real shipped-or-caught bug; check the file, not the intent.
 ## Data integrity
 - Every check-then-write atomic or re-guarded at write time? (conditional
   `UPDATE … RETURNING`; liveness predicate in the UPDATE — #40, #76)
-- Destructive endpoints: a repeated execution must be a harmless no-op —
-  unique constraints as idempotency arbiters, not just validation (#75)
+- Destructive scripts: run atomically when the driver supports transactions,
+  else ensure idempotent re-runnability (demo reseed — #79)
 - Unique constraints: pre-check → 400 path AND race catch?
   (email/phone edit — #76)
 - Case handling consistent between matchers and writers? (lowercase

@@ -1,7 +1,7 @@
 import { USER_ROLES, type Role } from '@/types/auth';
 
 /**
- * Roles that may operate /dashboard: ADMIN is an owner, STAFF is the
+ * Roles that may operate /dashboard: ADMIN is the admin role, STAFF is the
  * always-present manager who runs daily operations.
  */
 export const OPERATIONAL_ROLES: readonly USER_ROLES[] = [USER_ROLES.ADMIN, USER_ROLES.STAFF];

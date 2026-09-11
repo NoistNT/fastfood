@@ -38,9 +38,9 @@ SELECT setval(pg_get_serial_sequence('ingredients','id'), (SELECT MAX(id) FROM p
 -- Alice is a record-only person: no credentials until she registers
 -- and claims her record via phone+name match.
 INSERT INTO public.users (name, email, password_hash, phone_number) VALUES
-  ('John Doe','john.doe@example.com','$2b$10$B1osmUvl5yfLAMPE8hD7vuSzqE/gQ8/ERjAymS6NAdK/JuvPAvpE6','5491111111111'),
-  ('Bob Brown','bob.brown@example.com','$2b$10$B1osmUvl5yfLAMPE8hD7vuSzqE/gQ8/ERjAymS6NAdK/JuvPAvpE6','5491122222222'),
-  ('Jane Smith','jane.smith@example.com','$2b$10$B1osmUvl5yfLAMPE8hD7vuSzqE/gQ8/ERjAymS6NAdK/JuvPAvpE6','5491133333333'),
+  ('John Doe','john.doe@example.com','$2b$10$J7R7U8YK36bQ6NKsluu50ecBcDIxUZdX8OJ8QJHIPLOINvuYxBAcO','5491111111111'),
+  ('Bob Brown','bob.brown@example.com','$2b$10$6sYp5O.ZX6SDWgQ.BunLCuQUgzuiS7nEOaLLg9I/mlNuqdXvHb.IG','5491122222222'),
+  ('Jane Smith','jane.smith@example.com','$2b$10$6sYp5O.ZX6SDWgQ.BunLCuQUgzuiS7nEOaLLg9I/mlNuqdXvHb.IG','5491133333333'),
   ('Alice Johnson','alice.johnson@example.com',NULL,'5491144444444');
 
 INSERT INTO public.user_roles VALUES

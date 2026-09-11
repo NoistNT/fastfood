@@ -6,6 +6,7 @@ import { JetBrains_Mono as FontMono } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
 import ConditionalHeader from '@/modules/core/components/conditional-header';
+import { DemoBanner } from '@/modules/core/components/demo-banner';
 import Footer from '@/modules/core/components/footer';
 import { SkipToContent } from '@/modules/core/components/skip-to-content';
 import { PageTransition } from '@/modules/core/components/page-transition';
@@ -74,6 +75,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <ResourcePreloader />
                 <PushNotificationManager />
                 <Toaster />
+                <DemoBanner />
                 <ConditionalHeader />
                 <main
                   id="main-content"
