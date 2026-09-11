@@ -159,6 +159,60 @@ describe('POST /api/customers/[id]/edit', () => {
     expect(mockDbUpdate).not.toHaveBeenCalled();
   });
 
+  it('clears contact fields sent as blank strings', async () => {
+    selectOnce([{ id: PERSON_ID }]);
+    const setMock = vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        returning: vi
+          .fn()
+          .mockResolvedValue([{ id: PERSON_ID, name: 'Ana', email: null, phoneNumber: null }]),
+      }),
+    });
+    mockDbUpdate.mockReturnValueOnce({ set: setMock } as never);
+
+    const response = await editPerson(
+      postRequest(PERSON_ID, { name: 'Ana', phoneNumber: '', email: '' }),
+      {
+        params: Promise.resolve({ id: PERSON_ID }),
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(setMock).toHaveBeenCalledWith(
+      expect.objectContaining({ phoneNumber: null, email: null })
+    );
+  });
+
+  it('returns 400 for a malformed person id', async () => {
+    const response = await editPerson(postRequest('not-a-uuid', { name: 'Ana' }), {
+      params: Promise.resolve({ id: 'not-a-uuid' }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(result.error.code).toBe('VALIDATION_ERROR');
+    expect(mockDbSelect).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when the person is deleted before the write lands', async () => {
+    selectOnce([{ id: PERSON_ID }]);
+    mockDbUpdate.mockReturnValueOnce({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          returning: vi.fn().mockResolvedValue([]),
+        }),
+      }),
+    } as never);
+
+    const response = await editPerson(postRequest(PERSON_ID, { name: 'Ana' }), {
+      params: Promise.resolve({ id: PERSON_ID }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(404);
+    expect(result.error.code).toBe('NOT_FOUND');
+  });
+
   it('updates only the provided fields', async () => {
     selectOnce([{ id: PERSON_ID }]);
     const updated = { id: PERSON_ID, name: 'Ana Updated', email: null, phoneNumber: null };

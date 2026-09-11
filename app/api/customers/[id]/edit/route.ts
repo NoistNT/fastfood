@@ -15,12 +15,14 @@ import { normalizePhoneNumber } from '@/lib/phone';
 const editPersonSchema = z
   .object({
     name: z.string().trim().min(1).max(120).optional(),
+    // Explicit blanks clear the field (null); absent keys skip it.
+    // Collapsing '' to undefined here would make clearing impossible.
     phoneNumber: z.preprocess(
-      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      (value) => (typeof value === 'string' && value.trim() === '' ? null : value),
       z.string().trim().max(40).optional().nullable()
     ),
     email: z.preprocess(
-      (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+      (value) => (typeof value === 'string' && value.trim() === '' ? null : value),
       z.string().trim().email().max(120).optional().nullable()
     ),
   })
@@ -55,13 +57,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const { id } = await params;
+    const personId = z.uuid('Invalid person ID').parse(id);
     const body = await request.json();
     const input = editPersonSchema.parse(body);
 
     const [person] = await db
       .select({ id: users.id })
       .from(users)
-      .where(and(eq(users.id, id), isNull(users.deletedAt)))
+      .where(and(eq(users.id, personId), isNull(users.deletedAt)))
       .limit(1);
     if (!person) {
       return apiError(ERROR_CODES.NOT_FOUND, 'Person not found', { status: 404 });
@@ -83,7 +86,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         .where(
           and(
             sql`lower(${users.email}) = ${normalizedEmail}`,
-            ne(users.id, id),
+            ne(users.id, personId),
             isNull(users.deletedAt)
           )
         )
@@ -97,7 +100,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         .select({ id: users.id })
         .from(users)
         .where(
-          and(eq(users.phoneNumber, normalizedPhone), ne(users.id, id), isNull(users.deletedAt))
+          and(
+            eq(users.phoneNumber, normalizedPhone),
+            ne(users.id, personId),
+            isNull(users.deletedAt)
+          )
         )
         .limit(1);
       if (taken) {
@@ -116,13 +123,19 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           ...(normalizedEmail !== undefined ? { email: normalizedEmail } : {}),
           updatedAt: new Date(),
         })
-        .where(eq(users.id, id))
+        // Re-check liveness in the write itself: a concurrent soft-delete
+        // between the lookup above and this statement must not revive output
+        // for a deleted person. Empty returning means lost race → 404.
+        .where(and(eq(users.id, personId), isNull(users.deletedAt)))
         .returning({
           id: users.id,
           name: users.name,
           email: users.email,
           phoneNumber: users.phoneNumber,
         });
+      if (!updated) {
+        return apiError(ERROR_CODES.NOT_FOUND, 'Person not found', { status: 404 });
+      }
       return apiSuccess({ person: updated });
     } catch (error) {
       // Concurrent write raced the unique indexes after the pre-check.

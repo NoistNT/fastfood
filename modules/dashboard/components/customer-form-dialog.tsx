@@ -122,7 +122,13 @@ export function CustomerFormDialog({
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={(next) => {
+        // A pending submission owns this session: ignore dismissals until
+        // it settles, otherwise a late resolve would close a reopened form
+        // and discard its input.
+        if (!next && isSaving) return;
+        onOpenChange(next);
+      }}
     >
       <DialogContent>
         <DialogHeader>
