@@ -20,9 +20,10 @@ type CustomerWithRoles = {
 
 interface CustomerActionsCellProps {
   user: CustomerWithRoles;
+  onEdit?: (user: CustomerWithRoles) => void;
 }
 
-export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
+export function CustomerActionsCell({ user, onEdit }: CustomerActionsCellProps) {
   const router = useRouter();
 
   const t = useTranslations('Features.dashboard');
@@ -83,6 +84,15 @@ export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
 
   return (
     <div className="flex space-x-2">
+      {onEdit && (
+        <Button
+          onClick={() => onEdit(user)}
+          variant="outline"
+          size="sm"
+        >
+          {tCommon('actions.edit')}
+        </Button>
+      )}
       <Button
         onClick={handleRoleUpdate}
         disabled={isUpdating}
