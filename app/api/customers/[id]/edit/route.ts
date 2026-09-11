@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 
 import { z } from 'zod';
-import { and, eq, isNull, ne } from 'drizzle-orm';
+import { and, eq, isNull, ne, sql } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
@@ -73,11 +73,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       input.email === undefined ? undefined : (input.email?.trim().toLowerCase() ?? null);
 
     // Pre-check uniqueness excluding self so conflicts answer 400, not 500.
+    // Email comparison is case-insensitive: legacy rows may carry mixed
+    // case, and Postgres unique is case-sensitive — an exact match would
+    // let case-variant duplicates slip through that no matcher converges.
     if (normalizedEmail) {
       const [taken] = await db
         .select({ id: users.id })
         .from(users)
-        .where(and(eq(users.email, normalizedEmail), ne(users.id, id), isNull(users.deletedAt)))
+        .where(
+          and(
+            sql`lower(${users.email}) = ${normalizedEmail}`,
+            ne(users.id, id),
+            isNull(users.deletedAt)
+          )
+        )
         .limit(1);
       if (taken) {
         return apiError(ERROR_CODES.VALIDATION_ERROR, 'Email already in use', { status: 400 });

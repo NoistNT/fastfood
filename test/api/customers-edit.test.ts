@@ -145,6 +145,20 @@ describe('POST /api/customers/[id]/edit', () => {
     expect(mockDbUpdate).not.toHaveBeenCalled();
   });
 
+  it('returns 400 when only a case-variant of the email exists', async () => {
+    selectOnce([{ id: PERSON_ID }]);
+    selectOnce([{ id: 'other-id' }]);
+
+    const response = await editPerson(postRequest(PERSON_ID, { email: 'Taken@Example.COM' }), {
+      params: Promise.resolve({ id: PERSON_ID }),
+    });
+    const result = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(result.error.code).toBe('VALIDATION_ERROR');
+    expect(mockDbUpdate).not.toHaveBeenCalled();
+  });
+
   it('updates only the provided fields', async () => {
     selectOnce([{ id: PERSON_ID }]);
     const updated = { id: PERSON_ID, name: 'Ana Updated', email: null, phoneNumber: null };
