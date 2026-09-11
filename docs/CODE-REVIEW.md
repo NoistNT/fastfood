@@ -15,6 +15,9 @@ real shipped-or-caught bug; check the file, not the intent.
 
 ## Correctness
 - Empty vs. absent distinguished? (`''` must clear, missing must skip — #76)
+- Numeric validation matches the complete input? (`parseFloat` accepts
+  prefixes, `parseInt` truncates — #81)
+- Malformed JSON bodies answer 400, never 500? (#81)
 - Rotating seed credentials? grep E2E + docs for the old secret (#79)
 - Confirm screens: invalidate displayed preview on input change; disable
   confirm while reloading? (#75)
@@ -36,6 +39,8 @@ real shipped-or-caught bug; check the file, not the intent.
   else ensure idempotent re-runnability (demo reseed — #79)
 - Unique constraints: pre-check → 400 path AND race catch?
   (email/phone edit — #76)
+- Every race-catch needs a real constraint behind it — a uniqueness catch
+  without a unique index is dead code (#81)
 - Case handling consistent between matchers and writers? (lowercase
   everywhere — #76)
 - Deletes: soft or hard, and what cascades (or doesn't) as a consequence?
