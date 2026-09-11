@@ -38,6 +38,7 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   with minimal diffs; record skipped findings with a one-line reason.
   **Enforcement: no PR is presented until a verdict table for the full diff
   exists in the session** — review first, then show.
+- Review checklist: `docs/CODE-REVIEW.md` — run it against every diff.
 - Finish every change with the quality gates before reporting done:
   `pnpm lint` → `pnpm test:run` → `pnpm build`
 - Keep diffs minimal and scoped to what was agreed
