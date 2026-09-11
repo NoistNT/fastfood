@@ -9,6 +9,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
@@ -69,14 +70,18 @@ export const rolesRelations = relations(roles, ({ many }) => ({
   userRoles: many(userRoles),
 }));
 
-export const userRoles = pgTable('user_roles', {
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  roleId: integer('role_id')
-    .notNull()
-    .references(() => roles.id, { onDelete: 'cascade' }),
-});
+export const userRoles = pgTable(
+  'user_roles',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    roleId: integer('role_id')
+      .notNull()
+      .references(() => roles.id, { onDelete: 'cascade' }),
+  },
+  (table) => [unique('user_roles_user_id_role_id_unique').on(table.userId, table.roleId)]
+);
 
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
   role: one(roles, {

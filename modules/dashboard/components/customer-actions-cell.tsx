@@ -21,9 +21,10 @@ type CustomerWithRoles = {
 interface CustomerActionsCellProps {
   user: CustomerWithRoles;
   onEdit?: (user: CustomerWithRoles) => void;
+  onMerge?: (user: CustomerWithRoles) => void;
 }
 
-export function CustomerActionsCell({ user, onEdit }: CustomerActionsCellProps) {
+export function CustomerActionsCell({ user, onEdit, onMerge }: CustomerActionsCellProps) {
   const router = useRouter();
 
   const t = useTranslations('Features.dashboard');
@@ -91,6 +92,15 @@ export function CustomerActionsCell({ user, onEdit }: CustomerActionsCellProps) 
           size="sm"
         >
           {tCommon('actions.edit')}
+        </Button>
+      )}
+      {onMerge && (
+        <Button
+          onClick={() => onMerge(user)}
+          variant="outline"
+          size="sm"
+        >
+          {t('customers.merge.action')}
         </Button>
       )}
       <Button

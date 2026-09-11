@@ -15,6 +15,10 @@ real shipped-or-caught bug; check the file, not the intent.
 
 ## Correctness
 - Empty vs. absent distinguished? (`''` must clear, missing must skip — #76)
+- Confirm screens: invalidate displayed preview on input change; disable
+  confirm while reloading? (#75)
+- Dialog Cancel must route through the busy guard like every other
+  dismissal path? (#75)
 - Submit gates cover all invalid states, not just the obvious ones?
   (delivery-without-address had no `<form>`, so `required` was inert — #60)
 - Async races closed? (stale request closing a reopened dialog; submit
@@ -27,6 +31,8 @@ real shipped-or-caught bug; check the file, not the intent.
 ## Data integrity
 - Every check-then-write atomic or re-guarded at write time? (conditional
   `UPDATE … RETURNING`; liveness predicate in the UPDATE — #40, #76)
+- Destructive endpoints: a repeated execution must be a harmless no-op —
+  unique constraints as idempotency arbiters, not just validation (#75)
 - Unique constraints: pre-check → 400 path AND race catch?
   (email/phone edit — #76)
 - Case handling consistent between matchers and writers? (lowercase

@@ -12,6 +12,7 @@ import {
   CustomerFormDialog,
   type DirectoryPerson,
 } from '@/modules/dashboard/components/customer-form-dialog';
+import { CustomerMergeDialog } from '@/modules/dashboard/components/customer-merge-dialog';
 import { exportToCSV } from '@/lib/utils';
 
 export type CustomerWithRoles = {
@@ -35,6 +36,8 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState<DirectoryPerson | null>(null);
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [mergingPerson, setMergingPerson] = useState<DirectoryPerson | null>(null);
 
   const handleExportCSV = () => {
     exportToCSV(initialCustomers, 'customers.csv');
@@ -53,6 +56,16 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
       phoneNumber: user.phoneNumber,
     });
     setDialogOpen(true);
+  };
+
+  const handleMergePerson = (user: CustomerWithRoles) => {
+    setMergingPerson({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+    });
+    setMergeOpen(true);
   };
 
   return (
@@ -77,7 +90,7 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
         suppressHydrationWarning
       >
         <DataTable
-          columns={createColumns(t, tTable, handleEditPerson)}
+          columns={createColumns(t, tTable, handleEditPerson, handleMergePerson)}
           data={initialCustomers}
           searchColumn="name"
           onExportCSV={handleExportCSV}
@@ -87,6 +100,12 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         person={editingPerson}
+        onSuccess={() => router.refresh()}
+      />
+      <CustomerMergeDialog
+        open={mergeOpen}
+        onOpenChange={setMergeOpen}
+        loser={mergingPerson}
         onSuccess={() => router.refresh()}
       />
     </div>
