@@ -3,6 +3,10 @@
 A Next.js 16 (App Router) restaurant management app: admin dashboard, ordering,
 products/inventory, customers, and role-based auth.
 
+Built as a reusable template for small local food shops: one codebase, one
+fork per business (isolated DB + env), demo deployment included. See
+[`docs/FORK.md`](docs/FORK.md).
+
 **Stack:** Next.js 16 · TypeScript (strict) · pnpm 11 · Node 24 · PostgreSQL +
 Drizzle ORM (Neon serverless) · Tailwind CSS v4 · shadcn/ui · next-intl ·
 Zustand · TanStack React Query + Table · Vitest + jsdom · Playwright · Upstash
@@ -29,9 +33,10 @@ pnpm dev
 
 Open http://localhost:3000
 
-Seeded logins (password `P4$$W0rD`): admin `john.doe@example.com`,
-staff `bob.brown@example.com`, registered buyer `jane.smith@example.com`
-(`alice.johnson@example.com` is a record-only person — no password).
+Seeded logins (demo only — reseeded regularly): admin
+`john.doe@example.com` / `AdminDemo2026`, staff `bob.brown@example.com` /
+`StaffDemo2026` (`jane.smith@example.com` uses the staff password;
+`alice.johnson@example.com` is a record-only person — no password).
 
 > **External configuration** (Neon branches, Vercel dashboard vars, GitHub
 > Actions secrets, secret rotation, bootstrap-from-scratch) is documented in
@@ -75,6 +80,8 @@ Optional:
 
 - `RESEND_API_KEY` — transactional/notification email
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` — Redis rate limiting
+- `NEXT_PUBLIC_CURRENCY` — ISO code for money display (default `USD`)
+- `NEXT_PUBLIC_DEMO_MODE=true` — demo banner + login quick-fill (showcase only)
 
 Where each lives (local `.env`, Vercel dashboard, GitHub Actions secrets) is in
 **[`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md)**.
@@ -85,31 +92,30 @@ Where each lives (local `.env`, Vercel dashboard, GitHub Actions secrets) is in
 
 ```text
 .
-├── app/                          # App Router: pages + API routes
-│   ├── api/                      #   Route handlers (auth, products, orders, payment, …)
-│   ├── dashboard/                #   Admin dashboard (customers, inventory, orders, reports)
-│   ├── order/ products/          #   Customer-facing ordering + catalog pages
-│   ├── login/ register/          #   Auth pages (+ forgot/reset password)
-│   ├── profile/ forbidden/       #   Account + access-denied pages
+├── app/                          # Pages + API routes
+│   ├── api/                      #   auth, products, orders, payment, customers…
+│   ├── dashboard/                #   Admin console (customers, inventory, orders, reports)
+│   ├── order/ products/          #   Storefront: cart + catalog (no account needed)
+│   ├── login/ register/          #   Auth (+ forgot/reset password)
 │   └── components-test/          #   Living style fixture (visual regression)
 │
-├── modules/                      # Domain logic, grouped by feature
+├── modules/                      # Domain logic by feature
 │   ├── core/                     #   Shared UI (shadcn/ui), hooks, components
-│   ├── auth/ orders/ products/   #   Feature modules (actions + components per feature)
-│   ├── dashboard/ users/         #   Dashboard + user management
+│   ├── auth/ orders/ products/   #   Feature modules (actions + components)
+│   ├── dashboard/ users/         #   Console + identity (persons, claim tokens)
 │   └── <feature>/actions/        #   Server actions colocated per feature
 │
 ├── db/                           # Drizzle schema (single file) + client (Neon)
-├── lib/                          # Utilities: auth session (jose JWT), CSRF, rate limit
+├── drizzle/                      #   Tracked migrations (baseline + diffs)
+├── lib/                          # Utilities: session (jose JWT), CSRF, rate limit, log-error
 ├── store/                        # Zustand stores (cart, dashboard state)
 ├── types/                        # Shared TS types (auth, db)
 ├── messages/                     # next-intl translations (en.json, es.json)
 ├── i18n/                         # Locale detection / request config
-├── scripts/                      # Ops scripts (i18n check) + sql/ canonical DB reset & seed
-├── test/                         # Vitest, mirrored by type (api/, components/, …)
-├── e2e/                          # Playwright specs + visual baselines (e2e/visual/)
+├── scripts/                      # Ops scripts + sql/ canonical DB reset & seed
+├── test/ e2e/                    # Vitest by type · Playwright (+ e2e/visual/)
 ├── public/                       # Static assets (icons, manifest, service worker)
-├── docs/                         # Runbooks (see docs/ENVIRONMENTS.md)
+├── docs/                         # FORK (template+showcase), ENVIRONMENTS, CODE-REVIEW
 │
 ├── proxy.ts                      # Middleware: auth + role-based route protection
 ├── drizzle.config.ts             # Drizzle Kit config
@@ -133,12 +139,16 @@ visual-regression fixture.
 ## Auth & security
 
 - JWT session cookie (`jose`, HS256, 1-day expiry) via `lib/auth/session.ts`
-- `proxy.ts` middleware guards routes by role (`/dashboard` → admin+customer,
-  `/order`, `/products`, `/profile`)
+- Roles encode powers: `ADMIN`/`STAFF` only — customers carry zero roles.
+  `proxy.ts` + `requireAdmin`/`requireOperationalRole()` guards enforce it:
+  `/dashboard` needs an operational role, `reports`/`customers` need ADMIN
+- Guest checkout: anyone can order (name+phone), identity deduped into
+  passwordless person records; claim-link tokens adopt them cross-device
 - CSRF token for state-changing API calls (`x-csrf-token` header)
 - Input sanitization (`lib/sanitize.ts`), rate limiting (Upstash Redis with
   in-memory fallback)
-- No logger/Sentry by design — `console.error` only, no PII
+- No logger/Sentry by design — `logError()` allowlist (`lib/log-error.ts`);
+  correlation IDs required, never PII
 
 ---
 
@@ -161,6 +171,7 @@ against the `ci-e2e` Neon branch (skipped until `CI_E2E_DB_URL` +
 | `monitoring.yml`        | Health check every 30 min + email alert        |
 | `security.yml`          | `pnpm audit` weekly                            |
 | `visual-regression.yml` | Manual visual regression (`workflow_dispatch`) |
+| `demo-reseed.yml`       | Daily showcase DB reseed + manual dispatch     |
 
 ### Deployment (Vercel)
 
@@ -179,8 +190,8 @@ and environment configuration reference.
 - Health check endpoint `/api/health` (checks DB connectivity)
 - GitHub Actions `monitoring.yml` pings production health every 30 minutes and
   emails on failure
-- **No Sentry/structured logging** — the repo deliberately avoids error
-  tracking for privacy
+- **No Sentry/structured logging** — privacy-bounded `logError()` instead;
+  see [`AGENTS.md`](AGENTS.md) logging rule
 
 ---
 
