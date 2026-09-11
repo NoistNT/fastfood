@@ -15,6 +15,13 @@
       "when": 1789151247009,
       "tag": "0001_sad_apocalypse",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789166883494,
+      "tag": "0002_wealthy_mac_gargan",
+      "breakpoints": true
     }
   ]
 }

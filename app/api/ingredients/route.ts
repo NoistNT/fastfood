@@ -1,6 +1,6 @@
 import type { NextRequest } from 'next/server';
 
-import { asc, eq, sql } from 'drizzle-orm';
+import { asc, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db } from '@/db/drizzle';
@@ -41,16 +41,9 @@ export async function GET(_request: NextRequest) {
 const createIngredientSchema = z.object({
   name: z.string().trim().min(1).max(120),
   unit: z.string().trim().min(1).max(20),
-  price: z.string().refine(
-    (value) => {
-      if (value.trim() === '') return false;
-      const parsed = parseFloat(value);
-      return Number.isFinite(parsed) && parsed >= 0;
-    },
-    {
-      message: 'Price must be a valid non-negative number',
-    }
-  ),
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, {
+    message: 'Price must be a valid non-negative number',
+  }),
   minThreshold: z.number().int().min(0).default(10),
 });
 
@@ -77,7 +70,12 @@ export async function POST(request: NextRequest) {
       return apiError(ERROR_CODES.CSRF_INVALID, 'Invalid CSRF token', { status: 403 });
     }
 
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return apiError(ERROR_CODES.VALIDATION_ERROR, 'Malformed JSON body', { status: 400 });
+    }
     const input = createIngredientSchema.parse(body);
 
     const [existing] = await db
@@ -89,26 +87,24 @@ export async function POST(request: NextRequest) {
       return apiError(ERROR_CODES.VALIDATION_ERROR, 'Ingredient already exists', { status: 400 });
     }
 
-    const [created] = await db
-      .insert(ingredients)
-      .values({ name: input.name, unit: input.unit, price: input.price })
-      .returning({ id: ingredients.id, name: ingredients.name });
+    // Single atomic statement: the companion inventory row cannot fail
+    // independently, so no orphan ingredient can ever linger and no
+    // compensation delete exists to fail in turn.
+    const result = await db.execute(sql`
+      WITH new_ingredient AS (
+        INSERT INTO ${ingredients} (name, unit, price)
+        VALUES (${input.name}, ${input.unit}, ${input.price})
+        RETURNING id, name
+      ),
+      new_stock AS (
+        INSERT INTO ${inventory} (ingredient_id, quantity, min_threshold, unit)
+        SELECT id, 0, ${input.minThreshold}, ${input.unit} FROM new_ingredient
+      )
+      SELECT id, name FROM new_ingredient
+    `);
+    const [created] = result.rows;
     if (!created) {
       return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create ingredient', { status: 500 });
-    }
-
-    try {
-      await db.insert(inventory).values({
-        ingredientId: created.id,
-        quantity: 0,
-        minThreshold: input.minThreshold,
-        unit: input.unit,
-      });
-    } catch (error) {
-      // The inventory insert is atomic — nothing to clean there. Remove the
-      // orphan ingredient so a nameless catalog row never lingers.
-      await db.delete(ingredients).where(eq(ingredients.id, created.id));
-      throw error;
     }
 
     return apiSuccess({ ingredient: created }, { status: 201 });

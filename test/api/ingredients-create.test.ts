@@ -16,6 +16,7 @@ vi.mock('@/db/drizzle', () => ({
     insert: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
+    execute: vi.fn(),
   },
 }));
 
@@ -33,6 +34,7 @@ const mockApiError = vi.mocked(apiError);
 const mockDbSelect = vi.mocked(db.select);
 const mockDbInsert = vi.mocked(db.insert);
 const mockDbDelete = vi.mocked(db.delete);
+const mockDbExecute = vi.mocked(db.execute);
 
 function selectOnce(rows: unknown[]) {
   const terminator = { limit: vi.fn().mockResolvedValue(rows) } as never;
@@ -115,6 +117,15 @@ describe('POST /api/ingredients', () => {
     expect((await response.json()).error.code).toBe('VALIDATION_ERROR');
   });
 
+  it('returns 400 for numeric-prefix prices', async () => {
+    const response = await createIngredient(
+      postRequest({ name: 'Tomato', unit: 'kg', price: '10abc' })
+    );
+
+    expect(response.status).toBe(400);
+    expect(mockDbExecute).not.toHaveBeenCalled();
+  });
+
   it('returns 400 for non-finite prices', async () => {
     const response = await createIngredient(
       postRequest({ name: 'Tomato', unit: 'kg', price: 'Infinity' })
@@ -133,47 +144,42 @@ describe('POST /api/ingredients', () => {
     expect(mockDbInsert).not.toHaveBeenCalled();
   });
 
-  it('creates the ingredient with a zero-stock inventory row', async () => {
+  it('returns 400 for malformed JSON bodies', async () => {
+    const response = await createIngredient(
+      new NextRequest('http://localhost:3000/api/ingredients', {
+        method: 'POST',
+        body: 'not-json',
+      })
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.code).toBe('VALIDATION_ERROR');
+    expect(mockDbSelect).not.toHaveBeenCalled();
+  });
+
+  it('creates the ingredient with a zero-stock inventory row in one statement', async () => {
     selectOnce([]);
-    mockDbInsert
-      .mockReturnValueOnce({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([{ id: 9, name: 'Tomato' }]),
-        }),
-      } as never)
-      .mockReturnValueOnce({
-        values: vi.fn().mockResolvedValue([]),
-      } as never);
+    mockDbExecute.mockResolvedValue({ rows: [{ id: 9, name: 'Tomato' }] } as never);
 
     const response = await createIngredient(postRequest(validBody));
     const result = await response.json();
 
     expect(response.status).toBe(201);
     expect(result.data).toEqual({ ingredient: { id: 9, name: 'Tomato' } });
-    expect(mockDbInsert).toHaveBeenCalledTimes(2);
+    expect(mockDbExecute).toHaveBeenCalledTimes(1);
+    expect(mockDbInsert).not.toHaveBeenCalled();
+    expect(mockDbDelete).not.toHaveBeenCalled();
   });
 
-  it('deletes the orphan ingredient when the inventory insert fails', async () => {
+  it('maps unique-race violations to 400', async () => {
     selectOnce([]);
-    mockDbInsert
-      .mockReturnValueOnce({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([{ id: 9, name: 'Tomato' }]),
-        }),
-      } as never)
-      .mockReturnValueOnce({
-        values: vi.fn().mockRejectedValue(new Error('db down')),
-      } as never);
-    mockDbDelete.mockReturnValue({
-      where: vi.fn().mockResolvedValue([]),
-    } as never);
+    mockDbExecute.mockRejectedValue(Object.assign(new Error('dup'), { code: '23505' }));
 
     const response = await createIngredient(postRequest(validBody));
     const result = await response.json();
 
-    expect(response.status).toBe(500);
-    expect(result.error.code).toBe('INTERNAL_ERROR');
-    expect(mockDbDelete).toHaveBeenCalledTimes(1);
+    expect(response.status).toBe(400);
+    expect(result.error.code).toBe('VALIDATION_ERROR');
   });
 
   it('keeps listing ingredients for admin', async () => {

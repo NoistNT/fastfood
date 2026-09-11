@@ -44,18 +44,10 @@ export function IngredientFormDialog({ open, onOpenChange }: IngredientFormDialo
   const formSchema = z.object({
     name: z.string().trim().min(1, t('nameRequired')).max(120),
     unit: z.string().trim().min(1, t('unitRequired')).max(20),
-    price: z
-      .string()
-      .refine(
-        (value) => value.trim() !== '' && !isNaN(parseFloat(value)) && parseFloat(value) >= 0,
-        t('priceInvalid')
-      ),
+    price: z.string().regex(/^\d+(\.\d{1,2})?$/, t('priceInvalid')),
     minThreshold: z
       .string()
-      .refine(
-        (value) => value.trim() === '' || (!isNaN(parseInt(value, 10)) && parseInt(value, 10) >= 0),
-        t('thresholdInvalid')
-      )
+      .refine((value) => value.trim() === '' || /^\d+$/.test(value.trim()), t('thresholdInvalid'))
       .optional(),
   });
 

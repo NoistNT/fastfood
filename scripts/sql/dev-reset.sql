@@ -81,6 +81,7 @@ CREATE TABLE public.ingredients (
   "created_at" timestamp NOT NULL DEFAULT now(),
   "updated_at" timestamp NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX ingredients_name_unique_idx ON public.ingredients (lower("name"));
 
 CREATE TABLE public.products (
   "id" serial PRIMARY KEY,

@@ -162,15 +162,22 @@ export const productRelations = relations(products, ({ many }) => ({
   ingredients: many(productIngredients),
 }));
 
-export const ingredients = pgTable('ingredients', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  unit: text('unit').notNull(),
-  price: numeric('price', { precision: 10, scale: 2 }).notNull(),
-  isAvailable: boolean('is_available').notNull().default(true),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at').notNull().defaultNow(),
-});
+export const ingredients = pgTable(
+  'ingredients',
+  {
+    id: serial('id').primaryKey(),
+    name: text('name').notNull(),
+    unit: text('unit').notNull(),
+    price: numeric('price', { precision: 10, scale: 2 }).notNull(),
+    isAvailable: boolean('is_available').notNull().default(true),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  },
+  // Case-insensitive uniqueness: matchers lowercase everywhere, so the
+  // database must reject what the application pre-check would miss on a
+  // race — otherwise the isUniqueViolation handler below is dead code.
+  (table) => [uniqueIndex('ingredients_name_unique_idx').on(sql`lower(${table.name})`)]
+);
 
 export const ingredientRelations = relations(ingredients, ({ many, one }) => ({
   productIngredients: many(productIngredients),
