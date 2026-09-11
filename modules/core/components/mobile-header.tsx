@@ -33,7 +33,7 @@ export function MobileHeader({ user, isAuthenticated, loading = false }: MobileH
   const { logout } = useAuth();
   const pathname = usePathname();
 
-  // Dashboard sheet row is for operational roles only (owners + staff)
+  // Dashboard sheet row is for operational roles only (admins + staff)
   const hasOpsAccess = hasOperationalRole(user?.roles);
 
   return (

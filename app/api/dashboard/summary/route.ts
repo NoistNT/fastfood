@@ -8,7 +8,7 @@ import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 export async function GET() {
   try {
     // Staff-visible aggregates (dashboard home + reports share this feed);
-    // operational role required, owners-only pages fence above this layer.
+    // operational role required, admin-only pages fence above this layer.
     const guard = await requireOperationalRole();
     if (!guard.ok) {
       return apiError(

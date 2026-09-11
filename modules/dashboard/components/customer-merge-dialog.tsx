@@ -47,7 +47,7 @@ interface CustomerMergeDialogProps {
  * Two-step duplicate merge: pick the surviving identity through the
  * directory search, review exactly what moves on the confirm screen, then
  * execute. The loser must be record-only — enforced server-side; the picker
- * marks credentialed candidates so owners don't select them as losers.
+ * marks credentialed candidates so admins don't select them as losers.
  */
 export function CustomerMergeDialog({
   open,

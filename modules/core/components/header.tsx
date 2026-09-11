@@ -64,7 +64,7 @@ export default function Header() {
     };
   }, [user]);
 
-  // Dashboard entry point is for operational roles only (owners + staff)
+  // Dashboard entry point is for operational roles only (admins + staff)
   const hasOpsAccess = hasOperationalRole(localUser?.roles);
   const isOnMenu = pathname === '/products';
   const isOnCart = pathname === '/order';

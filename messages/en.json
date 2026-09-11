@@ -79,11 +79,6 @@
         "createItemError": "Error creating item for order {orderId}.",
         "noUsers": "No users found in the database.",
         "createOrderError": "Order could not be created.",
-        "rateLimited": "Too many order attempts. Try again later.",
-        "fullNameRequired": "Full name is required",
-        "phoneRequired": "Phone number is required",
-        "deliveryAddressRequired": "Delivery address is required for delivery orders",
-        "itemsRequired": "Order must contain at least one item",
         "invalidStatus": "Invalid status",
         "noOrders": "No orders found. Please try again later or contact support.",
         "orderNotFound": "Order not found",
@@ -415,6 +410,8 @@
         "title": "Sign In",
         "passwordPlaceholder": "Enter your password",
         "forgotPasswordLink": "Forgot your password?",
+        "tryAsStaff": "Try as staff",
+        "tryAsAdmin": "Try as admin",
         "toast": {
           "success": {
             "title": "Welcome back!",
@@ -592,11 +589,20 @@
     "errors": {
       "createItemError": "Error creating item for order {orderId}.",
       "noUsers": "No users found in the database.",
-      "createOrderError": "Order could not be created."
+      "createOrderError": "Order could not be created.",
+      "rateLimited": "Too many order attempts. Try again later.",
+      "fullNameRequired": "Full name is required",
+      "phoneRequired": "Phone number is required",
+      "deliveryAddressRequired": "Delivery address is required for delivery orders",
+      "itemsRequired": "Order must contain at least one item"
     }
   },
   "Components": {
     "skipToContent": "Skip to main content",
+    "demoBanner": {
+      "title": "Demo environment",
+      "description": "Data resets daily — feel free to click around"
+    },
     "main": {
       "landmark": "Main content"
     },
