@@ -60,16 +60,44 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [claimToken, setClaimToken] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
   });
+
+  // Claim-link prefill: resolve the token to the guest snapshot once.
+  // Unknown or expired links are ignored silently — the form stays blank
+  // and the legacy match-claim still applies at submit time.
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('claim');
+    if (!token) return;
+    let cancelled = false;
+    fetch(`/api/auth/claim?token=${encodeURIComponent(token)}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        const person = data?.data?.person;
+        if (!person) return;
+        setClaimToken(token);
+        reset({
+          ...(person.name ? { name: person.name } : {}),
+          ...(person.email ? { email: person.email } : {}),
+          ...(person.phoneNumber ? { phoneNumber: person.phoneNumber } : {}),
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [reset]);
 
   const password = watch('password', '');
 
@@ -98,6 +126,7 @@ export default function RegisterPage() {
           phoneNumber: data.phoneNumber,
           password: data.password,
           confirmPassword: data.confirmPassword,
+          ...(claimToken ? { claimToken } : {}),
         }),
       });
 

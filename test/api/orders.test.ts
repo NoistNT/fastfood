@@ -11,6 +11,9 @@ vi.mock('@/lib/auth/session');
 vi.mock('@/modules/orders/create-order');
 vi.mock('@/lib/inventory-management');
 vi.mock('@/modules/users/persons');
+vi.mock('@/modules/users/claim-tokens', () => ({
+  mintClaimToken: vi.fn(),
+}));
 vi.mock('@/lib/rate-limit', () => ({
   sensitiveOperationRateLimit: { limit: vi.fn() },
 }));
@@ -21,6 +24,7 @@ import { getSession } from '@/lib/auth/session';
 import { createOrder } from '@/modules/orders/create-order';
 import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { findOrCreatePerson } from '@/modules/users/persons';
+import { mintClaimToken } from '@/modules/users/claim-tokens';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
 import { apiSuccess, apiError } from '@/lib/api-response';
 
@@ -28,6 +32,7 @@ const mockGetSession = vi.mocked(getSession);
 const mockCreateOrder = vi.mocked(createOrder);
 const mockDeductInventory = vi.mocked(deductInventoryForOrder);
 const mockFindOrCreatePerson = vi.mocked(findOrCreatePerson);
+const mockMintClaimToken = vi.mocked(mintClaimToken);
 const mockRateLimit = vi.mocked(sensitiveOperationRateLimit.limit);
 const mockApiSuccess = vi.mocked(apiSuccess);
 const mockApiError = vi.mocked(apiError);
@@ -85,6 +90,7 @@ describe('/api/orders', () => {
     });
     mockDeductInventory.mockResolvedValue({ shortfalls: [] });
     mockGetSession.mockResolvedValue(null);
+    mockMintClaimToken.mockResolvedValue('claim-token-123');
     mockFindOrCreatePerson.mockResolvedValue({
       id: '550e8400-e29b-41d4-a716-446655440001',
       name: guestPerson.fullName,
@@ -183,15 +189,20 @@ describe('/api/orders', () => {
       expect(mockDeductInventory).toHaveBeenCalledWith('order-123');
       expect(response.status).toBe(201);
       expect(result.success).toBe(true);
+      expect(mockMintClaimToken).toHaveBeenCalledWith('550e8400-e29b-41d4-a716-446655440001');
+      expect(result.data.claimUrl).toBe('/register?claim=claim-token-123');
     });
 
     it('keeps the session identity for signed-in buyers without dedupe', async () => {
       mockGetSession.mockResolvedValue(mockUser);
 
       const response = await POST(postRequest(orderBody()));
+      const result = await response.json();
 
       expect(response.status).toBe(201);
       expect(mockFindOrCreatePerson).not.toHaveBeenCalled();
+      expect(mockMintClaimToken).not.toHaveBeenCalled();
+      expect(result.data.claimUrl).toBeUndefined();
       expect(mockCreateOrder).toHaveBeenCalledWith(
         expect.objectContaining({ userId: validUserId })
       );

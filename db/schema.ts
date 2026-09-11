@@ -349,3 +349,29 @@ export const inventoryAlertsRelations = relations(inventoryAlerts, ({ one }) => 
     references: [inventory.id],
   }),
 }));
+
+// Claim tokens for cross-device guest → account adoption: opaque bearer
+// tokens minted at guest order time. Token hashes only at rest; single-use
+// with a short TTL. personId cascades so a directory merge that deletes a
+// person invalidates its outstanding tokens automatically.
+export const claimTokens = pgTable(
+  'claim_tokens',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    tokenHash: text('token_hash').notNull().unique(),
+    personId: uuid('person_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    expiresAt: timestamp('expires_at').notNull(),
+    usedAt: timestamp('used_at'),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+  },
+  (table) => [
+    index('claim_tokens_person_id_idx').on(table.personId),
+    index('claim_tokens_expires_at_idx').on(table.expiresAt),
+  ]
+);
+
+export const claimTokensRelations = relations(claimTokens, ({ one }) => ({
+  person: one(users, { fields: [claimTokens.personId], references: [users.id] }),
+}));

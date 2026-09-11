@@ -9,6 +9,7 @@ import { hashPassword } from '@/lib/auth/password';
 import { normalizePhoneNumber } from '@/lib/phone';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
+import { consumeClaimToken } from '@/modules/users/claim-tokens';
 import { sanitizeInput } from '@/lib/sanitize';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -78,6 +79,28 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const passwordHash = await hashPassword(password);
+
+    // Token path: adopt the exact guest identity the token was minted for —
+    // stronger than matching, no guessing. Invalid, expired, or consumed
+    // tokens fall through to the legacy match-claim below.
+    if (typeof body.claimToken === 'string' && body.claimToken) {
+      const personId = await consumeClaimToken(body.claimToken);
+      if (personId) {
+        const [adopted] = await db
+          .update(users)
+          .set({
+            passwordHash,
+            email: sql`COALESCE(${users.email}, ${email})`,
+            updatedAt: new Date(),
+          })
+          .where(and(eq(users.id, personId), isNull(users.passwordHash), isNull(users.deletedAt)))
+          .returning();
+        if (adopted) {
+          const adoptedUser: UserWithRoles = { ...adopted, roles: [] };
+          return apiSuccess({ user: adoptedUser }, { status: 201 });
+        }
+      }
+    }
 
     // Claim path: attach credentials to a matching record-only person
     // (same normalized phone + name, never registered, not deleted).
