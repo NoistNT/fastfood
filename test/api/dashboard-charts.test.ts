@@ -203,7 +203,7 @@ describe('/api/dashboard/charts', () => {
 
       expect(response.status).toBe(200);
       expect(result.success).toBe(true);
-      expect(result.data.period).toBe('invalid'); // API doesn't validate period, just uses what was passed
+      expect(result.data.period).toBe('30d'); // unknown values coerce to the default
     });
   });
 });

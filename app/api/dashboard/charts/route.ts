@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { db } from '@/db/drizzle';
 import { orders } from '@/db/schema';
@@ -43,7 +44,12 @@ export async function GET(request: Request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const period = searchParams.get('period') ?? '30d';
+    // Coerce unknown values to the default so the echoed period always
+    // matches the data range actually computed below.
+    const period = z
+      .enum(['1w', '2w', '30d', '6m', '1y', 'all'])
+      .catch('30d')
+      .parse(searchParams.get('period'));
 
     // Calculate date range based on period
     const now = new Date();
