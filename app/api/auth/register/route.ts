@@ -9,6 +9,7 @@ import { hashPassword } from '@/lib/auth/password';
 import { normalizePhoneNumber } from '@/lib/phone';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
+import { consumeClaimToken } from '@/modules/users/claim-tokens';
 import { sanitizeInput } from '@/lib/sanitize';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -37,6 +38,10 @@ const registerSchema = z
         'Password must contain at least one lowercase letter, one uppercase letter, and one number'
       ),
     confirmPassword: z.string(),
+    claimToken: z
+      .string()
+      .regex(/^[0-9a-f]{64}$/, 'Invalid claim link')
+      .optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -54,9 +59,10 @@ export async function POST(request: NextRequest) {
       phoneNumber: typeof body.phoneNumber === 'string' ? body.phoneNumber.trim() : undefined,
       password: body.password, // Don't sanitize password as it needs special characters
       confirmPassword: body.confirmPassword,
+      claimToken: typeof body.claimToken === 'string' ? body.claimToken.trim() : undefined,
     };
 
-    const { name, email, phoneNumber, password } = registerSchema.parse(sanitizedBody);
+    const { name, email, phoneNumber, password, claimToken } = registerSchema.parse(sanitizedBody);
     const normalizedPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : '';
 
     // Rate limit by email (IP-based)
@@ -78,6 +84,48 @@ export async function POST(request: NextRequest) {
 
     // Hash password
     const passwordHash = await hashPassword(password);
+
+    // Token path: adopt the exact guest identity the token was minted for —
+    // stronger than matching, no guessing. Invalid, expired, or consumed
+    // tokens fall through to the legacy match-claim below.
+    if (claimToken) {
+      const personId = await consumeClaimToken(claimToken);
+      if (personId) {
+        const [person] = await db
+          .select({
+            email: users.email,
+            passwordHash: users.passwordHash,
+            deletedAt: users.deletedAt,
+          })
+          .from(users)
+          .where(eq(users.id, personId))
+          .limit(1);
+        // Adopt only when the submitted email matches (or the person has
+        // none): binding credentials to a row unreachable by the login
+        // email would brick the account. Mismatches fall through below —
+        // the spent token stays spent (single-use must hold regardless).
+        const emailMatches =
+          person &&
+          !person.passwordHash &&
+          !person.deletedAt &&
+          (!person.email || person.email.toLowerCase() === email.toLowerCase());
+        if (emailMatches) {
+          const [adopted] = await db
+            .update(users)
+            .set({
+              passwordHash,
+              email: sql`COALESCE(${users.email}, ${email})`,
+              updatedAt: new Date(),
+            })
+            .where(and(eq(users.id, personId), isNull(users.passwordHash), isNull(users.deletedAt)))
+            .returning();
+          if (adopted) {
+            const adoptedUser: UserWithRoles = { ...adopted, roles: [] };
+            return apiSuccess({ user: adoptedUser }, { status: 201 });
+          }
+        }
+      }
+    }
 
     // Claim path: attach credentials to a matching record-only person
     // (same normalized phone + name, never registered, not deleted).

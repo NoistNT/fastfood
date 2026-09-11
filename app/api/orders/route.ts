@@ -9,6 +9,7 @@ import { createOrder } from '@/modules/orders/create-order';
 import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 import { findOrCreatePerson } from '@/modules/users/persons';
+import { mintClaimToken } from '@/modules/users/claim-tokens';
 import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
 import { getClientIp } from '@/lib/request-ip';
 import { ORDER_TYPE, PAYMENT_METHOD } from '@/modules/orders/types';
@@ -44,6 +45,28 @@ function getSubmitOrderSchema(t: (key: string) => string) {
         });
       }
     });
+}
+
+/**
+ * Mints a claim token so a guest can adopt their order from any device.
+ * Relative path (no env dependency); callers prefix origin when sharing.
+ * Minting must never fail the order itself.
+ */
+async function mintGuestClaim(
+  session: unknown,
+  userId: string
+): Promise<{ claimUrl: string } | Record<string, never>> {
+  if (session) return {};
+  try {
+    const token = await mintClaimToken(userId);
+    return { claimUrl: `/register?claim=${token}` };
+  } catch (error) {
+    logError('orders', 'Claim mint failed for guest order', {
+      userId,
+      cause: errorMessage(error),
+    });
+    return {};
+  }
 }
 
 /**
@@ -114,7 +137,7 @@ export async function POST(request: NextRequest) {
       // This should trigger manual intervention
     }
 
-    return apiSuccess(order, { status: 201 });
+    return apiSuccess({ ...order, ...(await mintGuestClaim(session, userId)) }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       const firstError = error.issues[0];

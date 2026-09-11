@@ -60,16 +60,53 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [claimToken, setClaimToken] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
+    getValues,
+    getFieldState,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
   });
+
+  // Claim-link prefill: resolve the token to the guest snapshot once.
+  // Unknown or expired links are ignored silently — the form stays blank
+  // and the legacy match-claim still applies at submit time.
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('claim');
+    if (!token) return;
+    let cancelled = false;
+    fetch(`/api/auth/claim?token=${encodeURIComponent(token)}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        const person = data?.data?.person;
+        if (!person) return;
+        setClaimToken(token);
+        // Fill only untouched fields — an empty value is not proof the
+        // user didn't type-then-clear while the preview was in flight.
+        const untouched = (field: 'name' | 'email' | 'phoneNumber') =>
+          !getFieldState(field).isTouched;
+        reset({
+          ...getValues(),
+          ...(untouched('name') && person.name ? { name: person.name } : {}),
+          ...(untouched('email') && person.email ? { email: person.email } : {}),
+          ...(untouched('phoneNumber') && person.phoneNumber
+            ? { phoneNumber: person.phoneNumber }
+            : {}),
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [reset, getFieldState]);
 
   const password = watch('password', '');
 
@@ -98,6 +135,7 @@ export default function RegisterPage() {
           phoneNumber: data.phoneNumber,
           password: data.password,
           confirmPassword: data.confirmPassword,
+          ...(claimToken ? { claimToken } : {}),
         }),
       });
 

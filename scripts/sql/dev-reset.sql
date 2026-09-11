@@ -12,6 +12,7 @@ BEGIN;
 
 -- ============ NUKE ============
 DROP TABLE IF EXISTS public.inventory_alerts      CASCADE;
+DROP TABLE IF EXISTS public.claim_tokens          CASCADE;
 DROP TABLE IF EXISTS public.inventory_movements   CASCADE;
 DROP TABLE IF EXISTS public.inventory             CASCADE;
 DROP TABLE IF EXISTS public.addresses             CASCADE;
@@ -139,6 +140,17 @@ CREATE TABLE public.password_reset_tokens (
   "token" text NOT NULL UNIQUE,
   "expires_at" timestamp NOT NULL
 );
+
+CREATE TABLE public.claim_tokens (
+  "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  "token_hash" text NOT NULL UNIQUE,
+  "person_id" uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  "expires_at" timestamp NOT NULL,
+  "used_at" timestamp,
+  "created_at" timestamp NOT NULL DEFAULT now()
+);
+CREATE INDEX claim_tokens_person_id_idx ON public.claim_tokens (person_id);
+CREATE INDEX claim_tokens_expires_at_idx ON public.claim_tokens (expires_at);
 
 CREATE TABLE public.inventory (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),

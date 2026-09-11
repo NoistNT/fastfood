@@ -37,6 +37,7 @@ export default function Page() {
     guest: boolean;
     id: string;
     total: string;
+    claimUrl?: string;
   } | null>(null);
 
   // Signed-in buyers get their contact details prefilled — no re-typing.
@@ -95,7 +96,15 @@ export default function Page() {
 
         // Submit order online
         const placed = await submitOrder({ items, total, ...details }, clearOrder);
-        setPlacedOrder({ guest: prefilled === false, id: placed.id, total: placed.total });
+        // The server response is authoritative: only guest orders carry a
+        // claim URL. A still-pending session check must not hide it, and a
+        // mint failure keeps the plain-register fallback for confirmed guests.
+        setPlacedOrder({
+          guest: prefilled === false || Boolean(placed.claimUrl),
+          id: placed.id,
+          total: placed.total,
+          claimUrl: placed.claimUrl,
+        });
         toast({
           title: t('submitToast.successTitle'),
           description: t('submitToast.successDescription'),
@@ -206,7 +215,7 @@ export default function Page() {
                   size="sm"
                   variant="secondary"
                 >
-                  <a href="/register">{t('accountNudge.cta')}</a>
+                  <a href={placedOrder.claimUrl ?? '/register'}>{t('accountNudge.cta')}</a>
                 </Button>
               )}
             </div>
