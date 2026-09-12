@@ -1,10 +1,8 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
 early_access: false
 tone_instructions: >-
-  Prioritize data integrity, security/PII hygiene, and runtime correctness over
-  style nits. Flag synchronous setState inside effects, unescaped SQL LIKE
-  input, non-atomic writes, raw error-object logging, and undefined internal
-  jargon in docs.
+  Prioritize data integrity, runtime correctness, and PII on exfiltration surfaces (URLs, logs, payloads, responses). Same-device drafts are owner-approved — see path_instructions. Flag sync setState in effects, non-atomic writes, error logging.
 reviews:
   profile: chill
   request_changes_workflow: false
@@ -47,3 +45,25 @@ reviews:
       instructions: >-
         Mocks must mirror real driver constraints (e.g. neon-http batch/transaction
         support) so green tests cannot mask runtime breakage.
+    - path: store/**
+      instructions: >-
+        Same-device localStorage drafts (cart items, checkout contact,
+        offline queue) are owner-approved. Do not flag PII at rest here;
+        verify shape-validation on rehydrate (corrupt → fallback),
+        manual rehydration gating for SSR pages, and that no draft data is
+        transmitted except inside the existing order submit payload.
+    - path: modules/core/hooks/use-offline-orders.ts
+      instructions: >-
+        Established precedent for the approved localStorage-draft pattern
+        (person details included). Judge store/** changes against it.
+    - path: proxy.ts
+      instructions: >-
+        Public catalog is by design (/, /products incl. /products/[id],
+        /order). Only flag newly exposed auth-gated surfaces
+        (/dashboard/*, /profile/*) or weakened role checks.
+    - path: lib/log-error.ts
+      instructions: >-
+        The BLOCKED_KEYS allowlist is intentional privacy-by-design; never
+        ask to log PII, bodies, tokens, or user agents. Debuggability comes
+        from correlation IDs (order/tracking/ingredient) and curated
+        messages — flag their absence instead.
