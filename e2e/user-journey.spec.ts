@@ -132,7 +132,10 @@ test.describe('Complete User Journey', () => {
     await burgerCard.getByTestId('add-to-cart-button').click();
     await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
 
-    await page.goto('/order');
+    // Client-side navigation: the cart is in-memory Zustand, so a full
+    // page.goto('/order') would reload the app and empty it.
+    await page.getByRole('link', { name: 'View your order' }).click();
+    await page.waitForURL('**/order');
     await expect(page.locator('tbody tr').first()).toBeVisible();
     await expect(page.getByLabel('Full name')).toBeVisible();
     await expect(page.getByLabel('Phone number')).toBeVisible();
