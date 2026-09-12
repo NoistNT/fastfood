@@ -66,7 +66,7 @@ describe('Header — Information Architecture rules', () => {
     window.HTMLElement.prototype.releasePointerCapture = vi.fn();
   });
 
-  it('guest variant is auth-actions only: Login + primary Sign Up, no navigation or preferences', async () => {
+  it('guest variant is catalog + auth-actions: public Menu/Cart, Login + primary Sign Up', async () => {
     mockSession(null);
     render(<Header />);
 
@@ -74,11 +74,14 @@ describe('Header — Information Architecture rules', () => {
     const signUpLink = await screen.findByRole('link', { name: 'register' });
     expect(signUpLink).toHaveClass('bg-primary');
 
-    // Every destination is auth-gated: no Menu icon, no theme toggle, no cart, no account
-    expect(screen.queryByRole('link', { name: 'menu' })).not.toBeInTheDocument();
+    // Catalog + cart are public: guests browse the menu and buy
+    expect(screen.getByRole('link', { name: 'menu' }).getAttribute('href')).toBe('/products');
+    expect(screen.getByRole('link', { name: 'viewCart' }).getAttribute('href')).toBe('/order');
+
+    // Still gated: no theme toggle, no account, no dashboard
     expect(screen.queryByRole('button', { name: 'toggleTheme' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'viewCart' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'userMenu' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'dashboard' })).not.toBeInTheDocument();
   });
 
   it('authed customer has Profile only inside the avatar menu, never in the top nav', async () => {

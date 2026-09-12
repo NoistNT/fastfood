@@ -92,6 +92,45 @@ export default function Header() {
             role="navigation"
             aria-label={t('userNavigation')}
           >
+            {/* Catalog + cart are public — guests browse the menu and buy
+                without an account; auth only gates profile/dashboard. */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    suppressHydrationWarning
+                  >
+                    <Link
+                      href="/products"
+                      aria-label={t('menu')}
+                      aria-current={isOnMenu ? 'page' : undefined}
+                      className={cn(isOnMenu && 'bg-accent text-primary hover:bg-accent')}
+                    >
+                      <UtensilsCrossed />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{t('menu')}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Button
+              asChild
+              variant="ghost"
+              size="icon"
+              suppressHydrationWarning
+            >
+              <Link
+                href="/order"
+                aria-label={t('viewCart')}
+                aria-current={isOnCart ? 'page' : undefined}
+                className={cn(isOnCart && 'bg-accent text-primary hover:bg-accent')}
+              >
+                <ShoppingCart />
+              </Link>
+            </Button>
             {!localLoading && !localUser && (
               <>
                 <Button
@@ -112,28 +151,6 @@ export default function Header() {
             )}
             {!!localUser && (
               <>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="icon"
-                        suppressHydrationWarning
-                      >
-                        <Link
-                          href="/products"
-                          aria-label={t('menu')}
-                          aria-current={isOnMenu ? 'page' : undefined}
-                          className={cn(isOnMenu && 'bg-accent text-primary hover:bg-accent')}
-                        >
-                          <UtensilsCrossed />
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>{t('menu')}</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
                 {hasOpsAccess && (
                   <TooltipProvider>
                     <Tooltip>
@@ -156,21 +173,6 @@ export default function Header() {
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                <Button
-                  asChild
-                  variant="ghost"
-                  size="icon"
-                  suppressHydrationWarning
-                >
-                  <Link
-                    href="/order"
-                    aria-label={t('viewCart')}
-                    aria-current={isOnCart ? 'page' : undefined}
-                    className={cn(isOnCart && 'bg-accent text-primary hover:bg-accent')}
-                  >
-                    <ShoppingCart />
-                  </Link>
-                </Button>
                 <UserMenu user={localUser} />
               </>
             )}

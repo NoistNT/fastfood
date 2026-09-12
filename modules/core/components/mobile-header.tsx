@@ -61,22 +61,19 @@ export function MobileHeader({ user, isAuthenticated, loading = false }: MobileH
             className="flex flex-col gap-y-2 mt-6"
             aria-label={t('mainNavigation')}
           >
-            {isAuthenticated && user && (
-              <SheetItem
-                title={t('menu')}
-                href="/products"
-                icon={UtensilsCrossed}
-                active={pathname === '/products'}
-              />
-            )}
-            {isAuthenticated && user && (
-              <SheetItem
-                title={t('cart')}
-                href="/order"
-                icon={ShoppingCart}
-                active={pathname === '/order'}
-              />
-            )}
+            {/* Catalog + cart are public — same as desktop header. */}
+            <SheetItem
+              title={t('menu')}
+              href="/products"
+              icon={UtensilsCrossed}
+              active={pathname === '/products'}
+            />
+            <SheetItem
+              title={t('cart')}
+              href="/order"
+              icon={ShoppingCart}
+              active={pathname === '/order'}
+            />
             {hasOpsAccess && (
               <SheetItem
                 title={t('dashboard')}

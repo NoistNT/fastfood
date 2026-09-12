@@ -15,6 +15,7 @@ const publicRoutes = [
   '/login',
   '/register',
   '/order',
+  '/products',
   '/password-reset',
   '/password-reset/confirm',
   '/password-reset/request',
