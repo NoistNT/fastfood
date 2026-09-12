@@ -47,8 +47,10 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 
 - **Never open a PR without pre-approval**: show branch name, commit message,
   and full PR body first; wait for explicit approval
-- Conventional Commits; squash-merge; delete branches after merge — only `dev`
-  and `main` persist. `dev` integrates; pushing to `main` is a production release
+- Conventional Commits; squash-merge feature PRs; true merges (`--no-ff`)
+  for release PRs (`dev`→`main`) with short human-written notes; delete
+  branches after merge — only `dev` and `main` persist. `dev` integrates;
+  pushing to `main` is a production release
 - Scan diffs for credentials; never commit `.env*`, tokens, or real connection strings
 - Deferred review findings become a GitHub issue at deferral time
   (`enhancement`/`bug`); the resolving PR cites `Closes #N`. Never resolve
