@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 
-import { getCustomerById } from '../page';
+import { getCustomerById } from '@/app/dashboard/customers/page';
 
 interface Props {
   params: Promise<{ id: string }>;

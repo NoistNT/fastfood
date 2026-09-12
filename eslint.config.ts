@@ -70,6 +70,12 @@ export default [
           'newlines-between': 'always',
         },
       ],
+      // All TS imports use the root-mapped `@/` alias — relative imports
+      // (`../`, `./`) break under refactors and hide the module structure.
+      'no-restricted-imports': [
+        'error',
+        { patterns: [{ group: ['./*', '../*'], message: 'Use @/ deep paths instead.' }] },
+      ],
     },
     settings: {
       'react': { version: 'detect' },

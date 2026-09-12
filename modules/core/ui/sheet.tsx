@@ -7,8 +7,7 @@ import { X } from 'lucide-react';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 
 import { cn } from '@/lib/utils';
-
-import { SheetPortal, sheetVariants } from './utils-sheet';
+import { SheetPortal, sheetVariants } from '@/modules/core/ui/utils-sheet';
 
 export const SheetOverlay = React.forwardRef<
   React.ComponentRef<typeof SheetPrimitive.Overlay>,
@@ -94,4 +93,4 @@ export const SheetDescription = React.forwardRef<
 SheetDescription.displayName = 'SheetDescription';
 
 // Re-export from utils-sheet
-export { Sheet, SheetTrigger, SheetClose } from './utils-sheet';
+export { Sheet, SheetTrigger, SheetClose } from '@/modules/core/ui/utils-sheet';

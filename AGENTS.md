@@ -80,6 +80,9 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - **`app/`** pages + API routes · **`proxy.ts`** middleware (auth, role-based route protection)
 - **`modules/<feature>/`** domain logic (`auth`, `core`, `dashboard`, `orders`, `products`, `users`)
 - **`modules/core/ui/`** shadcn/ui primitives — import via deep paths (`@/modules/core/ui/button`)
+- **Absolute imports only**: every TS import uses the root-mapped `@/` alias —
+  never relative (`../`, `./`). `@/` is a TS import alias, not a filesystem
+  path: tool file arguments are repo-absolute paths, never `@/`-prefixed
 - **`db/schema.ts`** single-file Drizzle schema · **`db/drizzle.ts`** Neon client
 - **`lib/`** utilities · **`lib/auth/session.ts`** JWT sessions via `jose` (HS256, 1-day expiry)
 - **`i18n/request.ts`** auto-detects locale from `Accept-Language` (es → es, else en)

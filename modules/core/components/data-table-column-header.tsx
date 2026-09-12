@@ -1,7 +1,7 @@
 'use client';
 
 import type { Column, RowData } from '@tanstack/react-table';
-import type { DataTableFeatures } from './data-table-features';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from 'lucide-react';
 
