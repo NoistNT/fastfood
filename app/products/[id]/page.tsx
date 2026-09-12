@@ -1,11 +1,7 @@
 import type { Metadata } from 'next';
 
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { getTranslations } from 'next-intl/server';
-import { ChevronLeft } from 'lucide-react';
 
-import { Button } from '@/modules/core/ui/button';
 import { findAll, findOne } from '@/modules/products/actions/actions';
 import DetailCard from '@/modules/products/components/detail-card';
 
@@ -62,7 +58,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const t = await getTranslations('ProductDetail');
 
   const productId = parseProductId(id);
   if (productId === null) notFound();
@@ -71,20 +66,7 @@ export default async function Page({ params }: Props) {
   if (!product) notFound();
 
   return (
-    <section className="container mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-      >
-        <Link
-          href="/products"
-          aria-label={t('backToMenu')}
-        >
-          <ChevronLeft />
-          {t('backToMenu')}
-        </Link>
-      </Button>
+    <section className="container mx-auto max-w-2xl px-4 py-8">
       <DetailCard product={product} />
     </section>
   );

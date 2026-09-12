@@ -144,6 +144,11 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - WCAG AA target — reuse `skip-to-content` + `screen-reader-announcement`;
   cover new flows in `test/accessibility/`
 
+### Responsive
+
+- Mobile-first: base styles target small screens, `sm:`+ breakpoints enhance
+  upward — verify below `md` as well as desktop
+
 ## Testing & tooling
 
 - Tests live in `test/` organized by type (api/components/hooks/lib/integration/store/types/utils/workflows), not beside source; extend adjacent suites instead of new top-level folders — read a matching test first. Vitest runs jsdom with globals, setup = jest-dom only. Many API-route tests import handlers directly (DB mocked via CI env vars)
