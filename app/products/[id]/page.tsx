@@ -8,6 +8,7 @@ import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/modules/core/ui/button';
 import { findAll, findOne } from '@/modules/products/actions/actions';
 import DetailCard from '@/modules/products/components/detail-card';
+
 import { NEXT_PUBLIC_BASE_URL } from '@/constants';
 
 interface Props {
