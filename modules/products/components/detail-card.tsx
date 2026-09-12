@@ -1,8 +1,11 @@
 import type { ProductWithIngredients } from '@/modules/products/types';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { ChevronLeft } from 'lucide-react';
 
+import { Button } from '@/modules/core/ui/button';
 import { PlaceholderImage } from '@/modules/core/ui/placeholder-image';
 import { CardFooter } from '@/modules/products/components/card-footer';
 
@@ -17,9 +20,22 @@ export default async function DetailCard({
 
   return (
     <section
-      className="mx-auto max-w-lg rounded-3xl border-2 border-border"
+      className="relative mx-auto max-w-lg rounded-3xl border-2 border-border"
       aria-labelledby={`product-${id}-name`}
     >
+      <Button
+        asChild
+        variant="secondary"
+        size="icon"
+        className="absolute left-4 top-4 z-10 border bg-background/80 backdrop-blur-sm"
+      >
+        <Link
+          href="/products"
+          aria-label={t('backToMenu')}
+        >
+          <ChevronLeft />
+        </Link>
+      </Button>
       {imageUrl ? (
         <Image
           alt={name}
