@@ -61,7 +61,9 @@ export default [
       'react/jsx-boolean-value': ['error', 'never'],
       'react/jsx-no-useless-fragment': 'error',
       'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
+      // Error-level: warnings exit 0, so a missing dep ships silently and
+      // lingers (the getValues omission survived 8 green runs — #99).
+      'react-hooks/exhaustive-deps': 'error',
       'import/order': [
         'error',
         {

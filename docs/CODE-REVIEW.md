@@ -30,6 +30,8 @@ real shipped-or-caught bug; check the file, not the intent.
   (delivery-without-address had no `<form>`, so `required` was inert — #60)
 - Async races closed? (stale request closing a reopened dialog; submit
   before session resolves — #60)
+- Effect deps complete? (config enforces error-level, but read the body:
+  the `getValues` omission shipped green as a warning — #99)
 - Error paths preserve UX invariants? (invalid payloads never queued
   offline, never clear the cart — #60)
 - Guest vs. authed derived from server response, not client race state?
