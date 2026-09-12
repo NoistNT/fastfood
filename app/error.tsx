@@ -34,7 +34,7 @@ export default function ErrorPage({
 
   if (error instanceof Error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-background">
+      <div className="flex flex-col items-center justify-center min-h-full p-8 bg-background">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="flex justify-center">
             <AlertTriangle className="h-16 w-16 text-destructive" />
