@@ -102,14 +102,40 @@ test.describe('Complete User Journey', () => {
   });
 
   test('unauthenticated user cannot access protected routes', async ({ page }) => {
-    for (const path of ['/dashboard', '/profile', '/products']) {
+    for (const path of ['/dashboard', '/profile']) {
       await page.goto(path);
       await expect(page).toHaveURL(/\/login/);
     }
 
-    // /order is public by design — guests can browse the cart and buy.
+    // /products + /order are public by design — guests browse the catalog,
+    // add items, and check out without an account.
+    await page.goto('/products');
+    await page.waitForSelector('[data-testid="product-card"]');
+    await expect(
+      page.locator('[data-testid="product-card"]').filter({ hasText: 'Classic Burger' })
+    ).toBeVisible();
+
+    await page.goto('/products/1');
+    await expect(page.getByText('Classic Burger')).toBeVisible();
+
     await page.goto('/order');
     await expect(page.getByText("You don't have any products in your order")).toBeVisible();
+  });
+
+  test('guest can browse the catalog, add to cart, and reach checkout', async ({ page }) => {
+    await page.goto('/products');
+    await page.waitForSelector('[data-testid="product-card"]');
+
+    const burgerCard = page
+      .locator('[data-testid="product-card"]')
+      .filter({ hasText: 'Classic Burger' });
+    await burgerCard.getByTestId('add-to-cart-button').click();
+    await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
+
+    await page.goto('/order');
+    await expect(page.locator('tbody tr').first()).toBeVisible();
+    await expect(page.getByLabel('Full name')).toBeVisible();
+    await expect(page.getByLabel('Phone number')).toBeVisible();
   });
 
   test('error handling for invalid registration', async ({ page }) => {

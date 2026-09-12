@@ -103,7 +103,7 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 ### Navigation & chrome
 
 - One entry point per destination. Profile lives in the account menu on desktop, as a sheet row on mobile (`UserMenu` shared by both headers); Dashboard is the deliberate exception — admin-only toolbar icon on desktop, sheet row on mobile, never duplicated across surfaces
-- Header: right-anchored toolbar on solid `bg-background`, hairline `border-b`, `h-16`. Authed = Menu icon (`UtensilsCrossed`, tooltip + `aria-current` accent tint) · Dashboard icon (admin) · cart (authed, → `/order`) · avatar. Guests = Login (ghost) + Sign Up (**the one filled-primary CTA**) only — every other destination is auth-gated and would be a login wall in disguise
+- Header: right-anchored toolbar on solid `bg-background`, hairline `border-b`, `h-16`. Catalog + cart are public (`/products` incl. `/products/[id]`, `/order`): Menu icon (`UtensilsCrossed`, tooltip + `aria-current` accent tint) · cart (→ `/order`) render for everyone, guests included. Guests additionally get Login (ghost) + Sign Up (**the one filled-primary CTA**); authed users get Dashboard icon (admin) · avatar instead. Profile/dashboard stay auth-gated
 - Below `md`: logo + hamburger only; every control lives in the right-sliding sheet whose icon rows highlight the current route. No dead ends anywhere
 - Theme: submenu inside the account menu everywhere signed-in (including `/dashboard/*`, which has its own chrome); sheet footer toggle covers all mobile users
 - Avatars: `<UserAvatar>` — a single initial via `getUserInitials` on a filled-primary chip, identical across headers

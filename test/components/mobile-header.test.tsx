@@ -77,4 +77,19 @@ describe('MobileHeader — dashboard sheet row', () => {
     expect(await screen.findByRole('link', { name: 'menu' })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'dashboard' })).not.toBeInTheDocument();
   });
+
+  it('shows menu + cart rows to guests — catalog is public', async () => {
+    render(
+      <MobileHeader
+        user={null}
+        isAuthenticated={false}
+        loading={false}
+      />
+    );
+    await openSheet();
+
+    expect(await screen.findByRole('link', { name: 'menu' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'cart' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'dashboard' })).not.toBeInTheDocument();
+  });
 });

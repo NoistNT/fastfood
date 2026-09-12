@@ -55,11 +55,15 @@ describe('route protection matrix', () => {
 
   it('sends unauthenticated visitors to login on protected routes', async () => {
     await expectRedirect('/dashboard', null, '/login');
+    await expectRedirect('/profile', null, '/login');
   });
 
   it('lets anyone through public routes without a session', async () => {
     await expectPassThrough('/', null);
     await expectPassThrough('/login', null);
+    await expectPassThrough('/order', null);
+    await expectPassThrough('/products', null);
+    await expectPassThrough('/products/1', null);
   });
 
   it('fences civilians out of the dashboard', async () => {
