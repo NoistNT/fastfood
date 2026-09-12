@@ -40,6 +40,7 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   **Enforcement: no PR is presented until a verdict table for the full diff
   exists in the session** — review first, then show.
 - Review checklist: `docs/CODE-REVIEW.md` — run it against every diff.
+- UI workline: `docs/UI-REVIEW.md` — run it against every user-facing diff.
 - **Distill in the resolving PR**: every finding that teaches a durable rule
   lands its checklist/config line in the *same PR that fixes it* — never a
   later hygiene PR (deferred documentation is never done).
