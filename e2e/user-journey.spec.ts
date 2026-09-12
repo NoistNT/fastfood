@@ -132,6 +132,9 @@ test.describe('Complete User Journey', () => {
     await burgerCard.getByTestId('add-to-cart-button').click();
     await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
 
+    // The screen-reader announcement must never paint (no ghost text).
+    await expect(page.getByText('has been added to your order')).toBeHidden();
+
     // Client-side navigation into the cart (a reload round-trip is covered below).
     await page.getByRole('link', { name: 'View your order' }).click();
     await page.waitForURL('**/order');
