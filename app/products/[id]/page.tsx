@@ -71,7 +71,7 @@ export default async function Page({ params }: Props) {
   if (!product) notFound();
 
   return (
-    <section className="container mx-auto max-w-3xl space-y-6 px-4 py-8">
+    <section className="container mx-auto max-w-2xl space-y-6 px-4 py-8">
       <Button
         asChild
         variant="ghost"

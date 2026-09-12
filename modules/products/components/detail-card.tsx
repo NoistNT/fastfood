@@ -17,24 +17,24 @@ export default async function DetailCard({
 
   return (
     <section
-      className="mx-auto max-w-2xl rounded-3xl border-2 border-border"
+      className="mx-auto max-w-lg rounded-3xl border-2 border-border"
       aria-labelledby={`product-${id}-name`}
     >
       {imageUrl ? (
         <Image
           alt={name}
-          className="aspect-[4/3] w-full rounded-b-sm rounded-t-3xl object-cover"
-          height={810}
+          className="aspect-square w-full rounded-b-sm rounded-t-3xl object-cover"
+          height={540}
           src={imageUrl}
-          width={1080}
-          sizes="(max-width: 768px) 100vw, 768px"
+          width={540}
+          sizes="(max-width: 560px) 100vw, 512px"
           priority
         />
       ) : (
         <PlaceholderImage
-          className="aspect-[4/3] w-full rounded-b-sm rounded-t-3xl object-cover"
-          width={1080}
-          height={810}
+          className="aspect-square w-full rounded-b-sm rounded-t-3xl object-cover"
+          width={540}
+          height={540}
         />
       )}
       <div className="h-1 w-full bg-muted" />
@@ -42,7 +42,7 @@ export default async function DetailCard({
         <div className="flex items-center justify-between gap-4">
           <h2
             id={`product-${id}-name`}
-            className="text-2xl font-bold"
+            className="text-2xl font-bold min-w-0"
           >
             {name}
           </h2>
