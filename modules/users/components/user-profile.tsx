@@ -3,14 +3,17 @@ import type { User } from '@/modules/users/types';
 import { useTranslations } from 'next-intl';
 
 interface Props {
-  user: User;
+  user: Omit<User, 'passwordHash'>;
 }
 
 export default function UserProfile({ user }: Props) {
   const t = useTranslations('Features.profile');
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6"
+      data-testid="profile-details"
+    >
       <div>
         <h2 className="text-xl font-semibold mb-4">{t('personalInformation')}</h2>
         <div className="space-y-4">

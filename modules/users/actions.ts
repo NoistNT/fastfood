@@ -7,12 +7,29 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 
-export const findAllUsers = async (): Promise<User[]> => {
-  return await db.query.users.findMany();
+// Never serialize credential material to clients: every user read projects
+// these columns explicitly instead of spreading the full row.
+const safeUserColumns = {
+  id: true,
+  name: true,
+  email: true,
+  phoneNumber: true,
+  lastLoginAt: true,
+  deletedAt: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
+// User rows cross the server/client boundary (profile pages are server
+// components rendering client islands) — the hash must never be among them.
+export type SafeUser = Omit<User, 'passwordHash'>;
+
+export const findAllUsers = async (): Promise<SafeUser[]> => {
+  return await db.query.users.findMany({ columns: safeUserColumns });
 };
 
 export const findUserById = async (id: string) => {
-  return await db.query.users.findFirst({ where: eq(users.id, id) });
+  return await db.query.users.findFirst({ columns: safeUserColumns, where: eq(users.id, id) });
 };
 
 export const createUser = async (
