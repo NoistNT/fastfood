@@ -151,14 +151,17 @@ jobs:
             });
 
             // Create deployment record (empty required_contexts bypasses the
-            // self-referential check on the in-progress deploy job)
+            // self-referential check on the in-progress deploy job).
+            // auto_merge: false — status bookkeeping must never merge
+            // branches as a side effect (squash-diverged histories 409).
             const deployment = await github.rest.repos.createDeployment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: context.sha,
               environment: 'production',
               description: deployNotes,
-              required_contexts: []
+              required_contexts: [],
+              auto_merge: false,
             });
 
             // Update deployment status
