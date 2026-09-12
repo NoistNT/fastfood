@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { DollarSign, ShoppingCart, Users, Package } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { DashboardCardSkeleton } from '@/modules/core/ui/skeleton-components';
+import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
 
 interface SummaryData {
   totalRevenue: number;
@@ -13,32 +13,11 @@ interface SummaryData {
   totalProducts: number;
 }
 
-async function getSummaryData(): Promise<SummaryData> {
-  const response = await fetch('/api/dashboard/summary');
-  if (!response.ok) {
-    throw new Error('Failed to fetch summary data');
-  }
-  const result = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.error?.message ?? 'Failed to fetch summary data');
-  }
-
-  return result.data;
-}
-
 export function OverviewCards() {
-  const [data, setData] = useState<SummaryData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useDashboardSummary();
+  const summary = (data?.data ?? null) as SummaryData | null;
 
-  useEffect(() => {
-    getSummaryData()
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
+  if (isPending) {
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[...Array(4)].map((_, i) => (
@@ -48,9 +27,7 @@ export function OverviewCards() {
     );
   }
 
-  if (!data) {
-    return <div>Failed to load dashboard data</div>;
-  }
+  if (isError || !summary) return <div>Failed to load dashboard data</div>;
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -60,7 +37,7 @@ export function OverviewCards() {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">${(data.totalRevenue || 0).toFixed(2)}</div>
+          <div className="text-2xl font-bold">${(summary.totalRevenue || 0).toFixed(2)}</div>
           <p className="text-xs text-muted-foreground">+20.1% from last month</p>
         </CardContent>
       </Card>
@@ -71,7 +48,7 @@ export function OverviewCards() {
           <ShoppingCart className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{data.totalOrders}</div>
+          <div className="text-2xl font-bold">{summary.totalOrders}</div>
           <p className="text-xs text-muted-foreground">+180.1% from last month</p>
         </CardContent>
       </Card>
@@ -82,7 +59,7 @@ export function OverviewCards() {
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{data.totalCustomers}</div>
+          <div className="text-2xl font-bold">{summary.totalCustomers}</div>
           <p className="text-xs text-muted-foreground">+19% from last month</p>
         </CardContent>
       </Card>
@@ -93,7 +70,7 @@ export function OverviewCards() {
           <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{data.totalProducts}</div>
+          <div className="text-2xl font-bold">{summary.totalProducts}</div>
           <p className="text-xs text-muted-foreground">+2 new this month</p>
         </CardContent>
       </Card>

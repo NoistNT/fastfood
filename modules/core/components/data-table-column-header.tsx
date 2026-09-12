@@ -1,18 +1,22 @@
 'use client';
 
-import type { Column } from '@tanstack/react-table';
+import type { Column, RowData } from '@tanstack/react-table';
+import type { DataTableFeatures } from './data-table-features';
 
 import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/modules/core/ui/button';
 
-interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {
-  column: Column<TData, TValue>;
+interface DataTableColumnHeaderProps<
+  TData extends RowData,
+  TValue,
+> extends React.HTMLAttributes<HTMLDivElement> {
+  column: Column<DataTableFeatures, TData, TValue>;
   title: string;
 }
 
-export function DataTableColumnHeader<TData, TValue>({
+export function DataTableColumnHeader<TData extends RowData, TValue>({
   column,
   title,
   className,

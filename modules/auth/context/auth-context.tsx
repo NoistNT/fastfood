@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { useRouter } from 'next/navigation';
 
 import { type UserWithRoles } from '@/types/auth';
+import { clearCSRFTokenCache } from '@/modules/core/hooks/use-csrf-token';
 
 interface AuthContextType {
   user: UserWithRoles | null;
@@ -27,7 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await fetch('/api/auth/session');
         if (response.ok) {
           const data = await response.json();
-          setUser(data.user);
+          setUser(data.data?.user ?? null);
         } else {
           setUser(null);
         }
@@ -49,11 +50,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         const data = await response.json();
-        setUser(data.user);
+        setUser(data.data?.user ?? null);
 
         // Redirect based on user role
         const hasAdminAccess =
-          data.user?.roles?.some((role: { name: string }) => role.name === 'admin') ?? false;
+          data.data?.user?.roles?.some((role: { name: string }) => role.name === 'admin') ?? false;
         router.push(hasAdminAccess ? '/dashboard' : '/');
 
         return true;
@@ -76,10 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Always clear user on logout attempt, regardless of response
       setUser(null);
+      clearCSRFTokenCache();
       router.push('/login');
     } catch (_error) {
       // Still clear user even if request fails
       setUser(null);
+      clearCSRFTokenCache();
       router.push('/login');
     } finally {
       setLoading(false);

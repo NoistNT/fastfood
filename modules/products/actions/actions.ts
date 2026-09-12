@@ -15,13 +15,21 @@ const fetchAllProducts = async () => {
 const fetchOneProduct = async (id: number): Promise<ProductWithIngredients | null> => {
   const productWithIngredients = await db.query.products.findFirst({
     where: eq(products.id, id),
-    with: { ingredients: { with: { ingredient: { columns: { name: true } } } } },
+    with: {
+      ingredients: {
+        with: { ingredient: { columns: { id: true, name: true } } },
+      },
+    },
   });
 
   if (!productWithIngredients) return null;
   const { ingredients, ...product } = productWithIngredients;
 
-  return { ...product, ingredients: ingredients.map(({ ingredient }) => ingredient.name) };
+  return {
+    ...product,
+    ingredients: ingredients.map(({ ingredient }) => ingredient.name),
+    ingredientIds: ingredients.map(({ ingredient }) => ingredient.id),
+  };
 };
 
 export const findAll = cache(fetchAllProducts, ['products-findAll'], { tags: ['products'] });

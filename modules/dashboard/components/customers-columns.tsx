@@ -1,10 +1,11 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
+import type { USER_ROLES } from '@/types/auth';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import Link from 'next/link';
 
-import { USER_ROLES } from '@/types/auth';
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { CustomerActionsCell } from '@/modules/dashboard/components/customer-actions-cell';
 import { UserRoleBadge } from '@/modules/dashboard/components/user-role-badge';
@@ -21,8 +22,10 @@ type CustomerWithRoles = {
 
 export const createColumns = (
   t: (key: string) => string,
-  tTable?: (key: string) => string
-): ColumnDef<CustomerWithRoles>[] => [
+  tTable?: (key: string) => string,
+  onEdit?: (user: CustomerWithRoles) => void,
+  onMerge?: (user: CustomerWithRoles) => void
+): ColumnDef<DataTableFeatures, CustomerWithRoles>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => (
@@ -86,11 +89,11 @@ export const createColumns = (
             roles.map((role) => (
               <UserRoleBadge
                 key={role}
-                role={role as typeof USER_ROLES.ADMIN | typeof USER_ROLES.CUSTOMER}
+                role={role as typeof USER_ROLES.ADMIN | typeof USER_ROLES.STAFF}
               />
             ))
           ) : (
-            <UserRoleBadge role={USER_ROLES.CUSTOMER} />
+            <span className="text-sm text-muted-foreground">{t('customers.table.noRoles')}</span>
           )}
         </div>
       );
@@ -125,6 +128,12 @@ export const createColumns = (
   {
     id: 'actions',
     header: t('customers.table.columns.actions'),
-    cell: ({ row }) => <CustomerActionsCell user={row.original} />,
+    cell: ({ row }) => (
+      <CustomerActionsCell
+        user={row.original}
+        onEdit={onEdit}
+        onMerge={onMerge}
+      />
+    ),
   },
 ];

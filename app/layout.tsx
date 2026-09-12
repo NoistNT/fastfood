@@ -1,9 +1,12 @@
+import type { Metadata, Viewport } from 'next';
+
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { Inter as FontSans } from 'next/font/google';
+import { getMessages, getTranslations } from 'next-intl/server';
+import { JetBrains_Mono as FontMono } from 'next/font/google';
 
 import { cn } from '@/lib/utils';
 import ConditionalHeader from '@/modules/core/components/conditional-header';
+import { DemoBanner } from '@/modules/core/components/demo-banner';
 import Footer from '@/modules/core/components/footer';
 import { SkipToContent } from '@/modules/core/components/skip-to-content';
 import { PageTransition } from '@/modules/core/components/page-transition';
@@ -16,56 +19,48 @@ import {
 import { PushNotificationManager } from '@/modules/core/components/push-notification-manager';
 import { ServiceWorkerRegistration } from '@/modules/core/components/service-worker-registration';
 import { ThemeProvider } from '@/modules/core/theme-provider';
-import { ModeToggle } from '@/modules/core/ui/mode-toggle';
 import { Toaster } from '@/modules/core/ui/toaster';
 import { AuthProvider } from '@/modules/auth/context/auth-context';
 import '@/app/globals.css';
 
-const fontSans = FontSans({
+const fontMono = FontMono({
   subsets: ['latin'],
   variable: '--font-sans',
 });
 
+export const metadata: Metadata = {
+  title: {
+    default: 'FastFood',
+    template: '%s | FastFood',
+  },
+  description: 'Order your favorite fast food, fast.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'FastFood',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f7f4f2' },
+    { media: '(prefers-color-scheme: dark)', color: '#1f1b1a' },
+  ],
+};
+
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const messages = await getMessages();
+  const t = await getTranslations('Components');
 
   return (
     <html
       suppressHydrationWarning
       lang="en"
     >
-      <head>
-        <title>Fast Food</title>
-        <link
-          rel="manifest"
-          href="/manifest.json"
-        />
-        <meta
-          name="theme-color"
-          content="#000000"
-        />
-        <meta
-          name="apple-mobile-web-app-capable"
-          content="yes"
-        />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="default"
-        />
-        <meta
-          name="apple-mobile-web-app-title"
-          content="FastFood"
-        />
-        <link
-          rel="apple-touch-icon"
-          href="/next.svg"
-        />
-      </head>
-      <NextIntlClientProvider messages={messages}>
-        <AuthProvider>
-          <body
-            className={cn('min-h-screen flex flex-col font-sans antialiased', fontSans.variable)}
-          >
+      <body className={cn('min-h-screen flex flex-col font-sans antialiased', fontMono.variable)}>
+        <NextIntlClientProvider messages={messages}>
+          <AuthProvider>
             <ThemeProvider
               disableTransitionOnChange
               enableSystem
@@ -80,24 +75,22 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <ResourcePreloader />
                 <PushNotificationManager />
                 <Toaster />
-                <div className="fixed right-4 bottom-4 z-10">
-                  <ModeToggle />
-                </div>
+                <DemoBanner />
                 <ConditionalHeader />
                 <main
                   id="main-content"
                   className="grow"
                   role="main"
-                  aria-label="Main content"
+                  aria-label={t('main.landmark')}
                 >
                   <PageTransition>{children}</PageTransition>
                 </main>
                 <Footer />
               </QueryProvider>
             </ThemeProvider>
-          </body>
-        </AuthProvider>
-      </NextIntlClientProvider>
+          </AuthProvider>
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

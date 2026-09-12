@@ -147,7 +147,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div
-        className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8 shadow-lg"
+        className="w-full max-w-md space-y-8 rounded-lg border bg-card p-8"
         role="main"
         aria-labelledby="reset-password-heading"
       >

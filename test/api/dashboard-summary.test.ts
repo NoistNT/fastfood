@@ -88,6 +88,20 @@ describe('/api/dashboard/summary', () => {
       expect(result.error.code).toBe('UNAUTHORIZED');
     });
 
+    it('should return 403 for civilians without an operational role', async () => {
+      mockGetSession.mockResolvedValue({
+        ...mockUser,
+        roles: [{ id: 2, name: 'customer', description: 'Customer' }],
+      });
+
+      const response = await getSummary();
+      const result = await response.json();
+
+      expect(response.status).toBe(403);
+      expect(result.success).toBe(false);
+      expect(result.error.code).toBe('FORBIDDEN');
+    });
+
     it('should return dashboard summary successfully', async () => {
       const mockOrderStats = [{ totalOrders: 45, totalRevenue: '1250.50' }];
       const mockCustomerStats = [{ totalCustomers: 23 }];

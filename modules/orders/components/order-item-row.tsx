@@ -41,7 +41,7 @@ export function OrderItemRow({
     <Fragment>
       <TableRow
         key={productId}
-        className="dark:hover:bg-muted/50 hover:bg-neutral-200 text-muted-foreground font-medium"
+        className="hover:bg-accent text-muted-foreground font-medium"
       >
         <TableCell>
           <Link href={`/products/${productId}`}>
@@ -53,9 +53,9 @@ export function OrderItemRow({
           <div className="flex items-center gap-2">
             <Button
               aria-label="Decrease quantity"
-              className="size-8 p-0 bg-transparent text-muted-foreground shadow-none hover:shadow-none border border-neutral-300 dark:border-muted"
               type="button"
               variant="outline"
+              size="icon-sm"
               onClick={handleDecrement}
             >
               <Minus className="size-4" />
@@ -65,9 +65,9 @@ export function OrderItemRow({
             </span>
             <Button
               aria-label="Increase quantity"
-              className="size-8 p-0 bg-transparent text-muted-foreground shadow-none hover:shadow-none border border-neutral-300 dark:border-muted"
               type="button"
               variant="outline"
+              size="icon-sm"
               onClick={() => incrementQuantity(productId)}
             >
               <Plus className="size-4" />
@@ -78,12 +78,12 @@ export function OrderItemRow({
         <TableCell>
           <Button
             aria-label="Remove item"
-            className="size-8 p-0 bg-transparent hover:bg-rose-200 dark:hover:bg-rose-900/20 text-primary shadow-none hover:shadow-none border border-neutral-300 dark:border-muted"
             type="button"
-            variant="outline"
+            variant="destructive-soft"
+            size="icon-sm"
             onClick={() => setRemoveConfirmationOpen(true)}
           >
-            <Trash2Icon className="text-rose-400 dark:text-rose-800" />
+            <Trash2Icon className="text-destructive dark:text-destructive/80" />
           </Button>
         </TableCell>
       </TableRow>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   LineChart,
   Line,
@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/modules/core/ui/dropdown-menu';
+import { useDashboardCharts } from '@/modules/core/hooks/use-api-cache';
 
 interface ChartData {
   date: string;
@@ -36,39 +37,13 @@ const timePeriods = [
 ];
 
 export function RevenueChart() {
-  const [data, setData] = useState<ChartData[]>([]);
   const [period, setPeriod] = useState('30d');
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useDashboardCharts(period);
+  const chartData = (data?.data as { revenueData?: ChartData[] } | undefined)?.revenueData ?? [];
 
-  useEffect(() => {
-    fetchChartData(period);
-  }, [period]);
+  if (isPending) return <ChartSkeleton />;
 
-  const fetchChartData = async (selectedPeriod: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`/api/dashboard/charts?period=${selectedPeriod}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch chart data');
-      }
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error?.message ?? 'Failed to fetch chart data');
-      }
-
-      setData(result.data.revenueData ?? []);
-    } catch (error) {
-      console.error('Error fetching chart data:', error);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <ChartSkeleton />;
-  }
+  if (isError) return <div>Failed to load chart data</div>;
 
   return (
     <div className="space-y-4">
@@ -100,7 +75,7 @@ export function RevenueChart() {
         width="100%"
         height={350}
       >
-        <LineChart data={data}>
+        <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="date"

@@ -10,7 +10,7 @@ vi.mock('@/lib/auth/session');
 vi.mock('@/types/auth', () => ({
   USER_ROLES: {
     ADMIN: 'admin',
-    CUSTOMER: 'customer',
+    STAFF: 'staff',
   },
 }));
 
@@ -25,13 +25,13 @@ describe('Authentication Workflow Tests', () => {
 
       // Test that roles are properly defined
       expect(USER_ROLES).toHaveProperty('ADMIN');
-      expect(USER_ROLES).toHaveProperty('CUSTOMER');
+      expect(USER_ROLES).toHaveProperty('STAFF');
       expect(USER_ROLES.ADMIN).toBe('admin');
-      expect(USER_ROLES.CUSTOMER).toBe('customer');
+      expect(USER_ROLES.STAFF).toBe('staff');
     });
 
     it('should handle role-based authentication checks', () => {
-      // Test role checking logic
+      // Test role checking logic — roles encode powers only
       const userWithAdminRole = {
         id: 'user-123',
         name: 'Admin User',
@@ -39,24 +39,34 @@ describe('Authentication Workflow Tests', () => {
         roles: [{ id: 'role-1', name: 'admin' }],
       };
 
-      const userWithCustomerRole = {
+      const userWithStaffRole = {
         id: 'user-456',
-        name: 'Customer User',
-        email: 'customer@example.com',
-        roles: [{ id: 'role-2', name: 'customer' }],
+        name: 'Staff User',
+        email: 'staff@example.com',
+        roles: [{ id: 'role-2', name: 'staff' }],
+      };
+
+      const civilianUser = {
+        id: 'user-789',
+        name: 'Civilian User',
+        email: 'civilian@example.com',
+        roles: [],
       };
 
       // Check admin role
       const hasAdminRole = userWithAdminRole.roles.some((role) => role.name === 'admin');
       expect(hasAdminRole).toBe(true);
 
-      // Check customer role
-      const hasCustomerRole = userWithCustomerRole.roles.some((role) => role.name === 'customer');
-      expect(hasCustomerRole).toBe(true);
+      // Check staff role
+      const hasStaffRole = userWithStaffRole.roles.some((role) => role.name === 'staff');
+      expect(hasStaffRole).toBe(true);
 
-      // Check that admin user doesn't have customer-only access
-      const adminHasCustomerRole = userWithAdminRole.roles.some((role) => role.name === 'customer');
-      expect(adminHasCustomerRole).toBe(false);
+      // Check that admin user doesn't have staff-only access
+      const adminHasStaffRole = userWithAdminRole.roles.some((role) => role.name === 'staff');
+      expect(adminHasStaffRole).toBe(false);
+
+      // Civilians (registered buyers, record-only people) carry zero roles
+      expect(civilianUser.roles).toHaveLength(0);
     });
   });
 
@@ -148,7 +158,7 @@ describe('Authentication Workflow Tests', () => {
             id: 'user-123',
             name: 'John Doe',
             email: 'john@example.com',
-            roles: [{ id: 'role-2', name: 'customer' }],
+            roles: [{ id: 'role-2', name: 'staff' }],
           },
         },
       };

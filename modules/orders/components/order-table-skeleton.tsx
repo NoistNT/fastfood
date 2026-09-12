@@ -10,7 +10,7 @@ import {
 
 export default function OrderTableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <Table className="w-full">
         <TableHeader className="sticky top-0 bg-white dark:bg-black tracking-tight">
           <TableRow>
@@ -28,7 +28,7 @@ export default function OrderTableSkeleton() {
           {Array.from({ length: 3 }).map((_, i) => (
             <TableRow
               key={i}
-              className="dark:hover:bg-muted/50 hover:bg-neutral-200 text-muted-foreground font-medium"
+              className="hover:bg-accent text-muted-foreground font-medium"
             >
               <TableCell>
                 <Skeleton className="h-5 w-32" />

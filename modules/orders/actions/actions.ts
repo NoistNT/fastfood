@@ -1,97 +1,13 @@
 'use server';
 
-import { and, count, eq, gte, inArray, lt } from 'drizzle-orm';
+import { and, count, eq, gte, lt } from 'drizzle-orm';
 import { getTranslations } from 'next-intl/server';
 import { revalidateTag, unstable_cache as cache } from 'next/cache';
 
 import { db } from '@/db/drizzle';
-import { orderItem, orders, orderStatusHistory, products } from '@/db/schema';
-import {
-  canTransition,
-  getOrderSchemas,
-  isValidStatus,
-  validateData,
-} from '@/modules/orders/helpers';
-import {
-  ORDER_STATUS,
-  type DashboardOrderView,
-  type NewOrderRequest,
-  type OrderStatus,
-} from '@/modules/orders/types';
-
-const createItem = async (
-  orderId: string,
-  newOrder: NewOrderRequest,
-  t: (key: string, values?: { orderId: string }) => string
-) => {
-  try {
-    // Validate that all products exist
-    const productIds = newOrder.items.map((item) => item.productId);
-    const existingProducts = await db
-      .select({ id: products.id })
-      .from(products)
-      .where(inArray(products.id, productIds));
-
-    const existingProductIds = new Set(existingProducts.map((p) => p.id));
-    const invalidProductIds = productIds.filter((id) => !existingProductIds.has(id));
-
-    if (invalidProductIds.length > 0) {
-      throw new Error(`Invalid product IDs: ${invalidProductIds.join(', ')}`);
-    }
-
-    await db
-      .insert(orderItem)
-      .values(newOrder.items.map(({ productId, quantity }) => ({ orderId, productId, quantity })));
-  } catch (_error) {
-    console.error('Error inserting orderItem:', _error);
-    throw new Error(t('createItemError', { orderId }));
-  }
-};
-
-const insertAndGetOrderId = async (newOrder: NewOrderRequest) => {
-  const { items: _items, ...orderData } = newOrder;
-  const result = await db.insert(orders).values(orderData).returning({ id: orders.id });
-  if (result.length === 0) throw new Error('Failed to insert order');
-  return result;
-};
-
-const addStatus = async (orderId: string) => {
-  return await db.insert(orderStatusHistory).values({
-    orderId,
-    status: ORDER_STATUS.PENDING,
-    createdAt: new Date(),
-  });
-};
-
-export const create = async (newOrderData: NewOrderRequest) => {
-  const t = await getTranslations('Orders');
-  const { OrderId, CreateNewOrder } = getOrderSchemas((key) => t(`helpers.${key}`));
-  try {
-    const validatedNewOrder = validateData(CreateNewOrder, newOrderData);
-
-    const [orderId] = await insertAndGetOrderId(validatedNewOrder);
-    const validatedOrderId = validateData(OrderId, orderId.id);
-
-    await addStatus(validatedOrderId);
-
-    await createItem(validatedOrderId, validatedNewOrder, (key, values) =>
-      t(`errors.${key}`, values)
-    );
-
-    revalidateTag('orders', 'max');
-
-    // Return the created order information
-    return {
-      id: validatedOrderId,
-      userId: validatedNewOrder.userId,
-      total: validatedNewOrder.total,
-      status: ORDER_STATUS.PENDING,
-    };
-  } catch (error) {
-    console.error('Error in create order:', error);
-    throw new Error(t('errors.createOrderError'));
-  }
-};
+import { orders, orderStatusHistory } from '@/db/schema';
+import { canTransition, isValidStatus } from '@/modules/orders/helpers';
+import { ORDER_STATUS, type DashboardOrderView, type OrderStatus } from '@/modules/orders/types';
 
 export async function findAll(date?: Date): Promise<DashboardOrderView[]> {
   const t = await getTranslations('Orders.errors');

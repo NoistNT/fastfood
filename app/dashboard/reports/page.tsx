@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/mod
 import { RevenueChart } from '@/modules/dashboard/components/revenue-chart';
 import { OrdersStatusChart } from '@/modules/dashboard/components/orders-status-chart';
 import { OverviewCards } from '@/modules/dashboard/components/overview-cards';
-import { CustomerAnalytics } from '@/modules/dashboard/components/customer-analytics';
 import { RevenueForecast } from '@/modules/dashboard/components/revenue-forecast';
 
 export default async function ReportsPage() {
@@ -47,11 +46,6 @@ export default async function ReportsPage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Additional report sections will be added here */}
-      <Suspense fallback={<div>Loading customer analytics...</div>}>
-        <CustomerAnalytics />
-      </Suspense>
 
       <Suspense fallback={<div>Loading revenue forecast...</div>}>
         <RevenueForecast />

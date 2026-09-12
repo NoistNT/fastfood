@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 import { ChartSkeleton } from '@/modules/core/ui/skeleton-components';
+import { useDashboardCharts } from '@/modules/core/hooks/use-api-cache';
 
 interface StatusData {
   status: string;
@@ -13,38 +13,13 @@ interface StatusData {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export function OrdersStatusChart() {
-  const [data, setData] = useState<StatusData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useDashboardCharts('30d');
+  const statusData = (data?.data as { statusData?: StatusData[] } | undefined)?.statusData ?? [];
+  const chartData = statusData.map((item) => ({ name: item.status, value: item.count }));
 
-  useEffect(() => {
-    fetchStatusData();
-  }, []);
+  if (isPending) return <ChartSkeleton />;
 
-  const fetchStatusData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/dashboard/charts?period=30d');
-      if (!response.ok) {
-        throw new Error('Failed to fetch status data');
-      }
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error?.message ?? 'Failed to fetch status data');
-      }
-
-      setData(result.data.statusData ?? []);
-    } catch (error) {
-      console.error('Error fetching status data:', error);
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return <ChartSkeleton />;
-  }
+  if (isError) return <div>Failed to load status data</div>;
 
   return (
     <ResponsiveContainer
@@ -53,7 +28,7 @@ export function OrdersStatusChart() {
     >
       <PieChart>
         <Pie
-          data={data.map((item) => ({ name: item.status, value: item.count }))}
+          data={chartData}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -62,7 +37,7 @@ export function OrdersStatusChart() {
           fill="#8884d8"
           dataKey="value"
         >
-          {data.map((_, index) => (
+          {chartData.map((_, index) => (
             <Cell
               key={`cell-${index}`}
               fill={COLORS[index % COLORS.length]}

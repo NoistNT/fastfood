@@ -7,9 +7,10 @@ import { BackgroundWall } from '@/modules/core/ui/background-wall';
 
 export default function ConditionalHeader() {
   const pathname = usePathname();
-  const isDashboardRoute = pathname?.startsWith('/dashboard');
 
-  if (isDashboardRoute) return null;
+  // The dashboard renders its own chrome (sidebar + header); theme controls
+  // live inside the account menu there, same as everywhere else.
+  if (pathname?.startsWith('/dashboard')) return null;
 
   return (
     <>

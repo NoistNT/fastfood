@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Download } from 'lucide-react';
 
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
@@ -23,7 +23,9 @@ import {
 } from '@/modules/core/ui/dropdown-menu';
 import { Badge } from '@/modules/core/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
+import { useInventory } from '@/modules/core/hooks/use-api-cache';
 import { exportToCSV } from '@/lib/utils';
+import { IngredientFormDialog } from '@/modules/dashboard/components/ingredient-form-dialog';
 
 interface InventoryItem {
   id: string;
@@ -37,61 +39,23 @@ interface InventoryItem {
 
 export function InventoryTable() {
   const t = useTranslations('Features.dashboard.inventory');
-  const [items, setItems] = useState<InventoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000'}/api/inventory`
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch inventory items');
-        }
-
-        const result = await response.json();
-
-        if (!result.success) {
-          throw new Error(result.error?.message ?? 'Failed to fetch inventory items');
-        }
-
-        const processedItems = (result.data ?? []).map((item: InventoryItem) => {
-          let status: 'normal' | 'low' | 'out' = 'normal';
-          if (item.quantity === 0) {
-            status = 'out';
-          } else if (item.quantity <= item.minThreshold) {
-            status = 'low';
-          }
-
-          return {
-            id: item.id,
-            ingredientName: item.ingredientName,
-            quantity: item.quantity,
-            minThreshold: item.minThreshold,
-            unit: item.unit,
-            lastUpdated: item.lastUpdated,
-            status,
-          };
-        });
-        setItems(processedItems);
-      } catch (error) {
-        console.error('Failed to fetch inventory items:', error);
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchItems();
-  }, []);
+  const { data, isPending, isError } = useInventory();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const items: InventoryItem[] = ((data?.data ?? []) as InventoryItem[]).map((item) => {
+    let status: 'normal' | 'low' | 'out' = 'normal';
+    if (item.quantity === 0) {
+      status = 'out';
+    } else if (item.quantity <= item.minThreshold) {
+      status = 'low';
+    }
+    return { ...item, status };
+  });
 
   const handleExportCSV = () => {
-    exportToCSV(items as unknown as Record<string, unknown>[], 'inventory.csv');
+    exportToCSV(items, 'inventory.csv');
   };
 
-  if (loading) {
+  if (isPending) {
     return (
       <Card>
         <CardHeader>
@@ -104,6 +68,14 @@ export function InventoryTable() {
             columns={4}
           />
         </CardContent>
+      </Card>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <CardContent className="pt-6 text-muted-foreground">Failed to load inventory</CardContent>
       </Card>
     );
   }
@@ -131,7 +103,7 @@ export function InventoryTable() {
               <Download className="h-4 w-4 mr-2" />
               Export CSV
             </Button>
-            <Button>
+            <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               {t('inventoryTable.addItem')}
             </Button>
@@ -214,6 +186,10 @@ export function InventoryTable() {
           </TableBody>
         </Table>
       </CardContent>
+      <IngredientFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </Card>
   );
 }

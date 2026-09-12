@@ -30,7 +30,7 @@ describe('EnhancedInput', () => {
     render(<EnhancedInput success />);
 
     const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('border-green-500');
+    expect(input).toHaveClass('border-success');
 
     // Check for success icon (rendered as SVG)
     const successIcon = document.querySelector('svg');

@@ -74,7 +74,7 @@ export default async function CustomerDetailPage({ params }: Props) {
               <button className="w-full text-left px-4 py-2 text-sm bg-muted rounded-md hover:bg-muted/80 transition-colors">
                 {t('editCustomer')}
               </button>
-              <button className="w-full text-left px-4 py-2 text-sm bg-red-50 text-red-700 border border-red-200 rounded-md hover:bg-red-100 transition-colors">
+              <button className="w-full text-left px-4 py-2 text-sm bg-destructive/10 text-destructive border border-destructive/30 rounded-md hover:bg-destructive/20 transition-colors">
                 {t('deleteCustomer')}
               </button>
             </div>

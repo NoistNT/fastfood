@@ -72,7 +72,7 @@ describe('useAuth', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ user: mockUser }),
+      json: () => Promise.resolve({ data: { user: mockUser } }),
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -123,7 +123,7 @@ describe('useAuth', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ user: mockUser }),
+      json: () => Promise.resolve({ data: { user: mockUser } }),
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -214,7 +214,7 @@ describe('useAuth', () => {
     // Setup initial authenticated state
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ user: mockUser }),
+      json: () => Promise.resolve({ data: { user: mockUser } }),
     });
 
     mockFetch.mockResolvedValueOnce({
@@ -256,7 +256,7 @@ describe('useAuth', () => {
     // Setup initial authenticated state
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ user: mockUser }),
+      json: () => Promise.resolve({ data: { user: mockUser } }),
     });
 
     mockFetch.mockRejectedValueOnce(new Error('Logout failed'));
@@ -290,7 +290,9 @@ describe('useAuth', () => {
                 ok: true,
                 json: () =>
                   Promise.resolve({
-                    user: { id: '1', email: 'test@example.com', name: 'Test', roles: ['user'] },
+                    data: {
+                      user: { id: '1', email: 'test@example.com', name: 'Test', roles: ['user'] },
+                    },
                   }),
               }),
             100

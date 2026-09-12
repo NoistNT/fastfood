@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "ingredients_name_unique_idx" ON "ingredients" USING btree (lower("name"));

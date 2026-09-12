@@ -5,6 +5,8 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
+import { getSession } from '@/lib/auth/session';
+import { USER_ROLES } from '@/types/auth';
 import { verifyCSRFToken, getCSRFTokenFromRequest } from '@/lib/csrf';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
@@ -13,6 +15,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const t = await getTranslations('Dashboard.customers');
 
   try {
+    // Authorization first: only administrators delete people
+    const session = await getSession();
+    if (!session) {
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    }
+    const isAdmin = session.roles.some((role) => role.name === USER_ROLES.ADMIN);
+    if (!isAdmin) {
+      return apiError(ERROR_CODES.FORBIDDEN, 'Administrator access required', { status: 403 });
+    }
+
     // Verify CSRF token for delete operations
     const csrfToken = await getCSRFTokenFromRequest(request);
     if (!csrfToken || !(await verifyCSRFToken(csrfToken))) {

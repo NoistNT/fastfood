@@ -47,7 +47,7 @@ export function OrdersRow({
   };
 
   return (
-    <TableRow className="dark:hover:bg-muted/50 hover:bg-neutral-200 text-muted-foreground font-medium">
+    <TableRow className="hover:bg-accent text-muted-foreground font-medium">
       <TableCell className="w-1/4">
         <OrderStatusBadge status={currentStatus} />
       </TableCell>
@@ -66,9 +66,9 @@ export function OrdersRow({
                 onStatusUpdate={handleStatusUpdate}
               >
                 <Button
-                  className="size-8 group text-primary outline-1 outline-neutral-300 dark:outline-muted"
-                  variant="ghost"
-                  size="icon"
+                  className="group"
+                  variant="outline"
+                  size="icon-sm"
                   type="button"
                 >
                   <FileTextIcon className="size-4 text-muted-foreground" />

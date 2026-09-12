@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { getSession, updateSession } from '@/lib/auth/session';
 import { USER_ROLES } from '@/types/auth';
+import { OPERATIONAL_ROLES } from '@/lib/auth/roles';
+import { getSession, updateSession } from '@/lib/auth/session';
 
 export const config = {
   matcher: [
@@ -13,6 +14,7 @@ const publicRoutes = [
   '/',
   '/login',
   '/register',
+  '/order',
   '/password-reset',
   '/password-reset/confirm',
   '/password-reset/request',
@@ -21,17 +23,21 @@ const publicRoutes = [
   '/api/health',
 ];
 
+// Roles encode powers only. Every non-public route requires a session;
+// /dashboard additionally requires an operational role, except the
+// owners-only surfaces below which require ADMIN. Longest prefix wins.
 const authorizedRoutes: { path: string; roles: USER_ROLES[] }[] = [
-  { path: '/dashboard', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/order', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/products', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
-  { path: '/profile', roles: [USER_ROLES.ADMIN, USER_ROLES.CUSTOMER] },
+  { path: '/dashboard/reports', roles: [USER_ROLES.ADMIN] },
+  { path: '/dashboard/customers', roles: [USER_ROLES.ADMIN] },
+  { path: '/dashboard', roles: [...OPERATIONAL_ROLES] },
 ];
 
 export default async function proxy(request: NextRequest) {
   const session = await getSession();
   const { pathname } = request.nextUrl;
-  const isPublicRoute = publicRoutes.some((path) => pathname.startsWith(path));
+  const isPublicRoute = publicRoutes.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
 
   if (isPublicRoute) return await updateSession(request);
 
@@ -45,8 +51,8 @@ export default async function proxy(request: NextRequest) {
   const sortedAuthorizedRoutes = [...authorizedRoutes].sort(
     (a, b) => b.path.length - a.path.length
   );
-  const requiredRoles = sortedAuthorizedRoutes.find((route) =>
-    pathname.startsWith(route.path)
+  const requiredRoles = sortedAuthorizedRoutes.find(
+    (route) => pathname === route.path || pathname.startsWith(`${route.path}/`)
   )?.roles;
 
   if (requiredRoles && !requiredRoles.some((role) => userRoles.includes(role))) {

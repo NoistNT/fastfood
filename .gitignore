@@ -17,7 +17,6 @@ test-results/
 
 # production
 /build
-/drizzle
 
 # misc
 .DS_Store
@@ -42,3 +41,7 @@ error-logs/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# opencode session artifacts
+.openchamber/
+.opencode/plans/

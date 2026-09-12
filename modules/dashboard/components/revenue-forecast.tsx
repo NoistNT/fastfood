@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { ArrowDownRight, ArrowRight, ArrowUpRight } from 'lucide-react';
 
 import { ChartSkeleton } from '@/modules/core/ui/skeleton-components';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
+import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
 
 interface ForecastData {
   currentRevenue: number;
@@ -13,45 +14,10 @@ interface ForecastData {
 }
 
 export function RevenueForecast() {
-  const [forecast, setForecast] = useState<ForecastData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useDashboardSummary();
+  const summary = (data?.data ?? null) as { totalRevenue?: number } | null;
 
-  useEffect(() => {
-    const fetchForecast = async () => {
-      try {
-        // Fetch revenue data from summary API
-        const response = await fetch('/api/dashboard/summary');
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            const data = result.data;
-            const currentRevenue = data.totalRevenue ?? 0;
-            const growthRate = 0.15; // 15% growth assumption
-            const projectedRevenue = currentRevenue * (1 + growthRate);
-
-            let trend: 'up' | 'down' | 'stable' = 'stable';
-            if (growthRate > 0.1) trend = 'up';
-            else if (growthRate < -0.1) trend = 'down';
-
-            setForecast({
-              currentRevenue,
-              projectedRevenue,
-              growthRate,
-              trend,
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch revenue forecast:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchForecast();
-  }, []);
-
-  if (loading) {
+  if (isPending) {
     return (
       <Card>
         <CardHeader>
@@ -65,9 +31,14 @@ export function RevenueForecast() {
     );
   }
 
-  if (!forecast) {
-    return <div>Failed to load revenue forecast</div>;
-  }
+  if (isError || !summary) return <div>Failed to load revenue forecast</div>;
+
+  const currentRevenue = summary.totalRevenue ?? 0;
+  const growthRate = 0.15; // 15% growth assumption
+  const projectedRevenue = currentRevenue * (1 + growthRate);
+  const trend: 'up' | 'down' | 'stable' =
+    growthRate > 0.1 ? 'up' : growthRate < -0.1 ? 'down' : 'stable';
+  const forecast: ForecastData = { currentRevenue, projectedRevenue, growthRate, trend };
 
   return (
     <Card>
@@ -90,10 +61,10 @@ export function RevenueForecast() {
               <p
                 className={`text-2xl font-bold ${
                   forecast.trend === 'up'
-                    ? 'text-green-600'
+                    ? 'text-success'
                     : forecast.trend === 'down'
-                      ? 'text-red-600'
-                      : 'text-gray-600'
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
                 }`}
               >
                 {(forecast.growthRate * 100).toFixed(1)}%
@@ -101,13 +72,24 @@ export function RevenueForecast() {
               <p className="text-xs text-muted-foreground">Growth Rate</p>
             </div>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Trend:{' '}
-            {forecast.trend === 'up'
-              ? '📈 Growing'
-              : forecast.trend === 'down'
-                ? '📉 Declining'
-                : '➡️ Stable'}
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            Trend:
+            {forecast.trend === 'up' ? (
+              <span className="inline-flex items-center gap-0.5 font-medium text-success">
+                <ArrowUpRight className="h-4 w-4" />
+                Growing
+              </span>
+            ) : forecast.trend === 'down' ? (
+              <span className="inline-flex items-center gap-0.5 font-medium text-destructive">
+                <ArrowDownRight className="h-4 w-4" />
+                Declining
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-0.5 font-medium">
+                <ArrowRight className="h-4 w-4" />
+                Stable
+              </span>
+            )}
           </div>
         </div>
       </CardContent>

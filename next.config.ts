@@ -12,39 +12,8 @@ const nextConfig: NextConfig = {
   },
   logging: { fetches: { fullUrl: true } },
 
-  // Performance optimizations
   compress: true,
   poweredByHeader: false,
-
-  // Bundle analysis and optimization
-  webpack: (config, { dev, isServer }) => {
-    // Optimize bundle splitting
-    if (!dev && !isServer) {
-      config.optimization.splitChunks.chunks = 'all';
-      config.optimization.splitChunks.cacheGroups = {
-        ...config.optimization.splitChunks.cacheGroups,
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-          priority: 10,
-        },
-        ui: {
-          test: /[\\/]modules[\\/]core[\\/]ui[\\/]/,
-          name: 'ui-components',
-          chunks: 'all',
-          priority: 5,
-        },
-      };
-    }
-
-    return config;
-  },
-
-  // Experimental features for better performance
-  experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-  },
 
   // Headers for better performance and security
   async headers() {

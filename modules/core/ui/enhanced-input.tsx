@@ -26,7 +26,7 @@ export const EnhancedInput = forwardRef<HTMLInputElement, EnhancedInputProps>(
             className={cn(
               'text-sm font-medium',
               error && 'text-destructive',
-              success && 'text-green-600',
+              success && 'text-success',
               loading && 'text-muted-foreground'
             )}
           >
@@ -41,7 +41,7 @@ export const EnhancedInput = forwardRef<HTMLInputElement, EnhancedInputProps>(
             className={cn(
               'transition-all duration-200',
               error && 'border-destructive focus:border-destructive focus:ring-destructive/20',
-              success && 'border-green-500 focus:border-green-500 focus:ring-green-500/20',
+              success && 'border-success focus:border-success focus:ring-success/20',
               loading && 'opacity-70 cursor-not-allowed',
               className
             )}
@@ -59,7 +59,7 @@ export const EnhancedInput = forwardRef<HTMLInputElement, EnhancedInputProps>(
           )}
 
           {success && !loading && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-success">
               <svg
                 className="h-4 w-4"
                 fill="currentColor"

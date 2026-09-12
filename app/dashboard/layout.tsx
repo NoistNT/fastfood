@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 
+import { hasOperationalRole } from '@/lib/auth/roles';
 import { getSession } from '@/lib/auth/session';
-import { USER_ROLES } from '@/types/auth';
 import DashboardSidebar from '@/modules/dashboard/components/sidebar';
 import DashboardHeader from '@/modules/dashboard/components/header';
 import { ErrorBoundary } from '@/modules/core/components/error-boundary';
@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/login');
   }
 
-  if (!user.roles.some((role) => role.name === USER_ROLES.ADMIN)) {
+  if (!hasOperationalRole(user.roles)) {
     redirect('/forbidden');
   }
   return (

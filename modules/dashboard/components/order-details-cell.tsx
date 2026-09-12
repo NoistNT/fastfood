@@ -54,9 +54,9 @@ export function OrderDetailsCell({ orderWithItems }: OrderDetailsCellProps) {
             onStatusUpdate={handleStatusUpdate}
           >
             <Button
-              className="size-8 group text-primary outline-1 outline-neutral-300 dark:outline-muted"
-              variant="ghost"
-              size="icon"
+              className="group"
+              variant="outline"
+              size="icon-sm"
               type="button"
             >
               <FileTextIcon className="size-4 text-muted-foreground" />

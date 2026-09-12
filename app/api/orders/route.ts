@@ -1,77 +1,151 @@
 import type { NextRequest } from 'next/server';
 
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
+import { getTranslations } from 'next-intl/server';
 
-import { db } from '@/db/drizzle';
-import { users } from '@/db/schema';
 import { getSession } from '@/lib/auth/session';
-import { create } from '@/modules/orders/actions/actions';
-import { validateOrderInventory, deductInventoryForOrder } from '@/lib/inventory-management';
+import { errorMessage, logError } from '@/lib/log-error';
+import { createOrder } from '@/modules/orders/create-order';
+import { deductInventoryForOrder } from '@/lib/inventory-management';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
+import { findOrCreatePerson } from '@/modules/users/persons';
+import { mintClaimToken } from '@/modules/users/claim-tokens';
+import { sensitiveOperationRateLimit } from '@/lib/rate-limit';
+import { getClientIp } from '@/lib/request-ip';
+import { ORDER_TYPE, PAYMENT_METHOD } from '@/modules/orders/types';
 
 const orderItemSchema = z.object({
-  productId: z.number(),
-  quantity: z.number().min(1),
+  productId: z.number().int().positive(),
+  quantity: z.number().int().min(1),
 });
 
-const submitOrderSchema = z.object({
-  items: z.array(orderItemSchema).min(1, 'Order must contain at least one item'),
-  total: z.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-    message: 'Total must be a valid positive number',
-  }),
-});
+function getSubmitOrderSchema(t: (key: string) => string) {
+  return z
+    .object({
+      items: z.array(orderItemSchema).min(1, t('errors.itemsRequired')),
+      total: z.string().optional(),
+      person: z.object({
+        fullName: z.string().trim().min(1, t('errors.fullNameRequired')).max(120),
+        phoneNumber: z.string().trim().min(5, t('errors.phoneRequired')).max(40),
+        email: z.string().trim().email().max(120).optional(),
+      }),
+      orderType: z.enum([ORDER_TYPE.PICKUP, ORDER_TYPE.DELIVERY]).default(ORDER_TYPE.PICKUP),
+      paymentMethod: z
+        .enum([PAYMENT_METHOD.CASH, PAYMENT_METHOD.CARD, PAYMENT_METHOD.ONLINE])
+        .default(PAYMENT_METHOD.ONLINE),
+      deliveryAddress: z.string().trim().max(500).optional(),
+      deliveryNotes: z.string().trim().max(500).optional(),
+    })
+    .superRefine((value, ctx) => {
+      if (value.orderType === ORDER_TYPE.DELIVERY && !value.deliveryAddress) {
+        ctx.addIssue({
+          code: 'custom',
+          message: t('errors.deliveryAddressRequired'),
+          path: ['deliveryAddress'],
+        });
+      }
+    });
+}
 
+/**
+ * Mints a claim token so a guest can adopt their order from any device.
+ * Relative path (no env dependency); callers prefix origin when sharing.
+ * Minting must never fail the order itself.
+ */
+async function mintGuestClaim(
+  session: unknown,
+  userId: string
+): Promise<{ claimUrl: string } | Record<string, never>> {
+  if (session) return {};
+  try {
+    const token = await mintClaimToken(userId);
+    return { claimUrl: `/register?claim=${token}` };
+  } catch (error) {
+    logError('orders', 'Claim mint failed for guest order', {
+      userId,
+      cause: errorMessage(error),
+    });
+    return {};
+  }
+}
+
+/**
+ * Places an order for anyone — no account required (guest checkout).
+ * Identity resolves to the signed-in session when one exists, otherwise to
+ * a deduped passwordless person via the shared find-or-create service.
+ * Inventory is deducted atomically after creation; shortfalls never fail
+ * the order and stock never goes negative.
+ */
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const user = await getSession();
-    if (!user) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    const ip = getClientIp(request);
+    const { success } = await sensitiveOperationRateLimit.limit(ip);
+    if (!success) {
+      const t = await getTranslations('Orders');
+      return apiError(ERROR_CODES.RATE_LIMIT_EXCEEDED, t('errors.rateLimited'), {
+        status: 429,
+      });
     }
 
-    // Verify user exists in database
-    const dbUser = await db.query.users.findFirst({ where: eq(users.id, user.id) });
-    if (!dbUser) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'User not found', { status: 401 });
-    }
-
+    const t = await getTranslations('Orders');
     const body = await request.json();
-    const { items, total } = submitOrderSchema.parse(body);
+    const { items, person, orderType, paymentMethod, deliveryAddress, deliveryNotes } =
+      getSubmitOrderSchema(t).parse(body);
 
-    // Create the order
-    const order = await create({ items, total, userId: user.id });
+    // A signed-in buyer keeps their account identity; anyone else becomes a
+    // deduped guest person (null passwordHash) through the shared service.
+    const session = await getSession();
+    const userId = session
+      ? session.id
+      : (
+          await findOrCreatePerson({
+            name: person.fullName,
+            phoneNumber: person.phoneNumber,
+            email: person.email,
+          })
+        ).id;
+
+    // Create the order (total is computed server-side from catalog prices)
+    const order = await createOrder({
+      items,
+      userId,
+      orderType,
+      paymentMethod,
+      contactName: person.fullName,
+      contactPhone: person.phoneNumber,
+      deliveryAddress,
+      deliveryNotes,
+    });
 
     if (!order) {
-      return apiError(ERROR_CODES.INTERNAL_ERROR, 'Failed to create order', { status: 500 });
+      return apiError(ERROR_CODES.INTERNAL_ERROR, t('errors.createOrderError'), { status: 500 });
     }
 
-    // Validate inventory availability
-    const hasInventory = await validateOrderInventory(order.id);
-    if (!hasInventory) {
-      // Order is created but inventory is insufficient
-      // In a real app, you might want to cancel the order or notify the user
-      console.warn(`Order ${order.id} placed with insufficient inventory`);
-    }
-
-    // Deduct inventory (this will handle the case where inventory becomes insufficient)
+    // Deduct inventory atomically; shortfalls mean stock was already gone —
+    // nothing is removed and stock never goes negative.
     try {
-      await deductInventoryForOrder(order.id);
+      const { shortfalls } = await deductInventoryForOrder(order.id);
+      if (shortfalls.length > 0) {
+        console.warn(`Order ${order.id} placed with insufficient inventory`);
+      }
     } catch (error) {
-      console.error('Failed to deduct inventory for order:', order.id, error);
+      logError('orders', 'Failed to deduct inventory for order', {
+        orderId: order.id,
+        cause: errorMessage(error),
+      });
       // Order is still created, but inventory wasn't updated
       // This should trigger manual intervention
     }
 
-    return apiSuccess(order, { status: 201 });
+    return apiSuccess({ ...order, ...(await mintGuestClaim(session, userId)) }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       const firstError = error.issues[0];
       return apiError(ERROR_CODES.VALIDATION_ERROR, firstError.message, { status: 400 });
     }
 
-    console.error('Order submission error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    return apiError(ERROR_CODES.INTERNAL_ERROR, errorMessage, { status: 500 });
+    logError('orders', 'Order submission failed', { cause: errorMessage(error) });
+    const te = await getTranslations('Orders');
+    return apiError(ERROR_CODES.INTERNAL_ERROR, te('errors.createOrderError'), { status: 500 });
   }
 }

@@ -2,15 +2,20 @@ import { sql, desc, count } from 'drizzle-orm';
 
 import { db } from '@/db/drizzle';
 import { orders, users, products } from '@/db/schema';
-import { getSession } from '@/lib/auth/session';
+import { requireOperationalRole } from '@/lib/auth/guards';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 export async function GET() {
   try {
-    // Check authentication
-    const user = await getSession();
-    if (!user) {
-      return apiError(ERROR_CODES.UNAUTHORIZED, 'Authentication required', { status: 401 });
+    // Staff-visible aggregates (dashboard home + reports share this feed);
+    // operational role required, admin-only pages fence above this layer.
+    const guard = await requireOperationalRole();
+    if (!guard.ok) {
+      return apiError(
+        guard.reason === 'forbidden' ? ERROR_CODES.FORBIDDEN : ERROR_CODES.UNAUTHORIZED,
+        guard.reason === 'forbidden' ? 'Forbidden' : 'Authentication required',
+        { status: guard.reason === 'forbidden' ? 403 : 401 }
+      );
     }
 
     // Get total counts

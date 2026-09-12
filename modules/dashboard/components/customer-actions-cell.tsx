@@ -20,9 +20,11 @@ type CustomerWithRoles = {
 
 interface CustomerActionsCellProps {
   user: CustomerWithRoles;
+  onEdit?: (user: CustomerWithRoles) => void;
+  onMerge?: (user: CustomerWithRoles) => void;
 }
 
-export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
+export function CustomerActionsCell({ user, onEdit, onMerge }: CustomerActionsCellProps) {
   const router = useRouter();
 
   const t = useTranslations('Features.dashboard');
@@ -37,7 +39,7 @@ export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
       const response = await fetch(`/api/customers/${user.id}/role`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ roleName: isAdmin ? USER_ROLES.CUSTOMER : USER_ROLES.ADMIN }),
+        body: JSON.stringify(isAdmin ? {} : { roleName: USER_ROLES.ADMIN }),
       });
 
       if (!response.ok) {
@@ -83,6 +85,24 @@ export function CustomerActionsCell({ user }: CustomerActionsCellProps) {
 
   return (
     <div className="flex space-x-2">
+      {onEdit && (
+        <Button
+          onClick={() => onEdit(user)}
+          variant="outline"
+          size="sm"
+        >
+          {tCommon('actions.edit')}
+        </Button>
+      )}
+      {onMerge && (
+        <Button
+          onClick={() => onMerge(user)}
+          variant="outline"
+          size="sm"
+        >
+          {t('customers.merge.action')}
+        </Button>
+      )}
       <Button
         onClick={handleRoleUpdate}
         disabled={isUpdating}

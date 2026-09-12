@@ -59,6 +59,10 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       );
     }
+    // Record-only people have no credentials and can never log in
+    if (!user.passwordHash) {
+      return apiError(ERROR_CODES.UNAUTHORIZED, 'Invalid email or password', { status: 401 });
+    }
     const passwordValid = await verifyPassword(password, user.passwordHash);
 
     if (!passwordValid) {

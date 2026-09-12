@@ -45,6 +45,11 @@ export const toastNotifications = {
         title: 'Inventory updated',
         description: 'Inventory has been updated successfully.',
       }),
+    ingredientCreated: () =>
+      toast({
+        title: 'Ingredient added',
+        description: 'The ingredient has been added with zero stock.',
+      }),
     stockAlertResolved: () =>
       toast({ title: 'Alert resolved', description: 'The stock alert has been resolved.' }),
 
@@ -58,6 +63,8 @@ export const toastNotifications = {
       }),
     customerDeleted: () =>
       toast({ title: 'Customer deleted', description: 'The customer has been deleted.' }),
+    customerMerged: () =>
+      toast({ title: 'Customers merged', description: 'The duplicate was merged successfully.' }),
     roleUpdated: () =>
       toast({ title: 'Role updated', description: 'The customer role has been updated.' }),
 

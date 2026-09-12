@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import Link from 'next/link';
 
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
+import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
 
 interface RecentOrder {
   id: string;
@@ -14,36 +14,10 @@ interface RecentOrder {
 }
 
 export function RecentOrders() {
-  const [orders, setOrders] = useState<RecentOrder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isPending, isError } = useDashboardSummary();
+  const orders = (data?.data as { recentOrders?: RecentOrder[] } | undefined)?.recentOrders ?? [];
 
-  useEffect(() => {
-    fetchRecentOrders();
-  }, []);
-
-  const fetchRecentOrders = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/dashboard/summary');
-      if (!response.ok) {
-        throw new Error('Failed to fetch recent orders');
-      }
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error?.message ?? 'Failed to fetch recent orders');
-      }
-
-      setOrders(result.data.recentOrders ?? []);
-    } catch (error) {
-      console.error('Error fetching recent orders:', error);
-      setOrders([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (isPending) {
     return (
       <TableSkeleton
         rows={5}
@@ -52,9 +26,8 @@ export function RecentOrders() {
     );
   }
 
-  if (orders.length === 0) {
+  if (isError || orders.length === 0)
     return <div className="text-muted-foreground">No recent orders</div>;
-  }
 
   return (
     <div className="space-y-4">

@@ -23,6 +23,14 @@ const registerSchema = z
       .max(50, 'Name must be less than 50 characters')
       .regex(/^[a-zA-Z\s]+$/, { message: 'Name can only contain letters and spaces' }),
     email: z.email('Please enter a valid email address').toLowerCase(),
+    phoneNumber: z
+      .string()
+      .trim()
+      .refine(
+        (value) => value === '' || /^\+?[0-9()\s-]{6,20}$/.test(value),
+        'Please enter a valid phone number'
+      )
+      .optional(),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -52,16 +60,53 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [claimToken, setClaimToken] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
+    getValues,
+    getFieldState,
     formState: { errors, isValid },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
     mode: 'onChange',
   });
+
+  // Claim-link prefill: resolve the token to the guest snapshot once.
+  // Unknown or expired links are ignored silently — the form stays blank
+  // and the legacy match-claim still applies at submit time.
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('claim');
+    if (!token) return;
+    let cancelled = false;
+    fetch(`/api/auth/claim?token=${encodeURIComponent(token)}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        const person = data?.data?.person;
+        if (!person) return;
+        setClaimToken(token);
+        // Fill only untouched fields — an empty value is not proof the
+        // user didn't type-then-clear while the preview was in flight.
+        const untouched = (field: 'name' | 'email' | 'phoneNumber') =>
+          !getFieldState(field).isTouched;
+        reset({
+          ...getValues(),
+          ...(untouched('name') && person.name ? { name: person.name } : {}),
+          ...(untouched('email') && person.email ? { email: person.email } : {}),
+          ...(untouched('phoneNumber') && person.phoneNumber
+            ? { phoneNumber: person.phoneNumber }
+            : {}),
+        });
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [reset, getFieldState]);
 
   const password = watch('password', '');
 
@@ -87,8 +132,10 @@ export default function RegisterPage() {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
+          phoneNumber: data.phoneNumber,
           password: data.password,
           confirmPassword: data.confirmPassword,
+          ...(claimToken ? { claimToken } : {}),
         }),
       });
 
@@ -164,6 +211,24 @@ export default function RegisterPage() {
               {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
             </div>
 
+            {/* Phone Field (optional — enables claiming past guest orders) */}
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">
+                Phone <span className="text-muted-foreground">(optional)</span>
+              </Label>
+              <Input
+                id="phoneNumber"
+                type="tel"
+                placeholder="+54 9 11 2345-6789"
+                {...register('phoneNumber')}
+                className={errors.phoneNumber ? 'border-destructive' : ''}
+                disabled={isFormDisabled}
+              />
+              {errors.phoneNumber && (
+                <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>
+              )}
+            </div>
+
             {/* Password Field */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -203,11 +268,11 @@ export default function RegisterPage() {
                       className="flex items-center space-x-2 text-xs"
                     >
                       {req.met ? (
-                        <CheckCircle className="h-3 w-3 text-green-500" />
+                        <CheckCircle className="h-3 w-3 text-success" />
                       ) : (
-                        <XCircle className="h-3 w-3 text-red-500" />
+                        <XCircle className="h-3 w-3 text-destructive" />
                       )}
-                      <span className={req.met ? 'text-green-700' : 'text-red-700'}>
+                      <span className={req.met ? 'text-success' : 'text-destructive'}>
                         {req.text}
                       </span>
                     </div>

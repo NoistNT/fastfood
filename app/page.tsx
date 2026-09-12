@@ -6,12 +6,12 @@ import { Button } from '@/modules/core/ui/button';
 export default function Page() {
   const t = useTranslations('Home');
   return (
-    <div className="flex h-full items-center justify-center tracking-tight">
+    <div className="flex h-full items-center justify-center">
       <Link href="/products">
         <Button
+          size="lg"
           type="button"
           variant="outline"
-          className="p-4.5 font-semibold tracking-tight transition-colors duration-200 dark:hover:border-neutral-700"
         >
           {t('getStarted')}
         </Button>

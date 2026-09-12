@@ -15,7 +15,7 @@ export async function createProduct(data: {
   available: boolean;
   ingredientIds: number[];
 }) {
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
     const [product] = await db
@@ -56,7 +56,7 @@ export async function updateProduct(
     ingredientIds?: number[];
   }
 ) {
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
     await db.update(products).set(data).where(eq(products.id, id));
@@ -82,7 +82,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: number) {
-  const t = await getTranslations('Dashboard.products');
+  const t = await getTranslations('Features.dashboard.products');
 
   try {
     // Soft delete by setting unavailable

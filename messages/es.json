@@ -3,6 +3,8 @@
     "getStarted": "Empezar"
   },
   "ModeToggle": {
+    "theme": "Tema",
+    "toggleTheme": "Cambiar tema",
     "light": "Claro",
     "dark": "Oscuro",
     "system": "Sistema"
@@ -31,7 +33,6 @@
         }
       },
       "submitOrder": {
-        "redirecting": "Redirigiendo...",
         "checkout": "Pagar",
         "cancel": "Cancelar pedido",
         "addMore": "Agregar más productos",
@@ -44,6 +45,23 @@
         "errorTitle": "Algo salió mal",
         "errorDescription": "No se pudo registrar tu pedido.",
         "actionText": "Reintentar"
+      },
+      "checkout": {
+        "title": "Datos de contacto y entrega",
+        "orderType": "¿Cómo querés tu pedido?",
+        "pickup": "Retiro en el local",
+        "delivery": "Envío a domicilio",
+        "fullName": "Nombre y Apellido",
+        "phone": "Teléfono",
+        "email": "Email",
+        "emailOptional": "Email (opcional)",
+        "address": "Dirección de envío",
+        "notes": "Notas del envío"
+      },
+      "accountNudge": {
+        "title": "¿Querés seguir este pedido?",
+        "description": "Creá tu cuenta — tus datos ya están cargados, solo falta la contraseña.",
+        "cta": "Crear cuenta"
       },
       "handlePayToast": {
         "errorTitle": "Error de Pago",
@@ -58,44 +76,7 @@
         "totalNonEmpty": "El total no puede estar vacío"
       },
       "errors": {
-        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
-        "noUsers": "No se encontraron usuarios en la base de datos.",
-        "createOrderError": "No se pudo crear el pedido.",
-        "invalidStatus": "Estado inválido",
-        "noOrders": "No se encontraron pedidos. Por favor, inténtalo de nuevo más tarde o contacta a soporte.",
-        "orderNotFound": "Pedido no encontrado",
-        "invalidTransition": "Transición inválida",
-        "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
-      },
-      "submitOrder": {
-        "redirecting": "Redirigiendo...",
-        "checkout": "Pagar",
-        "cancel": "Cancelar pedido",
-        "addMore": "Agregar más productos",
-        "registering": "Registrando...",
-        "confirm": "Confirmar pedido"
-      },
-      "submitToast": {
-        "successTitle": "Listo!",
-        "successDescription": "Tu pedido ha sido registrado exitosamente.",
-        "errorTitle": "Algo salió mal",
-        "errorDescription": "No se pudo registrar tu pedido.",
-        "actionText": "Reintentar"
-      },
-      "handlePayToast": {
-        "errorTitle": "Error de Pago",
-        "errorDescription": "Hubo un error al procesar el pago"
-      },
-      "helpers": {
-        "invalidId": "ID del pedido inválido",
-        "invalidQuantity": "La cantidad debe ser al menos 1",
-        "orderNonEmpty": "El pedido debe tener al menos un artículo",
-        "statusNonEmpty": "El historial de estado no puede estar vacío",
-        "invalidUserId": "ID de usuario inválido",
-        "totalNonEmpty": "El total no puede estar vacío"
-      },
-      "errors": {
-        "createItemError": "Error al crear el artículo para el pedido {orderId}.",
+        "createItemError": "Error al crear el ítem para el pedido {orderId}.",
         "noUsers": "No se encontraron usuarios en la base de datos.",
         "createOrderError": "No se pudo crear el pedido.",
         "invalidStatus": "Estado inválido",
@@ -168,6 +149,7 @@
         }
       },
       "totalSales": "Ventas Totales",
+      "newOrder": "Nuevo pedido",
       "table": {
         "header": {
           "status": "Estado",
@@ -189,6 +171,44 @@
       },
       "date_picker": {
         "pick_a_date": "Seleccionar fecha"
+      },
+      "intake": {
+        "title": "Nuevo pedido",
+        "back": "Volver a pedidos",
+        "customer": "Cliente",
+        "customerExisting": "Cliente existente",
+        "customerNew": "Cliente nuevo",
+        "searchPlaceholder": "Buscar por nombre o teléfono…",
+        "searching": "Buscando…",
+        "searchEmpty": "Sin resultados",
+        "selectedLabel": "Seleccionado",
+        "change": "Cambiar",
+        "name": "Nombre",
+        "phone": "Teléfono",
+        "customerRequired": "Elegí un cliente o ingresá un nombre",
+        "items": "Productos",
+        "addItem": "Agregar producto",
+        "itemPlaceholder": "Elegí un producto",
+        "quantity": "Cant.",
+        "removeItem": "Quitar producto",
+        "itemsRequired": "Agregá al menos un producto",
+        "estimatedTotal": "Total estimado",
+        "pickup": "Retiro",
+        "delivery": "Entrega",
+        "address": "Dirección de entrega",
+        "addressPlaceholder": "Calle y número",
+        "addressRequired": "La dirección de entrega es obligatoria para entregas",
+        "notes": "Notas de entrega",
+        "payment": "Método de pago",
+        "cash": "Efectivo",
+        "card": "Tarjeta",
+        "online": "En línea (prepago)",
+        "submit": "Crear pedido",
+        "submitting": "Creando…",
+        "successToast": "Pedido creado correctamente",
+        "loadingMessage": "Cargando el formulario de pedido…",
+        "productsLoadFailed": "No se pudo cargar el catálogo de productos.",
+        "retry": "Reintentar"
       },
       "details": {
         "title": "Detalles del pedido",
@@ -215,9 +235,51 @@
             "phone": "Teléfono",
             "role": "Rol",
             "actions": "Acciones"
-          }
+          },
+          "noRoles": "—"
         },
         "confirmDelete": "¿Estás seguro que querés eliminar este usuario?",
+        "newPerson": "Nueva persona",
+        "merge": {
+          "action": "Unificar",
+          "title": "Unificar duplicado",
+          "description": "Unificá {name} en la identidad que sobrevive. Los pedidos se mueven, los roles se otorgan, los campos vacíos se completan y el duplicado se retira.",
+          "descriptionNoLoser": "Seleccioná primero el duplicado a retirar.",
+          "searchPlaceholder": "Buscá la persona que sobrevive…",
+          "searching": "Buscando…",
+          "noContact": "Sin datos de contacto",
+          "hasAccount": "Tiene cuenta",
+          "select": "Elegir",
+          "change": "Cambiar",
+          "loadingPreview": "Cargando vista previa…",
+          "previewFailed": "No se pudo cargar la vista previa.",
+          "mergeFailed": "No se pudo unificar el duplicado.",
+          "winner": "Identidad que sobrevive",
+          "loser": "Duplicado a retirar",
+          "ordersMoving": "Pedidos que se mueven",
+          "rolesGranting": "Roles otorgados",
+          "tokensInvalidated": "Enlaces retirados",
+          "fieldsFilling": "Campos completados",
+          "none": "Ninguno",
+          "confirm": "Unificar duplicado",
+          "merging": "Unificando…",
+          "cancel": "Cancelar"
+        },
+        "form": {
+          "titleCreate": "Agregar persona",
+          "titleEdit": "Editar persona",
+          "description": "Datos de contacto para el directorio. Los duplicados se unifican automáticamente cuando comparten teléfono o email.",
+          "fullName": "Nombre y Apellido",
+          "phone": "Teléfono",
+          "email": "Email",
+          "emailOptional": "Email (opcional)",
+          "nameRequired": "El nombre completo es obligatorio",
+          "emailInvalid": "Ingresá un email válido",
+          "save": "Guardar persona",
+          "saving": "Guardando…",
+          "cancel": "Cancelar",
+          "saveFailed": "No se pudo guardar la persona."
+        },
         "toast": {
           "promoteSuccess": "Usuario promovido exitosamente",
           "demoteSuccess": "Usuario degradado exitosamente",
@@ -227,7 +289,11 @@
         },
         "roleNotFound": "Rol no encontrado",
         "updateFailed": "Error al actualizar el rol del usuario",
-        "deleteFailed": "Error al eliminar el usuario"
+        "deleteFailed": "Error al eliminar el usuario",
+        "roleBadges": {
+          "admin": "Admin",
+          "staff": "Staff"
+        }
       },
       "products": {
         "title": "Productos",
@@ -240,8 +306,39 @@
         "createFailed": "Error al crear el producto",
         "updateFailed": "Error al actualizar el producto",
         "deleteFailed": "Error al eliminar el producto",
+        "invalidIngredients": "Uno o más ingredientes son inválidos",
         "productsTab": "Productos",
-        "inventoryTab": "Inventario"
+        "inventoryTab": "Inventario",
+        "form": {
+          "addProductTitle": "Agregar Producto",
+          "editProductTitle": "Editar Producto",
+          "name": "Nombre",
+          "namePlaceholder": "Hamburguesa con queso",
+          "nameRequired": "El nombre es obligatorio",
+          "price": "Precio",
+          "pricePlaceholder": "9.99",
+          "priceInvalid": "El precio debe ser un número positivo válido",
+          "description": "Descripción",
+          "descriptionPlaceholder": "Una breve descripción del producto",
+          "imageUrl": "URL de la imagen",
+          "imageUrlPlaceholder": "https://ejemplo.com/foto.jpg",
+          "imageUrlInvalid": "Por favor ingresa una URL válida",
+          "available": "Disponible",
+          "ingredients": "Ingredientes",
+          "ingredientsHint": "Selecciona los ingredientes que componen este producto",
+          "ingredientsEmpty": "No hay ingredientes disponibles",
+          "cancel": "Cancelar",
+          "save": "Guardar producto",
+          "saving": "Guardando..."
+        },
+        "archive": {
+          "title": "¿Archivar producto?",
+          "description": "Archivar un producto lo elimina del menú. Puedes restaurarlo más tarde al volverlo disponible.",
+          "confirm": "Archivar",
+          "cancel": "Cancelar",
+          "success": "Producto archivado correctamente",
+          "failed": "Error al archivar el producto"
+        }
       },
       "inventory": {
         "title": "Gestión de Inventario",
@@ -290,6 +387,24 @@
             "edit": "Editar",
             "adjustStock": "Ajustar Stock",
             "delete": "Eliminar"
+          },
+          "form": {
+            "titleCreate": "Agregar ingrediente",
+            "description": "Los ingredientes nuevos empiezan con stock cero. Definí el umbral inicial acá.",
+            "name": "Nombre",
+            "nameRequired": "El nombre es obligatorio",
+            "unit": "Unidad",
+            "unitRequired": "La unidad es obligatoria",
+            "unitPlaceholder": "kg, panes, litros…",
+            "price": "Precio",
+            "pricePlaceholder": "2.00",
+            "priceInvalid": "El precio debe ser un número válido no negativo",
+            "threshold": "Umbral mínimo",
+            "thresholdInvalid": "El umbral debe ser cero o más",
+            "save": "Guardar ingrediente",
+            "saving": "Guardando…",
+            "cancel": "Cancelar",
+            "saveFailed": "No se pudo guardar el ingrediente."
           }
         }
       }
@@ -304,7 +419,8 @@
           },
           "error": {
             "title": "Error en el Registro",
-            "description": "La contraseña no coincide."
+            "description": "La contraseña no coincide.",
+            "passwordConfirm": "Las contraseñas no coinciden."
           }
         }
       },
@@ -312,6 +428,8 @@
         "title": "Iniciar Sesión",
         "passwordPlaceholder": "Ingresa tu contraseña",
         "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+        "tryAsStaff": "Probar como empleado",
+        "tryAsAdmin": "Probar como admin",
         "toast": {
           "success": {
             "title": "Bienvenido!",
@@ -473,40 +591,55 @@
     },
     "dialog": {
       "title": "Eliminar Item",
-      "description": "¿Estás seguro que querés eliminar"
+      "description": "¿Estás seguro que querés eliminar",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
     }
   },
   "Components": {
+    "skipToContent": "Saltar al contenido principal",
+    "demoBanner": {
+      "title": "Entorno de demostración",
+      "description": "Los datos se reinician a diario — probá con libertad"
+    },
+    "main": {
+      "landmark": "Contenido principal"
+    },
     "header": {
       "title": "QVC",
+      "menu": "Menú",
+      "cart": "Carrito",
       "order": "Pedido",
       "dashboard": "Panel de Control",
-      "profile": "Perfil"
+      "profile": "Perfil",
+      "siteHeader": "Encabezado del sitio",
+      "homeLink": "Inicio de FastFood",
+      "mainNavigation": "Navegación principal",
+      "userNavigation": "Navegación de cuenta de usuario",
+      "viewCart": "Ver tu pedido",
+      "userMenu": "Menú de usuario",
+      "openMenu": "Abrir menú de navegación",
+      "avatarAlt": "Avatar del usuario"
     },
     "footer": {
-      "title": "QVC",
-      "description": "Los mejores sandwiches en la ciudad!",
+      "title": "FastFood",
+      "description": "¡Sirviendo la mejor comida rápida de la ciudad!",
+      "exploreHeading": "Explorar",
+      "visitUsHeading": "Visítanos",
+      "legalHeading": "Legal",
       "address": {
-        "street": "Valentin Berrondo 123",
-        "city": "Catamarca, Capital"
+        "street": "Calle Comida Rápida 123",
+        "city": "Ciudad Food, FC 12345"
       },
-      "phone": "(383) 412-3456",
+      "phone": "(123) 456-7890",
+      "landmark": "Pie de página",
       "navigation": {
         "home": "Inicio",
         "menu": "Menú",
-        "about": "Nosotros"
+        "order": "Tu pedido",
+        "landmark": "Navegación del pie de página"
       },
-      "menu": {
-        "burgers": "Burgers",
-        "sandwiches": "Sandwiches",
-        "pizzas": "Pizzas"
-      },
-      "about": {
-        "story": "Nuestra Historia",
-        "franchise": "Franquicias",
-        "contact": "Contacto"
-      },
-      "tos": "Términos y Condiciones",
+      "tos": "Términos del Servicio",
       "privacyPolicy": "Política de Privacidad"
     },
     "errors": {
@@ -517,7 +650,8 @@
       "notFound": {
         "title": "404 PÁGINA NO ENCONTRADA",
         "description": "La página que estás buscando no existe.",
-        "goHome": "Ir a Inicio"
+        "goHome": "Ir a Inicio",
+        "goBack": "Volver atrás"
       },
       "forbidden": {
         "title": "ACCESO DENEGADO",
@@ -539,6 +673,34 @@
         "description": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo.",
         "signIn": "Iniciar Sesión"
       }
+    },
+    "sidebar": {
+      "dashboard": "Panel",
+      "orders": "Pedidos",
+      "customers": "Clientes",
+      "products": "Productos",
+      "inventory": "Inventario",
+      "reports": "Reportes",
+      "toggle": "Alternar navegación"
+    }
+  },
+  "Orders": {
+    "helpers": {
+      "invalidId": "ID de pedido inválido",
+      "invalidQuantity": "La cantidad debe ser al menos 1",
+      "invalidUserId": "ID de usuario inválido",
+      "orderNonEmpty": "El pedido debe tener al menos un artículo",
+      "totalNonEmpty": "El total no puede estar vacío"
+    },
+    "errors": {
+      "createItemError": "Error al crear el artículo del pedido {orderId}.",
+      "noUsers": "No se encontraron usuarios en la base de datos.",
+      "createOrderError": "No se pudo crear el pedido.",
+      "rateLimited": "Demasiados intentos de pedido. Intentá nuevamente más tarde.",
+      "fullNameRequired": "El nombre completo es obligatorio",
+      "phoneRequired": "El teléfono es obligatorio",
+      "deliveryAddressRequired": "La dirección de envío es obligatoria para pedidos con entrega",
+      "itemsRequired": "El pedido debe contener al menos un producto"
     }
   }
 }

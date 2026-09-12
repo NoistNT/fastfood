@@ -36,10 +36,10 @@ export function sanitizeSqlInput(input: string): string {
 // Sanitize file names (remove dangerous characters)
 export function sanitizeFilename(filename: string): string {
   return filename
+    .substring(0, 255) // Limit length before regex passes
     .replace(/[<>:"/\\|?*]/g, '') // Remove dangerous characters
     .replace(/^\.+/, '') // Remove leading dots
     .replace(/\.+$/, '') // Remove trailing dots
-    .substring(0, 255) // Limit length
     .trim();
 }
 

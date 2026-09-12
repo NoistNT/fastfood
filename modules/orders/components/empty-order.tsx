@@ -14,12 +14,7 @@ export function EmptyOrder() {
         className="mx-auto"
         href="/products"
       >
-        <Button
-          variant="outline"
-          className="tracking-tight transition-colors duration-200 dark:hover:border-neutral-700"
-        >
-          {t('addProducts')}
-        </Button>
+        <Button variant="outline">{t('addProducts')}</Button>
       </Link>
     </div>
   );

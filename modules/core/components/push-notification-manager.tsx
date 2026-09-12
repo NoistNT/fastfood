@@ -13,22 +13,34 @@ export function PushNotificationManager() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if push notifications are supported
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      setIsSupported(true);
-      checkSubscriptionStatus();
+    if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+      return;
     }
-  }, []);
 
-  const checkSubscriptionStatus = async () => {
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
-    } catch (error) {
-      console.error('Error checking subscription status:', error);
-    }
-  };
+    let cancelled = false;
+
+    const checkSubscriptionStatus = async () => {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (!cancelled) {
+          setIsSupported(true);
+          setIsSubscribed(!!subscription);
+        }
+      } catch (error) {
+        console.error('Error checking subscription status:', error);
+        if (!cancelled) {
+          setIsSupported(true);
+        }
+      }
+    };
+
+    checkSubscriptionStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const subscribeToNotifications = async () => {
     setIsLoading(true);

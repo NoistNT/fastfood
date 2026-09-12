@@ -31,9 +31,9 @@ export function OrderTable({
 }: OrderTableProps) {
   const t = useTranslations('Features.orders.table');
   return (
-    <div className="overflow-hidden rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-primary-foreground">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       <Table className="w-full">
-        <TableHeader className="sticky top-0 bg-white dark:bg-black tracking-tight">
+        <TableHeader className="sticky top-0 bg-card">
           <TableRow>
             <TableHead className="w-2/5 text-primary">{t('columns.product')}</TableHead>
             <TableHead className="w-1/5 text-primary">{t('columns.price')}</TableHead>

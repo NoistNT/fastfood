@@ -25,8 +25,18 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
-        if [ "${{ inputs.frozen-lockfile }}" = "true" ]; then
-          pnpm install --frozen-lockfile
-        else
-          pnpm install
-        fi
+        status=1
+        for attempt in 1 2 3; do
+          status=0
+          if [ "${{ inputs.frozen-lockfile }}" = "true" ]; then
+            pnpm install --frozen-lockfile || status=$?
+          else
+            pnpm install || status=$?
+          fi
+          if [ "$status" -eq 0 ]; then
+            break
+          fi
+          echo "::warning::pnpm install failed (attempt $attempt of 3); retrying in 10 seconds"
+          sleep 10
+        done
+        exit "$status"

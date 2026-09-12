@@ -1,15 +1,6 @@
-import { ProductsDashboard } from '@/modules/dashboard/components/products-dashboard';
+import type { ProductWithIngredients } from '@/modules/products/types';
 
-type ProductWithIngredients = {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  imageUrl: string;
-  available: boolean;
-  ingredients: string[];
-  ingredientIds: number[];
-};
+import { ProductsDashboard } from '@/modules/dashboard/components/products-dashboard';
 
 interface InventoryStatsData {
   totalItems: number;

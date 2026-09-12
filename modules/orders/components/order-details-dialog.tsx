@@ -85,7 +85,7 @@ export function OrderDetailsDialog({
               {items.map(({ id, name, quantity }) => (
                 <li
                   key={id}
-                  className="flex justify-between rounded-md text-xs bg-neutral-200 p-2 text-muted-foreground dark:bg-neutral-800"
+                  className="flex justify-between rounded-md text-xs bg-muted p-2 text-muted-foreground"
                 >
                   <Link
                     href={`/products/${id}`}
@@ -102,7 +102,7 @@ export function OrderDetailsDialog({
           <div>
             <h3 className="mb-4 font-medium tracking-tighter">{t('statusHistory')}</h3>
             <div className="relative">
-              <div className="absolute left-4 h-full w-0.5 bg-neutral-200 dark:bg-neutral-800" />
+              <div className="absolute left-4 h-full w-0.5 bg-border" />
               <ul className="w-full space-y-1 text-xs">
                 {[...statusHistory]
                   .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
@@ -112,7 +112,7 @@ export function OrderDetailsDialog({
                       className="relative pl-8"
                     >
                       <div className="absolute left-0 top-3 h-2 w-2 rounded-full bg-current" />
-                      <div className="flex justify-between rounded-sm bg-neutral-200/90 p-2 pl-0 dark:bg-neutral-900">
+                      <div className="flex justify-between rounded-sm bg-muted/90 p-2 pl-0">
                         <OrderStatusBadge status={status} />
                         <span className="text-xs text-muted-foreground font-medium">
                           {createdAt.toLocaleString(undefined, {
