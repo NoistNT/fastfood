@@ -1,10 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore, useTransition } from 'react';
 
 import { toast } from '@/modules/core/hooks/use-toast';
 import { ToastAction } from '@/modules/core/ui/toast';
+import { Skeleton } from '@/modules/core/ui/skeleton';
 import { Button } from '@/modules/core/ui/button';
 import { EmptyOrder } from '@/modules/orders/components/empty-order';
 import { OrderTable } from '@/modules/orders/components/order-table';
@@ -15,8 +16,13 @@ import {
   type CheckoutFormState,
   toCheckoutDetails,
 } from '@/modules/orders/components/checkout-details';
-import { calculateTotal, submitOrder } from '@/modules/orders/utils';
-import { useOrderStore } from '@/store/use-order';
+import {
+  calculateTotal,
+  reconcileCartItems,
+  submitOrder,
+  type CatalogProductSnapshot,
+} from '@/modules/orders/utils';
+import { useOrderStore, type CheckoutIdentity } from '@/store/use-order';
 import { useOfflineOrders } from '@/modules/core/hooks/use-offline-orders';
 import { useCSRFToken } from '@/modules/core/hooks/use-csrf-token';
 import { OfflineStatus } from '@/modules/core/components/offline-status';
@@ -25,6 +31,7 @@ import { ErrorBoundary } from '@/modules/core/components/error-boundary';
 export default function Page() {
   const t = useTranslations('Features.orders');
   const { items, incrementQuantity, decrementQuantity, removeItem, clearOrder } = useOrderStore();
+  const setCheckoutIdentity = useOrderStore((state) => state.setCheckoutIdentity);
   const { isOnline, addOfflineOrder } = useOfflineOrders();
   const { getToken } = useCSRFToken();
 
@@ -33,6 +40,19 @@ export default function Page() {
   const [isPending, startTransition] = useTransition();
   const [checkout, setCheckout] = useState<CheckoutFormState>(emptyCheckoutDetails);
   const [prefilled, setPrefilled] = useState<boolean | null>(null);
+
+  // Cart persistence rehydrates manually: the first paint must match the
+  // SSR HTML (empty cart), so renders below gate on `hydrated`.
+  const hydrated = useSyncExternalStore(
+    (onStoreChange) => useOrderStore.persist.onFinishHydration(onStoreChange),
+    () => useOrderStore.persist.hasHydrated(),
+    () => false
+  );
+
+  useEffect(() => {
+    if (!useOrderStore.persist.hasHydrated()) void useOrderStore.persist.rehydrate();
+  }, []);
+
   const [placedOrder, setPlacedOrder] = useState<{
     guest: boolean;
     id: string;
@@ -41,7 +61,10 @@ export default function Page() {
   } | null>(null);
 
   // Signed-in buyers get their contact details prefilled — no re-typing.
+  // Guests fall back to their persisted identity (same device). Runs only
+  // after cart hydration so the stored snapshot is the rehydrated one.
   useEffect(() => {
+    if (!hydrated) return;
     let cancelled = false;
     fetch('/api/auth/session')
       .then((response) => response.json())
@@ -49,7 +72,16 @@ export default function Page() {
         if (cancelled) return;
         const user = data?.data?.user;
         setPrefilled(Boolean(user));
-        if (!user) return;
+        if (!user) {
+          const stored = useOrderStore.getState().checkoutIdentity;
+          setCheckout((state) => ({
+            ...state,
+            fullName: state.fullName || stored.fullName,
+            phoneNumber: state.phoneNumber || stored.phoneNumber,
+            email: state.email || stored.email,
+          }));
+          return;
+        }
         setCheckout((state) => ({
           ...state,
           fullName: state.fullName || (user.name ?? ''),
@@ -63,7 +95,61 @@ export default function Page() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [hydrated]);
+
+  // Identity fields persist across refreshes; fulfillment fields
+  // (orderType/address/notes) stay ephemeral per-order state.
+  const handleCheckoutChange = (patch: Partial<CheckoutFormState>) => {
+    setCheckout((state) => ({ ...state, ...patch }));
+    const identityPatch: Partial<CheckoutIdentity> = {};
+    if (patch.fullName !== undefined) identityPatch.fullName = patch.fullName;
+    if (patch.phoneNumber !== undefined) identityPatch.phoneNumber = patch.phoneNumber;
+    if (patch.email !== undefined) identityPatch.email = patch.email;
+    if (Object.keys(identityPatch).length > 0) setCheckoutIdentity(identityPatch);
+  };
+
+  // Persisted prices can lag behind menu edits: re-sync display prices
+  // from the catalog once per hydration. Charges stay server-authoritative
+  // at submit; a failed fetch (offline) simply keeps stored values.
+  useEffect(() => {
+    if (!hydrated) return;
+    let cancelled = false;
+    fetch('/api/products')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        const raw = data?.data;
+        if (!Array.isArray(raw)) return;
+        const catalog = raw.filter((product: unknown): product is CatalogProductSnapshot => {
+          if (typeof product !== 'object' || product === null) return false;
+          const candidate = product as Record<string, unknown>;
+          return (
+            typeof candidate.id === 'number' &&
+            typeof candidate.name === 'string' &&
+            typeof candidate.price === 'string' &&
+            typeof candidate.available === 'boolean'
+          );
+        });
+        const current = useOrderStore.getState().items;
+        if (current.length === 0) return;
+        const { items: next, removedCount } = reconcileCartItems(current, catalog);
+        if (JSON.stringify(next) !== JSON.stringify(current)) {
+          useOrderStore.setState({ items: next });
+        }
+        if (removedCount > 0) {
+          toast({
+            title: t('cartSync.title'),
+            description: t('cartSync.description'),
+          });
+        }
+      })
+      .catch(() => {
+        // offline or unavailable catalog — keep the stored cart as-is
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, t]);
 
   const handleSubmit = async () => {
     if (!checkout.fullName.trim() || !checkout.phoneNumber.trim()) {
@@ -159,6 +245,20 @@ export default function Page() {
     });
   };
 
+  if (!hydrated) {
+    return (
+      <div
+        className="mx-auto max-w-5xl h-full flex flex-col justify-center gap-4"
+        role="status"
+        aria-busy="true"
+      >
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-12 w-full" />
+      </div>
+    );
+  }
+
   if (!items.length && !placedOrder) return <EmptyOrder />;
 
   return (
@@ -176,7 +276,7 @@ export default function Page() {
             />
             <CheckoutDetailsForm
               value={checkout}
-              onChange={(patch) => setCheckout((s) => ({ ...s, ...patch }))}
+              onChange={handleCheckoutChange}
             />
             <SubmitOrder
               handleSubmit={handleSubmit}

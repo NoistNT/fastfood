@@ -132,13 +132,20 @@ test.describe('Complete User Journey', () => {
     await burgerCard.getByTestId('add-to-cart-button').click();
     await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
 
-    // Client-side navigation: the cart is in-memory Zustand, so a full
-    // page.goto('/order') would reload the app and empty it.
+    // Client-side navigation into the cart (a reload round-trip is covered below).
     await page.getByRole('link', { name: 'View your order' }).click();
     await page.waitForURL('**/order');
     await expect(page.locator('tbody tr').first()).toBeVisible();
     await expect(page.getByLabel('Full name')).toBeVisible();
     await expect(page.getByLabel('Phone number')).toBeVisible();
+
+    // Cart + contact survive a full reload (persisted same-device storage).
+    await page.getByLabel('Full name').fill('Guest Diner');
+    await page.getByLabel('Phone number').fill('555-0100');
+    await page.reload();
+    await expect(page.locator('tbody tr').first()).toBeVisible();
+    await expect(page.getByLabel('Full name')).toHaveValue('Guest Diner');
+    await expect(page.getByLabel('Phone number')).toHaveValue('555-0100');
   });
 
   test('error handling for invalid registration', async ({ page }) => {
