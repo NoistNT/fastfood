@@ -430,13 +430,13 @@
     },
     "auth": {
       "register": {
-    "title": "Registrarse",
-    "namePlaceholder": "María García",
-    "emailPlaceholder": "juana@example.com",
-    "phonePlaceholder": "+54 9 11 555-0100",
-    "passwordPlaceholder": "Mínimo 8 caracteres",
-    "confirmPasswordPlaceholder": "Repite la contraseña",
-    "toast": {
+        "title": "Registrarse",
+        "namePlaceholder": "María García",
+        "emailPlaceholder": "juana@example.com",
+        "phonePlaceholder": "+54 9 11 555-0100",
+        "passwordPlaceholder": "Mínimo 8 caracteres",
+        "confirmPasswordPlaceholder": "Repite la contraseña",
+        "toast": {
           "success": {
             "title": "Registro Exitoso",
             "description": "Te has registrado correctamente."

@@ -430,13 +430,13 @@
     },
     "auth": {
       "register": {
-    "title": "Sign Up",
-    "namePlaceholder": "Jane Doe",
-    "emailPlaceholder": "jane@example.com",
-    "phonePlaceholder": "+54 9 11 555-0100",
-    "passwordPlaceholder": "Minimum 8 characters",
-    "confirmPasswordPlaceholder": "Repeat the password",
-    "toast": {
+        "title": "Sign Up",
+        "namePlaceholder": "Jane Doe",
+        "emailPlaceholder": "jane@example.com",
+        "phonePlaceholder": "+54 9 11 555-0100",
+        "passwordPlaceholder": "Minimum 8 characters",
+        "confirmPasswordPlaceholder": "Repeat the password",
+        "toast": {
           "success": {
             "title": "Sign Up Successful",
             "description": "You have been registered successfully."
