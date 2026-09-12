@@ -62,6 +62,8 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - "Check a PR" means sweeping every surface: all reviewers' bodies (incl.
   outside-diff findings), inline threads, PR comments, CI checks, and merge
   state — never a single signal
+- CI lints the prospective merge, not your branch head: merge `dev` into the
+  feature branch and run the full gates before pushing (#93)
 - PRs changing user-facing behavior, commands, or conventions update `README.md`
   and `AGENTS.md` in the same PR
 
@@ -80,6 +82,9 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - **`app/`** pages + API routes · **`proxy.ts`** middleware (auth, role-based route protection)
 - **`modules/<feature>/`** domain logic (`auth`, `core`, `dashboard`, `orders`, `products`, `users`)
 - **`modules/core/ui/`** shadcn/ui primitives — import via deep paths (`@/modules/core/ui/button`)
+- **Absolute imports only**: every TS import uses the root-mapped `@/` alias —
+  never relative (`../`, `./`). `@/` is a TS import alias, not a filesystem
+  path: tool file arguments are repo-absolute paths, never `@/`-prefixed
 - **`db/schema.ts`** single-file Drizzle schema · **`db/drizzle.ts`** Neon client
 - **`lib/`** utilities · **`lib/auth/session.ts`** JWT sessions via `jose` (HS256, 1-day expiry)
 - **`i18n/request.ts`** auto-detects locale from `Accept-Language` (es → es, else en)

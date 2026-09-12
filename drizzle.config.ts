@@ -1,6 +1,6 @@
 import { defineConfig } from 'drizzle-kit';
 
-import { DB_URL } from './constants';
+import { DB_URL } from '@/constants';
 
 export default defineConfig({
   schema: './db/schema.ts',

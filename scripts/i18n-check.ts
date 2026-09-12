@@ -1,5 +1,5 @@
-import en from '../messages/en.json';
-import es from '../messages/es.json';
+import en from '@/messages/en.json';
+import es from '@/messages/es.json';
 
 const flat = (obj: object, prefix = ''): string[] =>
   Object.entries(obj).flatMap(([key, value]) =>

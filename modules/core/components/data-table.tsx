@@ -7,7 +7,7 @@ import type {
   RowData,
   SortingState,
 } from '@tanstack/react-table';
-import type { DataTableFeatures } from './data-table-features';
+import type { DataTableFeatures } from '@/modules/core/components/data-table-features';
 
 import { useState } from 'react';
 import { flexRender, useTable } from '@tanstack/react-table';
@@ -28,8 +28,7 @@ import {
   DropdownMenuTrigger,
 } from '@/modules/core/ui/dropdown-menu';
 import { Button } from '@/modules/core/ui/button';
-
-import { dataTableFeatures } from './data-table-features';
+import { dataTableFeatures } from '@/modules/core/components/data-table-features';
 
 interface DataTableProps<TData extends RowData> {
   columns: ColumnDef<DataTableFeatures, TData>[];
