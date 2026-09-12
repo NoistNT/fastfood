@@ -1,13 +1,8 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
 early_access: false
 tone_instructions: >-
-  Prioritize data integrity, runtime correctness, and exfiltration-surface
-  security (PII in URLs, logs, network payloads, error responses) over style
-  nits. Same-device localStorage drafts for active order data are an
-  owner-approved pattern — do not flag them; flag only new PII transmissions
-  or missing shape-validation on rehydrate. Flag synchronous setState inside
-  effects, unescaped SQL LIKE input, non-atomic writes, raw error-object
-  logging, and undefined internal jargon in docs.
+  Prioritize data integrity, runtime correctness, and PII on exfiltration surfaces (URLs, logs, payloads, responses). Same-device drafts are owner-approved — see path_instructions. Flag sync setState in effects, non-atomic writes, error logging.
 reviews:
   profile: chill
   request_changes_workflow: false
