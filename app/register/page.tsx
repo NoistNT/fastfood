@@ -108,7 +108,7 @@ export default function RegisterPage() {
     return () => {
       cancelled = true;
     };
-  }, [reset, getFieldState]);
+  }, [reset, getFieldState, getValues]);
 
   const password = watch('password', '');
 
