@@ -103,14 +103,14 @@ export default function LoginPage() {
             {...register('email')}
             type="email"
             label="Email"
-            placeholder="Enter your email"
+            placeholder={t('emailPlaceholder')}
             error={errors.email}
           />
           <EnhancedInput
             {...register('password')}
             type="password"
             label="Password"
-            placeholder="Enter your password"
+            placeholder={t('passwordPlaceholder')}
             error={errors.password}
           />
           <Button

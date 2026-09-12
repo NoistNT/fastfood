@@ -149,7 +149,7 @@ export function CustomerFormDialog({
                   <FormControl>
                     <Input
                       id="person-name"
-                      placeholder={t('fullName')}
+                      placeholder={t('fullNamePlaceholder')}
                       autoComplete="name"
                       {...field}
                     />
@@ -168,7 +168,7 @@ export function CustomerFormDialog({
                     <Input
                       id="person-phone"
                       type="tel"
-                      placeholder={t('phone')}
+                      placeholder={t('phonePlaceholder')}
                       autoComplete="tel"
                       {...field}
                     />
@@ -187,7 +187,7 @@ export function CustomerFormDialog({
                     <Input
                       id="person-email"
                       type="email"
-                      placeholder={t('emailOptional')}
+                      placeholder={t('emailPlaceholder')}
                       autoComplete="email"
                       {...field}
                     />

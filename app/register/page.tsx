@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -55,6 +56,7 @@ interface PasswordRequirement {
 
 export default function RegisterPage() {
   const { isAuthenticated, loading } = useAuth();
+  const t = useTranslations('Features.auth.register');
 
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,7 +108,7 @@ export default function RegisterPage() {
     return () => {
       cancelled = true;
     };
-  }, [reset, getFieldState]);
+  }, [reset, getFieldState, getValues]);
 
   const password = watch('password', '');
 
@@ -189,7 +191,7 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 type="text"
-                placeholder="John Doe"
+                placeholder={t('namePlaceholder')}
                 {...register('name')}
                 className={errors.name ? 'border-destructive' : ''}
                 disabled={isFormDisabled}
@@ -203,7 +205,7 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder={t('emailPlaceholder')}
                 {...register('email')}
                 className={errors.email ? 'border-destructive' : ''}
                 disabled={isFormDisabled}
@@ -219,7 +221,7 @@ export default function RegisterPage() {
               <Input
                 id="phoneNumber"
                 type="tel"
-                placeholder="+54 9 11 2345-6789"
+                placeholder={t('phonePlaceholder')}
                 {...register('phoneNumber')}
                 className={errors.phoneNumber ? 'border-destructive' : ''}
                 disabled={isFormDisabled}
@@ -236,7 +238,7 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="Enter your password"
+                  placeholder={t('passwordPlaceholder')}
                   {...register('password')}
                   className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
                   disabled={isFormDisabled}
@@ -288,7 +290,7 @@ export default function RegisterPage() {
                 <Input
                   id="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="Confirm your password"
+                  placeholder={t('confirmPasswordPlaceholder')}
                   {...register('confirmPassword')}
                   className={errors.confirmPassword ? 'border-destructive pr-10' : 'pr-10'}
                   disabled={isFormDisabled}
