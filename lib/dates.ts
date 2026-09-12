@@ -21,8 +21,6 @@ export interface DateFormatOptions {
   weekday?: 'long' | 'short' | 'narrow';
   hour?: 'numeric' | '2-digit';
   minute?: 'numeric' | '2-digit';
-  dateStyle?: 'full' | 'long' | 'medium' | 'short';
-  timeStyle?: 'full' | 'long' | 'medium' | 'short';
 }
 
 /** Fork-level IANA zone, validated; invalid or missing config falls back to UTC. */
@@ -170,4 +168,44 @@ export function toBusinessDateKey(value: Date | string | number): string {
   }).formatToParts(toDate(value));
   const part = (type: string): string => parts.find((entry) => entry.type === type)?.value ?? '';
   return `${part('year')}-${part('month')}-${part('day')}`;
+}
+
+/**
+ * Render a calendar-day key (`YYYY-MM-DD`) in viewer locale order, pinned
+ * to UTC so no timezone can shift it. Use for picked days and chart keys —
+ * never for instants (those go through the business clock).
+ */
+export function formatDayKey(key: string, options: DateFormatOptions = {}): string {
+  const [year, month, day] = key.split('-').map(Number);
+  return formatDate(new Date(Date.UTC(year, month - 1, day)), { ...options, timeZone: 'UTC' });
+}
+
+/**
+ * Browser-local calendar-day key (`YYYY-MM-DD`) for an instant — what the
+ * user clicked in a date picker. Uses browser-zone getters by definition,
+ * so it never shifts under the business clock.
+ */
+export function toDateKey(value: Date | string | number): string {
+  const date = toDate(value);
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Business-day window for a calendar-day key. Returns null on malformed
+ * keys so callers can fall back to instant-based resolution (which keeps
+ * legacy ISO query strings working).
+ */
+export function businessDayFromKey(key: string): BusinessDayWindow | null {
+  if (!DATE_KEY_PATTERN.test(key)) return null;
+  const [year, month, day] = key.split('-').map(Number);
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+  const timeZone = getBusinessTimeZone();
+  const start = utcForWallTime(year, month, day, timeZone);
+  // Guard calendar rollover (e.g. Feb 30 → March): the window must open
+  // on the requested business day.
+  if (toBusinessDateKey(start) !== key) return null;
+  return { start, end: utcForWallTime(year, month, day + 1, timeZone) };
 }

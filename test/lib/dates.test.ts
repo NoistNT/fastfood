@@ -1,12 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  businessDayFromKey,
   businessDayWindow,
   formatDate,
   formatDateTime,
+  formatDayKey,
   formatTime,
   getBusinessTimeZone,
   toBusinessDateKey,
+  toDateKey,
 } from '@/lib/dates';
 
 const TIME_ZONE_KEY = 'NEXT_PUBLIC_BUSINESS_TIMEZONE';
@@ -91,5 +94,36 @@ describe('toBusinessDateKey', () => {
     vi.stubEnv(TIME_ZONE_KEY, 'America/Argentina/Buenos_Aires');
     expect(toBusinessDateKey('2026-09-11T22:00:00-03:00')).toBe('2026-09-11');
     expect(toBusinessDateKey('2026-09-12T02:59:59Z')).toBe('2026-09-11');
+  });
+});
+
+describe('picker day-key round trip', () => {
+  it('preserves the clicked day for a browser east of UTC with business UTC', () => {
+    vi.stubEnv(TIME_ZONE_KEY, 'UTC');
+    vi.stubEnv('TZ', 'Asia/Tokyo');
+    // Tokyo user clicks Sep 12 (local midnight = Sep 11 15:00Z).
+    const clicked = new Date('2026-09-12T00:00:00+09:00');
+    const key = toDateKey(clicked);
+    expect(key).toBe('2026-09-12');
+
+    const window = businessDayFromKey(key);
+    expect(window?.start.toISOString()).toBe('2026-09-12T00:00:00.000Z');
+    expect(window?.end.toISOString()).toBe('2026-09-13T00:00:00.000Z');
+    expect(formatDayKey(key, { locale: 'en-US' })).toBe('09/12/2026');
+  });
+
+  it('resolves keys in a western business zone', () => {
+    vi.stubEnv(TIME_ZONE_KEY, 'America/Argentina/Buenos_Aires');
+    const window = businessDayFromKey('2026-09-12');
+    expect(window?.start.toISOString()).toBe('2026-09-12T03:00:00.000Z');
+    expect(window?.end.toISOString()).toBe('2026-09-13T03:00:00.000Z');
+  });
+
+  it('returns null on malformed keys so callers fall back to instants', () => {
+    vi.stubEnv(TIME_ZONE_KEY, 'America/Argentina/Buenos_Aires');
+    expect(businessDayFromKey('not-a-date')).toBeNull();
+    expect(businessDayFromKey('2026-13-99')).toBeNull();
+    expect(businessDayFromKey('2026-02-30')).toBeNull();
+    expect(businessDayFromKey('2026-09-12T03:00:00.000Z')).toBeNull();
   });
 });

@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Calendar as CalendarIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { formatDate } from '@/lib/dates';
+import { formatDayKey, toBusinessDateKey } from '@/lib/dates';
 import { Button } from '@/modules/core/ui/button';
 import { Calendar } from '@/modules/core/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/modules/core/ui/popover';
@@ -27,7 +27,12 @@ export default function DatePicker({ date, setDate }: DatePickerProps) {
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? (
-            formatDate(new Date(date), { locale, weekday: 'short', day: 'numeric', month: 'short' })
+            formatDayKey(toBusinessDateKey(date), {
+              locale,
+              weekday: 'short',
+              day: 'numeric',
+              month: 'short',
+            })
           ) : (
             <span>{t('pick_a_date')}</span>
           )}

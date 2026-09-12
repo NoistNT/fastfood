@@ -1,6 +1,8 @@
+'use client';
+
 import type { User } from '@/modules/users/types';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { formatDate } from '@/lib/dates';
 
@@ -10,6 +12,7 @@ interface Props {
 
 export default function UserProfile({ user }: Props) {
   const t = useTranslations('Features.profile');
+  const locale = useLocale();
 
   return (
     <div
@@ -34,7 +37,7 @@ export default function UserProfile({ user }: Props) {
           <div>
             <label className="text-sm font-medium text-muted-foreground">{t('memberSince')}</label>
             <p className="text-sm font-medium mt-1">
-              {formatDate(new Date(user.createdAt), { month: 'long' })}
+              {formatDate(new Date(user.createdAt), { locale, month: 'long' })}
             </p>
           </div>
         </div>

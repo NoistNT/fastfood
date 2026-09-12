@@ -80,15 +80,17 @@ export function RevenueChart() {
       >
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
+          {/* date values are YYYY-MM-DD calendar keys, not instants: pin UTC
+              so business zones west of it can't shift the label a day back. */}
           <XAxis
             dataKey="date"
-            tickFormatter={(value) => formatDate(new Date(value), { locale })}
+            tickFormatter={(value) => formatDate(new Date(value), { locale, timeZone: 'UTC' })}
           />
           <YAxis tickFormatter={(value) => `$${value.toFixed(0)}`} />
           <Tooltip
             labelFormatter={(value) =>
               typeof value === 'string' || typeof value === 'number'
-                ? formatDate(new Date(value), { locale })
+                ? formatDate(new Date(value), { locale, timeZone: 'UTC' })
                 : ''
             }
             formatter={(value) =>
