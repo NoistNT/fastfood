@@ -70,7 +70,7 @@ export default function LoginPage() {
   const isFormDisabled = loading || isSubmitting;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="flex min-h-full items-center justify-center bg-background py-8">
       <div
         className="relative w-full max-w-md space-y-8 rounded-lg border bg-card p-8"
         role="main"
