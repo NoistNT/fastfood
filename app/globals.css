@@ -348,18 +348,14 @@
   white-space: normal;
 }
 
-/* Live region for screen reader announcements */
+/* Live region for screen reader announcements: off-screen absolute keeps
+   it audible to assistive tech without painting anything. Never override
+   this to static/visible — that was the bottom-left ghost text on
+   add-to-cart. (`display:none` would hide it from AT; off-screen does not.) */
 .sr-live-region {
   position: absolute;
   left: -10000px;
   width: 1px;
   height: 1px;
   overflow: hidden;
-}
-
-.sr-live-region[aria-live] {
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
 }
