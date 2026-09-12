@@ -153,13 +153,11 @@ test.describe('Complete User Journey', () => {
 
   test('product detail supports buying, navigation, and invalid ids', async ({ page }) => {
     await page.goto('/products/1');
-    await expect(page.getByText('Classic Burger').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Classic Burger', exact: true })).toBeVisible();
 
     await test.step('Add to order from the detail page', async () => {
       await page.getByTestId('add-to-cart-button').click();
-      await expect(
-        page.getByText('Classic Burger added to order', { exact: true })
-      ).toBeVisible();
+      await expect(page.getByText('Classic Burger added to order', { exact: true })).toBeVisible();
       await expect(page.getByText('has been added to your order')).toBeHidden();
     });
 
