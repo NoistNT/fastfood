@@ -175,11 +175,55 @@ test.describe('Complete User Journey', () => {
       await page.getByRole('button', { name: 'User menu' }).click();
       await page.getByRole('menuitem', { name: 'Profile' }).click();
       await page.waitForURL('**/profile/**', { timeout: 10000 });
-      await expect(page.getByText(testUser.name).first()).toBeVisible();
+      await expect(page.getByTestId('profile-details').getByText(testUser.name)).toBeVisible();
     });
 
     await test.step("Another user's profile does not exist for civilians", async () => {
+      // A nonexistent id and a forbidden id both render notFound(); the
+      // second civilian below proves the denial path with a real foreign id.
       await page.goto('/profile/00000000-0000-0000-0000-000000000000');
+      await expect(page.getByText('404 PAGE NOT FOUND')).toBeVisible();
+    });
+
+    await test.step('Denial holds for an existing foreign profile', async () => {
+      const secondUser = {
+        name: 'Second Profile User',
+        email: `profile-second${timestamp}@example.com`,
+        password: 'TestPassword123!',
+      };
+
+      // Capture the second civilian's profile id from their account menu.
+      await page.getByRole('button', { name: 'User menu' }).click();
+      await page.getByRole('menuitem', { name: 'Logout' }).click();
+      await page.waitForURL('**/login', { timeout: 10000 });
+
+      await page.goto('/register');
+      await page.getByLabel('Full Name').fill(secondUser.name);
+      await page.getByLabel('Email').fill(secondUser.email);
+      await page.getByLabel('Password', { exact: true }).fill(secondUser.password);
+      await page.getByLabel('Confirm Password').fill(secondUser.password);
+      await page.locator('form').getByRole('button', { name: 'Create Account' }).click();
+      await page.waitForURL('**/login', { timeout: 10000 });
+      await page.getByLabel('Email').fill(secondUser.email);
+      await page.getByLabel('Password', { exact: true }).fill(secondUser.password);
+      await page.locator('form').getByRole('button', { name: 'Sign In' }).click();
+      await page.waitForURL('/', { timeout: 10000 });
+
+      await page.getByRole('button', { name: 'User menu' }).click();
+      await page.getByRole('menuitem', { name: 'Profile' }).click();
+      await page.waitForURL('**/profile/**', { timeout: 10000 });
+      const foreignId = page.url().split('/profile/')[1];
+
+      // Back to the first civilian, then visit the real foreign id.
+      await page.getByRole('button', { name: 'User menu' }).click();
+      await page.getByRole('menuitem', { name: 'Logout' }).click();
+      await page.waitForURL('**/login', { timeout: 10000 });
+      await page.getByLabel('Email').fill(testUser.email);
+      await page.getByLabel('Password', { exact: true }).fill(testUser.password);
+      await page.locator('form').getByRole('button', { name: 'Sign In' }).click();
+      await page.waitForURL('/', { timeout: 10000 });
+
+      await page.goto(`/profile/${foreignId}`);
       await expect(page.getByText('404 PAGE NOT FOUND')).toBeVisible();
     });
   });
