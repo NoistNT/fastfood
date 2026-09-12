@@ -3,7 +3,7 @@
 import type { DashboardOrderView, OrderStatus, OrderStatusHistory } from '@/modules/orders/types';
 
 import { FileTextIcon } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { Button } from '@/modules/core/ui/button';
@@ -14,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/modules/core/ui/tooltip';
+import { formatDate, formatTime } from '@/lib/dates';
 import { OrderDetailsDialog } from '@/modules/orders/components/order-details-dialog';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 
@@ -36,10 +37,9 @@ export function OrdersRow({
       []
   );
   const t = useTranslations('Features.dashboard.table.row');
+  const locale = useLocale();
 
-  const formattedDate = createdAt
-    .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    .replace(/\//g, '-');
+  const formattedDate = formatDate(createdAt, { locale });
 
   const handleStatusUpdate = (newStatus: OrderStatus) => {
     setCurrentStatus(newStatus);
@@ -52,7 +52,7 @@ export function OrdersRow({
         <OrderStatusBadge status={currentStatus} />
       </TableCell>
       <TableCell className="w-1/4">${total}</TableCell>
-      <TableCell className="w-1/4">{createdAt.toLocaleTimeString()}</TableCell>
+      <TableCell className="w-1/4">{formatTime(createdAt, { locale })}</TableCell>
       <TableCell className="w-1/4">{formattedDate}</TableCell>
       <TableCell className="flex flex-col">
         <TooltipProvider>

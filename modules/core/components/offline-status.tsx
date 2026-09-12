@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { Wifi, WifiOff, Clock, Trash2, RotateCcw } from 'lucide-react';
 
@@ -7,9 +8,11 @@ import { Button } from '@/modules/core/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { Badge } from '@/modules/core/ui/badge';
 import { useOfflineOrders } from '@/modules/core/hooks/use-offline-orders';
+import { formatDateTime } from '@/lib/dates';
 
 export function OfflineStatus() {
   const { isOnline, offlineOrders, removeOfflineOrder, retryOfflineOrder } = useOfflineOrders();
+  const locale = useLocale();
   const [showDetails, setShowDetails] = useState(false);
 
   const pendingOrders = offlineOrders.filter((order) => order.status === 'pending');
@@ -62,7 +65,7 @@ export function OfflineStatus() {
                     <p className="font-medium">Order #{order.id.split('_')[1]}</p>
                     <p className="text-sm text-muted-foreground">
                       {order.items.length} items • ${order.total} •{' '}
-                      {new Date(order.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(order.timestamp), { locale })}
                     </p>
                   </div>
                 </div>
@@ -81,7 +84,7 @@ export function OfflineStatus() {
                     <p className="font-medium">Order #{order.id.split('_')[1]}</p>
                     <p className="text-sm text-muted-foreground">
                       {order.items.length} items • ${order.total} •{' '}
-                      {new Date(order.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(order.timestamp), { locale })}
                     </p>
                   </div>
                 </div>

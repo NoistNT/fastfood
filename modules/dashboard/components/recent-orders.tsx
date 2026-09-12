@@ -1,10 +1,11 @@
 'use client';
 
-import { format } from 'date-fns';
+import { useLocale } from 'next-intl';
 import Link from 'next/link';
 
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
 import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
+import { formatDate } from '@/lib/dates';
 
 interface RecentOrder {
   id: string;
@@ -15,6 +16,7 @@ interface RecentOrder {
 
 export function RecentOrders() {
   const { data, isPending, isError } = useDashboardSummary();
+  const locale = useLocale();
   const orders = (data?.data as { recentOrders?: RecentOrder[] } | undefined)?.recentOrders ?? [];
 
   if (isPending) {
@@ -44,7 +46,7 @@ export function RecentOrders() {
               Order #{order.id}
             </Link>
             <p className="text-xs text-muted-foreground">
-              {format(new Date(order.createdAt), 'MMM dd, yyyy')}
+              {formatDate(new Date(order.createdAt), { locale, month: 'short' })}
             </p>
           </div>
           <div className="text-right">

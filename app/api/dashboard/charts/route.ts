@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { db } from '@/db/drizzle';
 import { orders } from '@/db/schema';
 import { requireOperationalRole } from '@/lib/auth/guards';
+import { getBusinessTimeZone } from '@/lib/dates';
 import { apiSuccess, apiError, ERROR_CODES } from '@/lib/api-response';
 
 // Helper to handle database errors gracefully
@@ -78,17 +79,26 @@ export async function GET(request: Request) {
         startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
 
+    // Day buckets in the business timezone (DB sessions run UTC, which
+    // would push late-evening orders into the next day). Columns are
+    // naive timestamps holding UTC walls, so declare them UTC first, then
+    // convert — a single AT TIME ZONE would read the wall as business-local
+    // and bucket the wrong way. The zone travels as a bound parameter,
+    // never interpolated.
+    const timeZone = getBusinessTimeZone();
+    const businessDay = sql<string>`DATE(${orders.createdAt} AT TIME ZONE 'UTC' AT TIME ZONE ${timeZone})`;
+
     // Get revenue data grouped by date
     const revenueData = await db
       .select({
-        date: sql<string>`DATE(${orders.createdAt})`,
+        date: businessDay,
         revenue: sql<number>`SUM(${orders.total})`,
         orderCount: sql<number>`COUNT(*)`,
       })
       .from(orders)
       .where(sql`${orders.createdAt} >= ${startDate}`)
-      .groupBy(sql`DATE(${orders.createdAt})`)
-      .orderBy(sql`DATE(${orders.createdAt})`);
+      .groupBy(businessDay)
+      .orderBy(businessDay);
 
     // Get order status breakdown
     const statusData = await db

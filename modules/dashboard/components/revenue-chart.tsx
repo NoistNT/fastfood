@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import {
   LineChart,
   Line,
@@ -13,6 +14,7 @@ import {
 
 import { Button } from '@/modules/core/ui/button';
 import { ChartSkeleton } from '@/modules/core/ui/skeleton-components';
+import { formatDate } from '@/lib/dates';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +40,7 @@ const timePeriods = [
 
 export function RevenueChart() {
   const [period, setPeriod] = useState('30d');
+  const locale = useLocale();
   const { data, isPending, isError } = useDashboardCharts(period);
   const chartData = (data?.data as { revenueData?: ChartData[] } | undefined)?.revenueData ?? [];
 
@@ -77,15 +80,17 @@ export function RevenueChart() {
       >
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
+          {/* date values are YYYY-MM-DD calendar keys, not instants: pin UTC
+              so business zones west of it can't shift the label a day back. */}
           <XAxis
             dataKey="date"
-            tickFormatter={(value) => new Date(value).toLocaleDateString()}
+            tickFormatter={(value) => formatDate(new Date(value), { locale, timeZone: 'UTC' })}
           />
           <YAxis tickFormatter={(value) => `$${value.toFixed(0)}`} />
           <Tooltip
             labelFormatter={(value) =>
               typeof value === 'string' || typeof value === 'number'
-                ? new Date(value).toLocaleDateString()
+                ? formatDate(new Date(value), { locale, timeZone: 'UTC' })
                 : ''
             }
             formatter={(value) =>

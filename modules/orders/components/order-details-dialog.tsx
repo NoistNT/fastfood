@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { toast } from '@/modules/core/hooks/use-toast';
+import { formatDateTime } from '@/lib/dates';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ export function OrderDetailsDialog({
   children,
 }: Props) {
   const t = useTranslations('Features.dashboard.details');
+  const locale = useLocale();
   const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const nextStatus = useMemo(() => {
@@ -115,13 +117,7 @@ export function OrderDetailsDialog({
                       <div className="flex justify-between rounded-sm bg-muted/90 p-2 pl-0">
                         <OrderStatusBadge status={status} />
                         <span className="text-xs text-muted-foreground font-medium">
-                          {createdAt.toLocaleString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
+                          {formatDateTime(createdAt, { locale, month: 'short' })}
                         </span>
                       </div>
                     </li>

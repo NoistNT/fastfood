@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Download } from 'lucide-react';
 
@@ -24,6 +24,7 @@ import {
 import { Badge } from '@/modules/core/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { useInventory } from '@/modules/core/hooks/use-api-cache';
+import { formatDate } from '@/lib/dates';
 import { exportToCSV } from '@/lib/utils';
 import { IngredientFormDialog } from '@/modules/dashboard/components/ingredient-form-dialog';
 
@@ -39,6 +40,7 @@ interface InventoryItem {
 
 export function InventoryTable() {
   const t = useTranslations('Features.dashboard.inventory');
+  const locale = useLocale();
   const { data, isPending, isError } = useInventory();
   const [dialogOpen, setDialogOpen] = useState(false);
   const items: InventoryItem[] = ((data?.data ?? []) as InventoryItem[]).map((item) => {
@@ -152,7 +154,7 @@ export function InventoryTable() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {new Date(item.lastUpdated).toLocaleDateString()}
+                  {formatDate(new Date(item.lastUpdated), { locale })}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>

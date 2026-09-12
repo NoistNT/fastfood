@@ -6,6 +6,7 @@ import { revalidateTag, unstable_cache as cache } from 'next/cache';
 
 import { db } from '@/db/drizzle';
 import { orders, orderStatusHistory } from '@/db/schema';
+import { businessDayWindow } from '@/lib/dates';
 import { canTransition, isValidStatus } from '@/modules/orders/helpers';
 import { ORDER_STATUS, type DashboardOrderView, type OrderStatus } from '@/modules/orders/types';
 
@@ -20,11 +21,11 @@ export async function findAll(date?: Date): Promise<DashboardOrderView[]> {
 
 const cachedFindAll = cache(
   async (date?: Date): Promise<DashboardOrderView[]> => {
-    const where = date
-      ? and(
-          gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
-          lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
-        )
+    // Business-day window as UTC instants (exclusive end); server-local
+    // setHours would bucket late-evening orders into the next day.
+    const dayWindow = date ? businessDayWindow(date) : undefined;
+    const where = dayWindow
+      ? and(gte(orders.createdAt, dayWindow.start), lt(orders.createdAt, dayWindow.end))
       : undefined;
 
     const allOrders = await db.query.orders.findMany({
@@ -93,11 +94,9 @@ export async function findAllWithPages(
 
 const cachedFindAllWithPages = cache(
   async (date?: Date, limit: number = 10, offset: number = 0) => {
-    const where = date
-      ? and(
-          gte(orders.createdAt, new Date(date.setHours(0, 0, 0, 0))),
-          lt(orders.createdAt, new Date(date.setHours(23, 59, 59, 999)))
-        )
+    const dayWindow = date ? businessDayWindow(date) : undefined;
+    const where = dayWindow
+      ? and(gte(orders.createdAt, dayWindow.start), lt(orders.createdAt, dayWindow.end))
       : undefined;
 
     const [allOrders, totalCount] = await Promise.all([
