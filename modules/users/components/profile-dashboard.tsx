@@ -2,9 +2,10 @@
 
 import type { User } from '@/modules/users/types';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import UserProfile from '@/modules/users/components/user-profile';
+import { formatDate } from '@/lib/dates';
 
 interface ProfileDashboardProps {
   user: Omit<User, 'passwordHash'>;
@@ -13,6 +14,7 @@ interface ProfileDashboardProps {
 
 export function ProfileDashboard({ user, isOwnProfile = false }: ProfileDashboardProps) {
   const t = useTranslations('Features.profile');
+  const locale = useLocale();
 
   return (
     <div className="mx-auto flex h-full max-w-4xl flex-1 flex-col py-8 px-1.5">
@@ -61,13 +63,13 @@ export function ProfileDashboard({ user, isOwnProfile = false }: ProfileDashboar
               <div>
                 <p className="text-sm text-muted-foreground">{t('memberSince')}</p>
                 <p className="text-sm font-medium">
-                  {new Date(user.createdAt).toLocaleDateString()}
+                  {formatDate(new Date(user.createdAt), { locale })}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">{t('lastUpdated')}</p>
                 <p className="text-sm font-medium">
-                  {new Date(user.updatedAt).toLocaleDateString()}
+                  {formatDate(new Date(user.updatedAt), { locale })}
                 </p>
               </div>
             </div>

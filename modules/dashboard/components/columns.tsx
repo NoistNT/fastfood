@@ -5,9 +5,11 @@ import type { DataTableFeatures } from '@/modules/core/components/data-table-fea
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { OrderStatusBadge } from '@/modules/orders/components/order-status-badge';
 import { OrderDetailsCell } from '@/modules/dashboard/components/order-details-cell';
+import { formatDate, formatTime } from '@/lib/dates';
 
 export const createColumns = (
-  t: (key: string) => string
+  t: (key: string) => string,
+  locale: string
 ): ColumnDef<DataTableFeatures, DashboardOrderView>[] => [
   {
     accessorKey: 'order.userName',
@@ -62,7 +64,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const createdAt: Date = new Date(row.getValue('order.time'));
-      return <span>{createdAt.toLocaleTimeString()}</span>;
+      return <span>{formatTime(createdAt, { locale })}</span>;
     },
   },
   {
@@ -76,10 +78,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const createdAt: Date = new Date(row.getValue('order.date'));
-      const formattedDate = createdAt
-        .toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })
-        .replace(/\//g, '-');
-      return <span>{formattedDate}</span>;
+      return <span>{formatDate(createdAt, { locale })}</span>;
     },
   },
   {
