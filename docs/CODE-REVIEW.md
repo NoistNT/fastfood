@@ -10,6 +10,9 @@ real shipped-or-caught bug; check the file, not the intent.
   (`params.id` UUID → 400 not 500 — #76; `period` enum coercion — #69)
 - Rate-limit key from a trusted source (`getClientIp()`, never raw
   `x-forwarded-for` — #60)?
+- Reads scoped by user id — order/profile access must never trust
+  client-supplied ids; project safe columns, never spread full rows to
+  clients (#90)?
 - No PII in URLs, storage, logs, or error responses? (register-URL params →
   sessionStorage → removed entirely — #60)
 
@@ -31,6 +34,9 @@ real shipped-or-caught bug; check the file, not the intent.
   offline, never clear the cart — #60)
 - Guest vs. authed derived from server response, not client race state?
   (`placed.claimUrl` authority — #72)
+- Persisted client state: shape-validate on rehydrate with empty fallback;
+  rehydrate failures must still complete hydration — gate first paints on
+  finish, never on data (#88)
 
 ## Data integrity
 - Every check-then-write atomic or re-guarded at write time? (conditional
@@ -55,6 +61,9 @@ real shipped-or-caught bug; check the file, not the intent.
   failure-mode oracle? (claim tokens — #64)
 - Registration/claim adoption can't bind credentials to an unreachable
   identity? (email-match guard — #64)
+- The PII ban targets exfiltration surfaces (URLs, logs, payloads,
+  responses). Owner-approved same-device drafts (cart, offline queue) are
+  allowed; never transmit except via the existing submit payload (#88)
 
 ## Maintenance
 - Every future finding that slips through gets distilled into one line here,

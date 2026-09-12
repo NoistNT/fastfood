@@ -16,6 +16,7 @@ Dev runs Turbopack by default (clear `.next` if it misbehaves); production build
 | `pnpm build`                        | Production build                          |
 | `pnpm lint`                         | ESLint **+ `tsc --noEmit`** (both matter) |
 | `pnpm test:run`                     | Vitest suite (`pnpm test` = watcher)      |
+| `pnpm test:coverage`                | Vitest coverage report                    |
 | `pnpm test:e2e`                     | Playwright E2E (server auto-boots)        |
 | `pnpm test:visual`                  | Update visual snapshots                   |
 | `pnpm db:push`                      | Push Drizzle schema to database           |
@@ -39,6 +40,9 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
   **Enforcement: no PR is presented until a verdict table for the full diff
   exists in the session** — review first, then show.
 - Review checklist: `docs/CODE-REVIEW.md` — run it against every diff.
+- **Distill in the resolving PR**: every finding that teaches a durable rule
+  lands its checklist/config line in the *same PR that fixes it* — never a
+  later hygiene PR (deferred documentation is never done).
 - Finish every change with the quality gates before reporting done:
   `pnpm lint` → `pnpm test:run` → `pnpm build`
 - Keep diffs minimal and scoped to what was agreed
@@ -81,6 +85,11 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - **`i18n/request.ts`** auto-detects locale from `Accept-Language` (es → es, else en)
 - **`test/`** Vitest suites by type · **`e2e/`** Playwright specs (+ `e2e/visual/`)
 - **`store/`** Zustand · **`types/`** shared types · **`messages/`** en.json + es.json
+- Data fetching: Server Components for reads; TanStack `use-api-cache` hook
+  for client-side fetching
+- Money: columns are `numeric(10,2)`, carried as strings end-to-end; display
+  via `toFixed`, cart totals via `calculateTotal`, charges via server-side
+  `computeOrderTotal` — never trust client-submitted totals
 
 ## Design system & UX rules
 
@@ -124,11 +133,16 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - Dedicated badge components exist (`order-status-badge` etc.) — extend them, don't inline colors; render new primitives in `app/components-test/page.tsx` (visual fixture)
 - Metadata via `app/layout.tsx` exports; assets: `app/icon.svg`, `public/logo.svg`
 
+### Accessibility
+
+- WCAG AA target — reuse `skip-to-content` + `screen-reader-announcement`;
+  cover new flows in `test/accessibility/`
+
 ## Testing & tooling
 
-- Tests live in `test/` organized by type (api/components/hooks/lib/integration), not beside source; Vitest runs jsdom with globals, setup = jest-dom only. Many API-route tests import handlers directly (DB mocked via CI env vars)
-- Playwright boots its own server via `webServer` config (seeded DB if present, mock DB fallback); visual tests are Chromium-only, manual `workflow_dispatch`
-- Lint/format: `pnpm lint` = ESLint + `tsc --noEmit` (strict; `consistent-type-imports`; `import/order`; scoped `no-console`); Prettier 100-width single quotes; `pnpm format` autofixes
+- Tests live in `test/` organized by type (api/components/hooks/lib/integration/store/types/utils/workflows), not beside source; extend adjacent suites instead of new top-level folders — read a matching test first. Vitest runs jsdom with globals, setup = jest-dom only. Many API-route tests import handlers directly (DB mocked via CI env vars)
+- Playwright boots its own server via `webServer` config (seeded DB if present, mock DB fallback); visual tests are Chromium-only, manual `workflow_dispatch` (threshold 0.3 / maxDiffPixels 1000; never commit unintended `.ts-snapshots` changes)
+- Lint/format: `pnpm lint` = ESLint + `tsc --noEmit` (strict; `consistent-type-imports`; `import/order`; scoped `no-console` — off in `app/api/**` and `lib/**`); Prettier 100-width single quotes; `pnpm format` autofixes
 - CI order mirrors gates then E2E: lint → test:run → build → start → wait-on → chromium; Dependabot, CodeQL, CodeRabbit, weekly audit run automatically (Dependabot PRs skip preview deploys — secrets are withheld from that actor)
 - Logging: no logger/Sentry (privacy) — `logError()` allowlist in `lib/log-error.ts`;
   correlation IDs (order/tracking/ingredient) and curated messages required;

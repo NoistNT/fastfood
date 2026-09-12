@@ -1,3 +1,5 @@
+# NOTE: tone_instructions must stay <=250 chars — over-limit silently falls
+# back to CodeRabbit defaults (hit in #89).
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 language: en-US
 early_access: false
