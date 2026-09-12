@@ -15,6 +15,10 @@
     "outOfStock": "Out of Stock",
     "addedToOrder": "added to order"
   },
+  "ProductDetail": {
+    "backToMenu": "Back to menu",
+    "ingredients": "Ingredients"
+  },
   "Features": {
     "orders": {
       "emptyOrder": "You don't have any products in your order",

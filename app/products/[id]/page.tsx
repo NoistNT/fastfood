@@ -1,15 +1,78 @@
-import { findOne } from '@/modules/products/actions/actions';
+import type { Metadata } from 'next';
+
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+import { ChevronLeft } from 'lucide-react';
+
+import { Button } from '@/modules/core/ui/button';
+import { findAll, findOne } from '@/modules/products/actions/actions';
 import DetailCard from '@/modules/products/components/detail-card';
+import { NEXT_PUBLIC_BASE_URL } from '@/constants';
 
 interface Props {
-  params: Promise<{ id: number }>;
+  params: Promise<{ id: string }>;
+}
+
+/** Route ids arrive as strings; non-numeric values never reach the database. */
+const parseProductId = (raw: string): number | null => {
+  if (!/^\d+$/.test(raw)) return null;
+  const id = Number(raw);
+  return Number.isSafeInteger(id) ? id : null;
+};
+
+export async function generateStaticParams() {
+  const products = await findAll();
+
+  return products.map(({ id }) => ({ id: String(id) }));
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const productId = parseProductId(id);
+  const product = productId === null ? null : await findOne(productId);
+
+  if (!product) {
+    return {
+      title: 'Not found',
+      description: 'The product you are looking for does not exist.',
+      metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
+    };
+  }
+
+  return {
+    title: product.name,
+    description: product.description,
+    metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
+  };
 }
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const product = await findOne(id);
+  const t = await getTranslations('ProductDetail');
 
-  if (!product) return <p>Product not found</p>;
+  const productId = parseProductId(id);
+  if (productId === null) notFound();
 
-  return <DetailCard product={product} />;
+  const product = await findOne(productId);
+  if (!product) notFound();
+
+  return (
+    <section className="container mx-auto max-w-3xl space-y-6 px-4 py-8">
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+      >
+        <Link
+          href="/products"
+          aria-label={t('backToMenu')}
+        >
+          <ChevronLeft />
+          {t('backToMenu')}
+        </Link>
+      </Button>
+      <DetailCard product={product} />
+    </section>
+  );
 }
