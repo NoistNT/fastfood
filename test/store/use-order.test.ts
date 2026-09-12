@@ -110,6 +110,10 @@ describe('useOrderStore persistence', () => {
       phoneNumber: '',
       email: '',
     });
+    // Hydration must complete (not hang the /order skeleton gate) and the
+    // malformed payload must be evicted so the next load starts clean.
+    expect(useOrderStore.persist.hasHydrated()).toBe(true);
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 
   it('clearOrder empties the persisted cart', () => {

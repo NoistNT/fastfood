@@ -1,7 +1,7 @@
 import type { CartItem } from '@/modules/orders/types';
 
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
+import { persist, type PersistStorage, type StorageValue } from 'zustand/middleware';
 
 // Guest contact identity typed once at checkout. Persisted alongside the
 // cart so a refresh doesn't wipe it; same-device localStorage only, never
@@ -32,6 +32,40 @@ interface OrderStore {
 }
 
 type PersistedOrderState = Pick<OrderStore, 'items' | 'checkoutIdentity'>;
+
+// Safe JSON storage: malformed payloads are removed and read as empty so
+// rehydrate() completes and hasHydrated() flips. With the default adapter a
+// corrupt fastfood_cart leaves hasHydrated() false forever — and the /order
+// skeleton gate (subscribed to finish-hydration) pending with it.
+const safeJsonStorage = (): PersistStorage<PersistedOrderState> => ({
+  getItem: (name) => {
+    try {
+      const raw = localStorage.getItem(name);
+      return raw === null ? null : (JSON.parse(raw) as StorageValue<PersistedOrderState>);
+    } catch {
+      try {
+        localStorage.removeItem(name);
+      } catch {
+        // storage itself unreachable — rehydrate as empty below
+      }
+      return null;
+    }
+  },
+  setItem: (name, value) => {
+    try {
+      localStorage.setItem(name, JSON.stringify(value));
+    } catch {
+      // quota/unavailable storage must never crash cart interactions
+    }
+  },
+  removeItem: (name) => {
+    try {
+      localStorage.removeItem(name);
+    } catch {
+      // already effectively gone
+    }
+  },
+});
 
 const isValidCartItem = (item: unknown): item is CartItem => {
   if (typeof item !== 'object' || item === null) return false;
@@ -104,9 +138,9 @@ export const useOrderStore = create<OrderStore>()(
     {
       name: 'fastfood_cart',
       version: 1,
-      // createJSONStorage returns undefined storage on the server (no
-      // localStorage) and persist degrades to a plain in-memory store there.
-      storage: createJSONStorage(() => localStorage),
+      // Undefined storage on the server (no localStorage): persist degrades
+      // to a plain in-memory store there.
+      storage: typeof localStorage === 'undefined' ? undefined : safeJsonStorage(),
       partialize: ({ items, checkoutIdentity }) => ({ items, checkoutIdentity }),
       // Corrupt or foreign shapes fall back to the current (empty) state.
       merge: (persistedState, currentState) => {
