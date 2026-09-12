@@ -84,7 +84,7 @@ export function CheckoutDetailsForm({ value, onChange }: CheckoutDetailsFormProp
           <Label htmlFor="checkout-name">{t('fullName')}</Label>
           <Input
             id="checkout-name"
-            placeholder={t('fullName')}
+            placeholder={t('fullNamePlaceholder')}
             autoComplete="name"
             required
             value={value.fullName}
@@ -96,7 +96,7 @@ export function CheckoutDetailsForm({ value, onChange }: CheckoutDetailsFormProp
           <Input
             id="checkout-phone"
             type="tel"
-            placeholder={t('phone')}
+            placeholder={t('phonePlaceholder')}
             autoComplete="tel"
             required
             value={value.phoneNumber}
@@ -108,7 +108,7 @@ export function CheckoutDetailsForm({ value, onChange }: CheckoutDetailsFormProp
           <Input
             id="checkout-email"
             type="email"
-            placeholder={t('emailOptional')}
+            placeholder={t('emailPlaceholder')}
             autoComplete="email"
             value={value.email}
             onChange={(event) => onChange({ email: event.target.value })}
@@ -120,7 +120,7 @@ export function CheckoutDetailsForm({ value, onChange }: CheckoutDetailsFormProp
               <Label htmlFor="checkout-address">{t('address')}</Label>
               <Input
                 id="checkout-address"
-                placeholder={t('address')}
+                placeholder={t('addressPlaceholder')}
                 autoComplete="street-address"
                 required
                 value={value.deliveryAddress}
@@ -131,7 +131,7 @@ export function CheckoutDetailsForm({ value, onChange }: CheckoutDetailsFormProp
               <Label htmlFor="checkout-notes">{t('notes')}</Label>
               <Input
                 id="checkout-notes"
-                placeholder={t('notes')}
+                placeholder={t('notesPlaceholder')}
                 value={value.deliveryNotes}
                 onChange={(event) => onChange({ deliveryNotes: event.target.value })}
               />

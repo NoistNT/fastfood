@@ -56,11 +56,16 @@
         "pickup": "Pickup at the shop",
         "delivery": "Delivery",
         "fullName": "Full name",
+        "fullNamePlaceholder": "Jane Doe",
         "phone": "Phone number",
+        "phonePlaceholder": "+54 9 11 555-0100",
         "email": "Email",
         "emailOptional": "Email (optional)",
+        "emailPlaceholder": "jane@example.com",
         "address": "Delivery address",
-        "notes": "Delivery notes"
+        "addressPlaceholder": "Street and number",
+        "notes": "Delivery notes",
+        "notesPlaceholder": "No onions, please"
       },
       "accountNudge": {
         "title": "Want to track this order?",
@@ -192,7 +197,9 @@
         "selectedLabel": "Selected",
         "change": "Change",
         "name": "Name",
+        "namePlaceholder": "Jane Doe",
         "phone": "Phone",
+        "phonePlaceholder": "+54 9 11 555-0100",
         "customerRequired": "Choose a customer or enter a name",
         "items": "Items",
         "addItem": "Add item",
@@ -278,9 +285,12 @@
           "titleEdit": "Edit person",
           "description": "Contact details for the directory. Duplicates converge automatically when they share a phone or email.",
           "fullName": "Full name",
+          "fullNamePlaceholder": "Jane Doe",
           "phone": "Phone number",
+          "phonePlaceholder": "+54 9 11 555-0100",
           "email": "Email",
           "emailOptional": "Email (optional)",
+          "emailPlaceholder": "jane@example.com",
           "nameRequired": "Full name is required",
           "emailInvalid": "Enter a valid email address",
           "save": "Save person",
@@ -400,6 +410,7 @@
             "titleCreate": "Add ingredient",
             "description": "New ingredients start with zero stock. Set the starting threshold here.",
             "name": "Name",
+            "namePlaceholder": "Flour",
             "nameRequired": "Name is required",
             "unit": "Unit",
             "unitRequired": "Unit is required",
@@ -419,8 +430,13 @@
     },
     "auth": {
       "register": {
-        "title": "Sign Up",
-        "toast": {
+    "title": "Sign Up",
+    "namePlaceholder": "Jane Doe",
+    "emailPlaceholder": "jane@example.com",
+    "phonePlaceholder": "+54 9 11 555-0100",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "confirmPasswordPlaceholder": "Repeat the password",
+    "toast": {
           "success": {
             "title": "Sign Up Successful",
             "description": "You have been registered successfully."
@@ -434,7 +450,8 @@
       },
       "login": {
         "title": "Sign In",
-        "passwordPlaceholder": "Enter your password",
+        "emailPlaceholder": "jane@example.com",
+        "passwordPlaceholder": "Minimum 8 characters",
         "forgotPasswordLink": "Forgot your password?",
         "tryAsStaff": "Try as staff",
         "tryAsAdmin": "Try as admin",
@@ -479,9 +496,9 @@
         "title": "Reset Your Password",
         "description": "Enter your new password below.",
         "passwordLabel": "New Password",
-        "passwordPlaceholder": "Enter your new password",
+        "passwordPlaceholder": "Minimum 8 characters",
         "confirmPasswordLabel": "Confirm Password",
-        "confirmPasswordPlaceholder": "Confirm your new password",
+        "confirmPasswordPlaceholder": "Repeat the password",
         "submitButton": "Reset Password",
         "submittingButton": "Resetting Password...",
         "backToLogin": "Back to Sign In",

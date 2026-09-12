@@ -371,7 +371,7 @@ export default function OrderIntakeForm() {
                       <FormControl>
                         <Input
                           id="intake-name"
-                          placeholder={t('name')}
+                          placeholder={t('namePlaceholder')}
                           {...field}
                         />
                       </FormControl>
@@ -388,7 +388,7 @@ export default function OrderIntakeForm() {
                       <FormControl>
                         <Input
                           id="intake-phone"
-                          placeholder={t('phone')}
+                          placeholder={t('phonePlaceholder')}
                           {...field}
                         />
                       </FormControl>

@@ -127,7 +127,7 @@ export function IngredientFormDialog({ open, onOpenChange }: IngredientFormDialo
                   <FormControl>
                     <Input
                       id="ingredient-name"
-                      placeholder={t('name')}
+                      placeholder={t('namePlaceholder')}
                       autoComplete="off"
                       {...field}
                     />
