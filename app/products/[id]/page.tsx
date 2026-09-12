@@ -23,29 +23,41 @@ const parseProductId = (raw: string): number | null => {
 };
 
 export async function generateStaticParams() {
-  const products = await findAll();
+  try {
+    const products = await findAll();
 
-  return products.map(({ id }) => ({ id: String(id) }));
+    return products.map(({ id }) => ({ id: String(id) }));
+  } catch {
+    // Preview/CI builds run against a mock DB_URL: skip static generation
+    // and render product pages on demand instead.
+    console.warn('[products/[id]] generateStaticParams: database unavailable, skipping');
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const productId = parseProductId(id);
-  const product = productId === null ? null : await findOne(productId);
+  const metadataBase = new URL(NEXT_PUBLIC_BASE_URL);
+  try {
+    const { id } = await params;
+    const productId = parseProductId(id);
+    const product = productId === null ? null : await findOne(productId);
 
-  if (!product) {
+    if (!product) {
+      return {
+        title: 'Not found',
+        description: 'The product you are looking for does not exist.',
+        metadataBase,
+      };
+    }
+
     return {
-      title: 'Not found',
-      description: 'The product you are looking for does not exist.',
-      metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
+      title: product.name,
+      description: product.description,
+      metadataBase,
     };
+  } catch {
+    return { title: 'FastFood', metadataBase };
   }
-
-  return {
-    title: product.name,
-    description: product.description,
-    metadataBase: new URL(NEXT_PUBLIC_BASE_URL),
-  };
 }
 
 export default async function Page({ params }: Props) {
