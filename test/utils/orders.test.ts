@@ -2,7 +2,7 @@ import type { CartItem } from '@/modules/orders/types';
 
 import { describe, expect, it } from 'vitest';
 
-import { calculateTotal, toFixed } from '@/modules/orders/utils';
+import { calculateTotal, reconcileCartItems, toFixed } from '@/modules/orders/utils';
 
 describe('calculateTotal', () => {
   it('calculates total for empty array', () => {
@@ -84,5 +84,40 @@ describe('toFixed', () => {
   it('handles large numbers', () => {
     expect(toFixed('1234.567')).toBe('1234.57');
     expect(toFixed('999999.999')).toBe('1000000.00');
+  });
+});
+
+describe('reconcileCartItems', () => {
+  it('syncs name and price from the catalog', () => {
+    const items: CartItem[] = [{ productId: 1, name: 'Old Name', price: '1.00', quantity: 2 }];
+    const result = reconcileCartItems(items, [
+      { id: 1, name: 'New Name', price: '8.99', available: true },
+    ]);
+    expect(result).toEqual({
+      items: [{ productId: 1, name: 'New Name', price: '8.99', quantity: 2 }],
+      removedCount: 0,
+    });
+  });
+
+  it('drops missing and unavailable products, counting removals', () => {
+    const items: CartItem[] = [
+      { productId: 1, name: 'Burger', price: '8.99', quantity: 1 },
+      { productId: 2, name: 'Gone', price: '5.00', quantity: 1 },
+      { productId: 3, name: 'Paused', price: '3.00', quantity: 2 },
+    ];
+    const result = reconcileCartItems(items, [
+      { id: 1, name: 'Burger', price: '8.99', available: true },
+      { id: 3, name: 'Paused', price: '3.00', available: false },
+    ]);
+    expect(result.items).toEqual([{ productId: 1, name: 'Burger', price: '8.99', quantity: 1 }]);
+    expect(result.removedCount).toBe(2);
+  });
+
+  it('keeps the cart untouched when nothing changed', () => {
+    const items: CartItem[] = [{ productId: 1, name: 'Burger', price: '8.99', quantity: 1 }];
+    const result = reconcileCartItems(items, [
+      { id: 1, name: 'Burger', price: '8.99', available: true },
+    ]);
+    expect(result).toEqual({ items, removedCount: 0 });
   });
 });

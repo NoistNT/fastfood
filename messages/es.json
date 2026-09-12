@@ -84,6 +84,10 @@
         "orderNotFound": "Pedido no encontrado",
         "invalidTransition": "Transición inválida",
         "updateStatusError": "Error al actualizar el estado para el pedido {orderId}"
+      },
+      "cartSync": {
+        "title": "Carrito actualizado",
+        "description": "Algunos productos no estaban disponibles y fueron removidos de tu pedido."
       }
     },
     "profile": {

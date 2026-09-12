@@ -143,7 +143,9 @@ visual-regression fixture.
   `proxy.ts` + `requireAdmin`/`requireOperationalRole()` guards enforce it:
   `/dashboard` needs an operational role, `reports`/`customers` need ADMIN
 - Guest checkout: anyone can order (name+phone), identity deduped into
-  passwordless person records; claim-link tokens adopt them cross-device
+  passwordless person records; claim-link tokens adopt them cross-device.
+  Cart + typed contact survive a refresh (same-device storage only);
+  display prices re-sync from the catalog, charges stay server-computed
 - CSRF token for state-changing API calls (`x-csrf-token` header)
 - Input sanitization (`lib/sanitize.ts`), rate limiting (Upstash Redis with
   in-memory fallback)

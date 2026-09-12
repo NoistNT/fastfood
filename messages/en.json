@@ -84,6 +84,10 @@
         "orderNotFound": "Order not found",
         "invalidTransition": "Invalid transition",
         "updateStatusError": "Error updating status for order {orderId}"
+      },
+      "cartSync": {
+        "title": "Cart updated",
+        "description": "Some items were unavailable and were removed from your order."
       }
     },
     "profile": {
