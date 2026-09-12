@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 
+import { canViewProfile } from '@/lib/auth/roles';
 import { getSession } from '@/lib/auth/session';
 import { findUserById } from '@/modules/users/actions';
 import { ProfileDashboard } from '@/modules/users/components/profile-dashboard';
@@ -11,11 +12,14 @@ interface Props {
 
 export default async function UserProfilePage({ params }: Props) {
   const { id } = await params;
+
+  const session = await getSession();
+  if (!canViewProfile(session, id)) notFound();
+
   const user = await findUserById(id);
 
   if (!user) notFound();
 
-  const session = await getSession();
   const isOwnProfile = session?.id === id;
 
   return (

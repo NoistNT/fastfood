@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl';
 import UserProfile from '@/modules/users/components/user-profile';
 
 interface ProfileDashboardProps {
-  user: User;
+  user: Omit<User, 'passwordHash'>;
   isOwnProfile?: boolean;
 }
 

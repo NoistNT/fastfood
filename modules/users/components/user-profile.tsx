@@ -3,7 +3,7 @@ import type { User } from '@/modules/users/types';
 import { useTranslations } from 'next-intl';
 
 interface Props {
-  user: User;
+  user: Omit<User, 'passwordHash'>;
 }
 
 export default function UserProfile({ user }: Props) {

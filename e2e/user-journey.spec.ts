@@ -148,6 +148,42 @@ test.describe('Complete User Journey', () => {
     await expect(page.getByLabel('Phone number')).toHaveValue('555-0100');
   });
 
+  test('profile access is scoped to self for civilians', async ({ page }) => {
+    const timestamp = Date.now();
+    const testUser = {
+      name: 'Profile User',
+      email: `profile${timestamp}@example.com`,
+      password: 'TestPassword123!',
+    };
+
+    await test.step('Register and login', async () => {
+      await page.goto('/register');
+      await page.getByLabel('Full Name').fill(testUser.name);
+      await page.getByLabel('Email').fill(testUser.email);
+      await page.getByLabel('Password', { exact: true }).fill(testUser.password);
+      await page.getByLabel('Confirm Password').fill(testUser.password);
+      await page.locator('form').getByRole('button', { name: 'Create Account' }).click();
+      await page.waitForURL('**/login', { timeout: 10000 });
+
+      await page.getByLabel('Email').fill(testUser.email);
+      await page.getByLabel('Password', { exact: true }).fill(testUser.password);
+      await page.locator('form').getByRole('button', { name: 'Sign In' }).click();
+      await page.waitForURL('/', { timeout: 10000 });
+    });
+
+    await test.step('Own profile renders', async () => {
+      await page.getByRole('button', { name: 'User menu' }).click();
+      await page.getByRole('menuitem', { name: 'Profile' }).click();
+      await page.waitForURL('**/profile/**', { timeout: 10000 });
+      await expect(page.getByText(testUser.name).first()).toBeVisible();
+    });
+
+    await test.step("Another user's profile does not exist for civilians", async () => {
+      await page.goto('/profile/00000000-0000-0000-0000-000000000000');
+      await expect(page.getByText('404 PAGE NOT FOUND')).toBeVisible();
+    });
+  });
+
   test('error handling for invalid registration', async ({ page }) => {
     await page.goto('/register');
 
