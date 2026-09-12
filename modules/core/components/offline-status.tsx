@@ -7,6 +7,7 @@ import { Button } from '@/modules/core/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/modules/core/ui/card';
 import { Badge } from '@/modules/core/ui/badge';
 import { useOfflineOrders } from '@/modules/core/hooks/use-offline-orders';
+import { formatDateTime } from '@/lib/dates';
 
 export function OfflineStatus() {
   const { isOnline, offlineOrders, removeOfflineOrder, retryOfflineOrder } = useOfflineOrders();
@@ -62,7 +63,7 @@ export function OfflineStatus() {
                     <p className="font-medium">Order #{order.id.split('_')[1]}</p>
                     <p className="text-sm text-muted-foreground">
                       {order.items.length} items • ${order.total} •{' '}
-                      {new Date(order.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(order.timestamp))}
                     </p>
                   </div>
                 </div>
@@ -81,7 +82,7 @@ export function OfflineStatus() {
                     <p className="font-medium">Order #{order.id.split('_')[1]}</p>
                     <p className="text-sm text-muted-foreground">
                       {order.items.length} items • ${order.total} •{' '}
-                      {new Date(order.timestamp).toLocaleString()}
+                      {formatDateTime(new Date(order.timestamp))}
                     </p>
                   </div>
                 </div>

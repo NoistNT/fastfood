@@ -2,7 +2,7 @@
 
 import type { OrderWithProductsView } from '@/modules/orders/types';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { DataTable } from '@/modules/core/components/data-table';
 import { createColumns } from '@/modules/dashboard/components/columns';
@@ -15,6 +15,7 @@ interface Props {
 
 export default function OrdersTable({ orders }: Props) {
   const tTable = useTranslations('Common.table');
+  const locale = useLocale();
 
   const handleExportCSV = () => {
     exportToCSV(orders, 'orders.csv');
@@ -23,7 +24,7 @@ export default function OrdersTable({ orders }: Props) {
   return (
     <div className="w-full">
       <DataTable
-        columns={createColumns(tTable)}
+        columns={createColumns(tTable, locale)}
         data={orders}
         searchColumn="order.status"
         onExportCSV={handleExportCSV}

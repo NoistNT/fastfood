@@ -48,6 +48,8 @@ cp .env.production.example .env.production
 | `RESEND_API_KEY`       | `re_...`                                        | Optional; email notifications            |
 | `UPSTASH_REDIS_REST_URL` | `https://...upstash.io`                       | Optional; separate instance per env      |
 | `UPSTASH_REDIS_REST_TOKEN` | token string                                | Optional; see §6 known gotchas (permissions) |
+| `NEXT_PUBLIC_CURRENCY` | `USD`                                             | Optional; ISO 4217 money display         |
+| `NEXT_PUBLIC_BUSINESS_TIMEZONE` | `UTC`                                      | Optional; IANA business clock for day buckets + date display (forks override per shop, trunk stays UTC) |
 
 `.env.test` is referenced by `pnpm test` (watcher) but not required — Vitest
 runs fine without it.
@@ -68,6 +70,8 @@ vars from Vercel.
 | `RESEND_API_KEY`       | optional                     | `re_...`                     |
 | `UPSTASH_REDIS_REST_URL` | optional dev instance      | optional prod instance       |
 | `UPSTASH_REDIS_REST_TOKEN` | optional                  | optional                     |
+| `NEXT_PUBLIC_CURRENCY` | `USD`                       | per-fork                     |
+| `NEXT_PUBLIC_BUSINESS_TIMEZONE` | `UTC`                | per-fork shop zone           |
 
 ### 2.3 GitHub Actions secrets (repo → Settings → Secrets and variables → Actions)
 

@@ -1,10 +1,10 @@
 'use client';
 
-import { format } from 'date-fns';
 import Link from 'next/link';
 
 import { TableSkeleton } from '@/modules/core/ui/skeleton-components';
 import { useDashboardSummary } from '@/modules/core/hooks/use-api-cache';
+import { formatDate } from '@/lib/dates';
 
 interface RecentOrder {
   id: string;
@@ -44,7 +44,7 @@ export function RecentOrders() {
               Order #{order.id}
             </Link>
             <p className="text-xs text-muted-foreground">
-              {format(new Date(order.createdAt), 'MMM dd, yyyy')}
+              {formatDate(new Date(order.createdAt), { month: 'short' })}
             </p>
           </div>
           <div className="text-right">

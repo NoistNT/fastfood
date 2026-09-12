@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
+
+import { formatDate, formatDateTime } from '@/lib/dates';
 
 import { getCustomerById } from '../page';
 
@@ -10,6 +12,7 @@ interface Props {
 export default async function CustomerDetailPage({ params }: Props) {
   const { id } = await params;
   const t = await getTranslations('CustomerDetail');
+  const locale = await getLocale();
 
   const customer = await getCustomerById(id);
 
@@ -54,13 +57,15 @@ export default async function CustomerDetailPage({ params }: Props) {
               <div>
                 <dt className="text-sm font-medium text-muted-foreground">Member Since</dt>
                 <dd className="text-sm font-medium">
-                  {new Date(customer.createdAt).toLocaleDateString()}
+                  {formatDate(new Date(customer.createdAt), { locale })}
                 </dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-muted-foreground">Last Login</dt>
                 <dd className="text-sm font-medium">
-                  {customer.lastLoginAt ? new Date(customer.lastLoginAt).toLocaleString() : 'Never'}
+                  {customer.lastLoginAt
+                    ? formatDateTime(new Date(customer.lastLoginAt), { locale })
+                    : 'Never'}
                 </dd>
               </div>
             </dl>

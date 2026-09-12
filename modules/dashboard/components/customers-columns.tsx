@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { DataTableColumnHeader } from '@/modules/core/components/data-table-column-header';
 import { CustomerActionsCell } from '@/modules/dashboard/components/customer-actions-cell';
 import { UserRoleBadge } from '@/modules/dashboard/components/user-role-badge';
+import { formatDate } from '@/lib/dates';
 
 type CustomerWithRoles = {
   id: string;
@@ -22,6 +23,7 @@ type CustomerWithRoles = {
 
 export const createColumns = (
   t: (key: string) => string,
+  locale: string,
   tTable?: (key: string) => string,
   onEdit?: (user: CustomerWithRoles) => void,
   onMerge?: (user: CustomerWithRoles) => void
@@ -109,7 +111,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const lastLogin: Date | null = row.getValue('lastLoginAt');
-      return <span>{lastLogin ? new Date(lastLogin).toLocaleDateString() : 'Never'}</span>;
+      return <span>{lastLogin ? formatDate(new Date(lastLogin), { locale }) : 'Never'}</span>;
     },
   },
   {
@@ -122,7 +124,7 @@ export const createColumns = (
     ),
     cell: ({ row }) => {
       const createdAt: Date = row.getValue('createdAt');
-      return <span>{new Date(createdAt).toLocaleDateString()}</span>;
+      return <span>{formatDate(new Date(createdAt), { locale })}</span>;
     },
   },
   {

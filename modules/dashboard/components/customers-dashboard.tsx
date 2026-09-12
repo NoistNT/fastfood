@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -33,6 +33,7 @@ interface CustomersDashboardProps {
 export function CustomersDashboard({ initialCustomers, initialSearch }: CustomersDashboardProps) {
   const t = useTranslations('Features.dashboard');
   const tTable = useTranslations('Common.table');
+  const locale = useLocale();
   const router = useRouter();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPerson, setEditingPerson] = useState<DirectoryPerson | null>(null);
@@ -90,7 +91,7 @@ export function CustomersDashboard({ initialCustomers, initialSearch }: Customer
         suppressHydrationWarning
       >
         <DataTable
-          columns={createColumns(t, tTable, handleEditPerson, handleMergePerson)}
+          columns={createColumns(t, locale, tTable, handleEditPerson, handleMergePerson)}
           data={initialCustomers}
           searchColumn="name"
           onExportCSV={handleExportCSV}
