@@ -91,6 +91,8 @@ Use `pnpm exec <tool>` / `pnpm dlx <pkg>` — avoid bare `npm` / `npx`.
 - **`i18n/request.ts`** auto-detects locale from `Accept-Language` (es → es, else en)
 - **`test/`** Vitest suites by type · **`e2e/`** Playwright specs (+ `e2e/visual/`)
 - **`store/`** Zustand · **`types/`** shared types · **`messages/`** en.json + es.json
+- **`.opencode/plugins/<name>/index.ts`** local OpenCode V2 plugins — plural only
+  (`.opencode/plugin/` is the V1 path); auto-discovered by the server
 - Data fetching: Server Components for reads; TanStack `use-api-cache` hook
   for client-side fetching
 - Money: columns are `numeric(10,2)`, carried as strings end-to-end; display
